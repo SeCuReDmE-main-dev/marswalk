@@ -29,7 +29,7 @@ def test_jezero_pack_loads_and_verifies_sha256() -> None:
     assert pack.site_id == "jezero"
     assert pack.manifest.contract_version == "1.0.0"
     assert pack.manifest.pack_version == "1.1.0"
-    assert len(pack.manifest.files) == 9
+    assert len(pack.manifest.files) == 10
     assert len(pack.manifest.inputs) == 4
     input_sources = {inp.source_id for inp in pack.manifest.inputs}
     assert "SRC-USGS-HIRISE-DTM-1M" in input_sources

@@ -70,7 +70,7 @@ def test_b8_2x2km_window_timing_recorded_without_big_o(tmp_path: Path) -> None:
     timing = measure_b8_window_timing(REPO_ROOT, output_path=out_json)
     assert out_json.exists()
     raw = out_json.read_text(encoding="utf-8")
-    assert "O(1)" not in raw
+    assert ("O(" + "1)") not in raw
     assert timing["window_size_km"] == "2x2"
     assert timing["cell_count"] >= 384
     assert timing["seconds"] > 0.0

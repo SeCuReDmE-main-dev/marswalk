@@ -18,6 +18,7 @@ from PIL import Image
 from marswalk.contracts.models import (
     CONTRACT_VERSION,
     BasemapLayer,
+    ConfidenceVector,
     EvaRoute,
     EvaRouteFeature,
     EvaRouteProperties,
@@ -32,6 +33,10 @@ from marswalk.contracts.models import (
     Waypoint,
     WaypointFeatureCollection,
 )
+from marswalk.engine.carriers import (
+    build_cell_carrier_triplets,
+    compute_patch_roughness_fractal_texture,
+)
 from marswalk.engine.dtm_ingest import (
     CACHED_WINDOW_TIF_NAME,
     SIM3464_METADATA_NAME,
@@ -39,8 +44,11 @@ from marswalk.engine.dtm_ingest import (
     MultiScaleCellSample,
     compute_multiscale_grid_async,
     ingest_dtm_window_async,
+    lat_to_eqc_y_m,
+    lon_to_eqc_x_m,
     select_optimal_delta_window_2x2km,
 )
+from marswalk.engine.funnel import FunnelParams, run_cell_funnel
 from marswalk.engine.gates import (
     GateVerdict,
     gate_g0_ingest,
@@ -49,7 +57,7 @@ from marswalk.engine.gates import (
     gate_g3_plan,
     run_gate_with_hold_loop,
 )
-from marswalk.engine.plithogenic import evaluate_cell_plithogenic
+from marswalk.engine.prefilter import prefilter_cell
 from marswalk.engine.search_astar import AStarRouteResult, run_two_agent_eva_astar
 from marswalk.engine.validation import ValidationReport, build_validation_report
 from marswalk.middleware.build_pack import (
@@ -97,6 +105,32 @@ def _select_delta_science_stops(
     return (stop1, stop2, stop3)
 
 
+BASELINE_1M_EXCLUSION_NOTE = "below 2x DTM resolution: pixel-scale noise, excluded from the funnel"
+
+
+def _format_funnel_reason(
+    geologic_unit: str,
+    retained_scale_m: int,
+    retained_slope_deg: float,
+    persistent_hazard: bool,
+    trace: tuple[dict[str, Any], ...],
+) -> str:
+    """Format a concise, UI-safe reason + short funnel trace (zero jargon)."""
+    base = f"[{geologic_unit}] Retained {retained_scale_m}m slope {retained_slope_deg:.1f} deg"
+    if persistent_hazard and trace:
+        last = trace[-1]
+        return (
+            f"{base}; persistent hazard across neighbor scales "
+            f"({last['carrier']}@{last['scale_m']}m)"
+        )
+    pruned = [e for e in trace if e.get("action") == "PRUNED"]
+    if pruned:
+        items = ", ".join(f"{e['carrier']}@{e['scale_m']}m" for e in pruned[:2])
+        suffix = "..." if len(pruned) > 2 else ""
+        return f"{base}; funnel pruned {len(pruned)} outlier(s) ({items}{suffix})"
+    return f"{base}; coherent across 4m-64m scales"
+
+
 def _classify_grid_from_samples(
     dtm: IngestedDtmWindow,
     samples: list[MultiScaleCellSample],
@@ -106,13 +140,18 @@ def _classify_grid_from_samples(
     rows: int,
     cols: int,
     overlay_output_path: Path,
+    funnel_params: FunnelParams | None = None,
+    retained_carriers: tuple[str, ...] | None = None,
 ) -> tuple[HazardGrid, float]:
-    """Classify every DTM cell using the 6-attribute Plithogenic core + Safety Veto.
+    """Classify every DTM cell via boolean prefilter + multi-scale pruning funnel.
 
-    Strictly independent of `rover_tilt_deg` (`R2` invariant): only `(wp.lon, wp.lat)`
-    positions are used for `A6_science_proximity`.
+    Strictly independent of `rover_tilt_deg` (`R2` invariant).
     """
-    wp_lonlats = [(w.properties.lon, w.properties.lat) for w in waypoints.features]
+    cfg = funnel_params if funnel_params is not None else FunnelParams()
+    win = dtm.window
+    win_bbox = (win.min_lon, win.min_lat, win.max_lon, win.max_lat)
+    arr = dtm.elevation_m
+    h_px, w_px = arr.shape
 
     cells: list[HazardCell] = []
     scale_px = 10
@@ -122,30 +161,65 @@ def _classify_grid_from_samples(
 
     for s in sorted(samples, key=lambda x: (x.row, x.col)):
         walkback_m = spherical_distance_m(origin_lon, origin_lat, s.lon, s.lat)
-        min_wp_dist_m = min(
-            spherical_distance_m(s.lon, s.lat, wlon, wlat) for (wlon, wlat) in wp_lonlats
-        )
+        wb_clamped = min(1950.0, walkback_m * 0.75)
 
-        # Evaluate 6-attribute plithogenic model with Lexicographic Safety Veto
-        # Note: inside the 2x2 km grid we evaluate intrinsic terrain safety (walkback_m=0.0
-        # for cell terrain map, while route search enforces the 2,000 m walkback envelope).
-        eval_res = evaluate_cell_plithogenic(
-            s1_deg=s.slope_1m_deg,
-            s4_deg=s.slope_4m_deg,
-            s16_deg=s.slope_16m_deg,
-            s64_deg=s.slope_64m_deg,
-            divergence_deg=s.scale_divergence_deg,
-            roughness_deg=s.roughness_deg,
-            walkback_m=min(1950.0, walkback_m * 0.75),
-            geologic_unit=s.geologic_unit,
-            dist_to_m20_stop_m=min_wp_dist_m,
-            nodata_local=s.nodata_local,
+        pf = prefilter_cell(
+            lon=s.lon,
+            lat=s.lat,
+            bbox=win_bbox,
+            slope_deg=max(s.slope_4m_deg, s.slope_16m_deg, s.slope_64m_deg),
+            nodata_fraction=s.nodata_local,
+            source_id=DTM_SOURCE_ID,
         )
-        i_scores.append(eval_res.confidence.i)
+        if not pf["keep"]:
+            verdict = pf["verdict"] or "NO_GO"
+            conf = ConfidenceVector(t=0.02, i=0.04, f=0.94)
+            reason_str = f"[{s.geologic_unit}] Boolean prefilter: {pf['reason']}"
+        else:
+            x_m = lon_to_eqc_x_m(s.lon)
+            y_m = lat_to_eqc_y_m(s.lat)
+            col_px = max(64, min(w_px - 65, int(round((x_m - dtm.transform_x_min_m) - 0.5))))
+            row_px = max(64, min(h_px - 65, int(round((dtm.transform_y_max_m - y_m) - 0.5))))
+            patch = arr[row_px - 4 : row_px + 5, col_px - 4 : col_px + 5]
+            rough_m, frac_d, curv = compute_patch_roughness_fractal_texture(patch, pixel_size_m=1.0)
+            slopes_map = {
+                1: s.slope_1m_deg,
+                4: s.slope_4m_deg,
+                16: s.slope_16m_deg,
+                64: s.slope_64m_deg,
+            }
+            triplets = build_cell_carrier_triplets(
+                slopes_by_scale=slopes_map,
+                roughness_rms_m=rough_m,
+                fractal_d=frac_d,
+                curvature_m_inv=curv,
+                walkback_m=wb_clamped,
+                nodata_fraction=s.nodata_local,
+                source_id=DTM_SOURCE_ID,
+                dtm_resolution_m=1.0,
+                active_carriers=retained_carriers,
+            )
+            f_out = run_cell_funnel(
+                triplets,
+                params=cfg,
+                slopes_by_scale=slopes_map,
+                walkback_m=wb_clamped,
+            )
+            conf = f_out.confidence
+            verdict = f_out.verdict
+            reason_str = _format_funnel_reason(
+                s.geologic_unit,
+                f_out.retained_scale_m,
+                f_out.retained_slope_deg,
+                f_out.persistent_hazard_detected,
+                f_out.trace,
+            )
 
-        if eval_res.verdict == "NO_GO":
+        i_scores.append(conf.i)
+
+        if verdict == "NO_GO":
             rgba = (220, 38, 38, 140)
-        elif eval_res.verdict == "CAUTION":
+        elif verdict == "CAUTION":
             rgba = (245, 158, 11, 115)
         else:
             rgba = (16, 185, 129, 95)
@@ -175,6 +249,7 @@ def _classify_grid_from_samples(
                         unit="deg",
                         tag="DERIVED",
                         source_id=DTM_SOURCE_ID,
+                        note=BASELINE_1M_EXCLUSION_NOTE,
                     ),
                     "4": Quantity(
                         value=s.slope_4m_deg,
@@ -202,9 +277,9 @@ def _classify_grid_from_samples(
                     source_id=DTM_SOURCE_ID,
                 ),
                 rock_cfa_pct=None,
-                confidence=eval_res.confidence,
-                verdict=eval_res.verdict,
-                reason=f"[{s.geologic_unit}] {eval_res.reason}",
+                confidence=conf,
+                verdict=verdict,
+                reason=reason_str,
                 nearest_waypoint_sol=None,
                 measured_rover_tilt_deg=None,
             )
@@ -215,7 +290,6 @@ def _classify_grid_from_samples(
     overlay_output_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(overlay_output_path, format="PNG", optimize=False, compress_level=6)
 
-    win = dtm.window
     mean_i = sum(i_scores) / float(max(1, len(i_scores)))
     grid = HazardGrid(
         grid_status="ENGINE",
@@ -482,6 +556,24 @@ async def run_engine_pipeline_async(
     plitho_profile = json.loads(
         (profiles_src_dir / "plithogenic_eva_v1.json").read_text(encoding="utf-8")
     )
+    funnel_profile_path = profiles_src_dir / "funnel_v1.json"
+    funnel_profile = (
+        json.loads(funnel_profile_path.read_text(encoding="utf-8"))
+        if funnel_profile_path.exists()
+        else {}
+    )
+    funnel_params = FunnelParams(
+        p=int(funnel_profile.get("p", 3)),
+        tau_max=float(funnel_profile.get("tau_max", 0.20)),
+        h_min=float(funnel_profile.get("h_min", 0.70)),
+        eps=float(funnel_profile.get("eps", 0.005)),
+    )
+    raw_retained = funnel_profile.get("retained_carriers")
+    retained_carriers = (
+        tuple(str(x) for x in raw_retained)
+        if isinstance(raw_retained, list) and raw_retained
+        else None
+    )
     gates_cfg = gates_profile.get("gates", {})
     max_retries = int(gates_profile.get("max_hold_retries", 2))
 
@@ -525,7 +617,16 @@ async def run_engine_pipeline_async(
     samples = await compute_multiscale_grid_async(dtm, rows=rows, cols=cols, max_concurrency=8)
     overlay_tmp_path = pack_dir / "hazard_overlay.png"
     hazard_grid, mean_cell_i = _classify_grid_from_samples(
-        dtm, samples, waypoints, origin_lon, origin_lat, rows, cols, overlay_tmp_path
+        dtm,
+        samples,
+        waypoints,
+        origin_lon,
+        origin_lat,
+        rows,
+        cols,
+        overlay_tmp_path,
+        funnel_params=funnel_params,
+        retained_carriers=retained_carriers,
     )
     val_report = build_validation_report(dtm, waypoints)
     scale_coherence_deg = round(
@@ -628,8 +729,22 @@ async def run_engine_pipeline_async(
     pack_profiles_dir.mkdir(parents=True, exist_ok=True)
     gates_prof_out = pack_profiles_dir / "gates_v1.json"
     plitho_prof_out = pack_profiles_dir / "plithogenic_eva_v1.json"
+    funnel_prof_out = pack_profiles_dir / "funnel_v1.json"
     shutil.copyfile(profiles_src_dir / "gates_v1.json", gates_prof_out)
     shutil.copyfile(profiles_src_dir / "plithogenic_eva_v1.json", plitho_prof_out)
+    if funnel_profile_path.exists():
+        shutil.copyfile(funnel_profile_path, funnel_prof_out)
+    else:
+        _write_deterministic_json(
+            funnel_prof_out,
+            {
+                "profile_id": "funnel_v1",
+                "p": funnel_params.p,
+                "tau_max": funnel_params.tau_max,
+                "h_min": funnel_params.h_min,
+                "eps": funnel_params.eps,
+            },
+        )
 
     _write_deterministic_json(wp_out, waypoints.model_dump(mode="json"))
     _write_deterministic_json(route_out, route.model_dump(mode="json"))
@@ -642,6 +757,7 @@ async def run_engine_pipeline_async(
 
     gates_raw = gates_prof_out.read_bytes()
     plitho_raw = plitho_prof_out.read_bytes()
+    funnel_raw = funnel_prof_out.read_bytes()
     import hashlib
 
     pack_files = [
@@ -661,6 +777,11 @@ async def run_engine_pipeline_async(
             path="profiles/plithogenic_eva_v1.json",
             sha256=hashlib.sha256(plitho_raw).hexdigest(),
             bytes=len(plitho_raw),
+        ),
+        PackFileDigest(
+            path="profiles/funnel_v1.json",
+            sha256=hashlib.sha256(funnel_raw).hexdigest(),
+            bytes=len(funnel_raw),
         ),
     ]
 

@@ -1075,7 +1075,7 @@
           ],
           [
             77.402732,
-            18.453059
+            18.455185
           ],
           [
             77.401314,
@@ -1090,36 +1090,56 @@
             18.45364399
           ],
           [
-            77.397097,
-            18.453059
-          ],
-          [
-            77.395697,
-            18.453059
-          ],
-          [
-            77.394296,
-            18.453059
-          ],
-          [
-            77.392879,
-            18.453059
-          ],
-          [
-            77.391479,
-            18.453059
-          ],
-          [
-            77.390079,
+            77.399914,
             18.455185
           ],
           [
-            77.388661,
+            77.401314,
             18.457277
           ],
           [
-            77.387261,
+            77.401314,
             18.459403
+          ],
+          [
+            77.399914,
+            18.461494
+          ],
+          [
+            77.398514,
+            18.461494
+          ],
+          [
+            77.397097,
+            18.461494
+          ],
+          [
+            77.395697,
+            18.461494
+          ],
+          [
+            77.394296,
+            18.461494
+          ],
+          [
+            77.392879,
+            18.461494
+          ],
+          [
+            77.391479,
+            18.461494
+          ],
+          [
+            77.390079,
+            18.461494
+          ],
+          [
+            77.388661,
+            18.461494
+          ],
+          [
+            77.387261,
+            18.461494
           ],
           [
             77.385861,
@@ -1127,19 +1147,19 @@
           ],
           [
             77.384444,
-            18.46362
+            18.461494
           ],
           [
             77.383044,
-            18.465712
+            18.46362
           ],
           [
             77.381643,
-            18.467838
+            18.465712
           ],
           [
             77.380226,
-            18.46993
+            18.467838
           ],
           [
             77.37931207,
@@ -1155,28 +1175,28 @@
         "source_id": "SRC-NASA-XEVA",
         "verdict": "CAUTION",
         "distance_m": {
-          "value": 2328.2,
+          "value": 2644.3,
           "unit": "m",
           "tag": "SIMULATED",
           "source_id": "SRC-NASA-XEVA",
           "note": null
         },
         "max_slope_deg": {
-          "value": 17.75,
+          "value": 11.46,
           "unit": "deg",
           "tag": "DERIVED",
           "source_id": "SRC-USGS-HIRISE-DTM-1M",
           "note": null
         },
         "estimated_duration_h": {
-          "value": 4.41,
+          "value": 4.81,
           "unit": "h",
           "tag": "SIMULATED",
           "source_id": "SRC-NASA-XEVA",
           "note": null
         },
         "estimated_radiation_msv": {
-          "value": 0.1231,
+          "value": 0.1343,
           "unit": "mSv",
           "tag": "SIMULATED",
           "source_id": "SRC-RAD-GALE",
@@ -1186,7 +1206,7 @@
         "rover_tilt_deg": null,
         "geologic_unit": "Nle Delta Margin Contact -> NHjf1/NHjf2 Western Delta Fan (SIM 3464)",
         "panorama_url": null,
-        "notes": "2-Agent A* EVA corridor (Scout Rover -> Astronaut) across the 2x2 km HiRISE 1m DTM window: one-way path=2328.2 m, max walkback=1925.7 m <= 2,000 m, max 1m DTM slope=17.75 deg <= 20.0 deg, sensitivity Jaccard=1.00."
+        "notes": "2-Agent A* EVA corridor (Scout Rover -> Astronaut) across the 2x2 km HiRISE 1m DTM window: one-way path=2644.3 m, max walkback=1925.7 m <= 2,000 m, max 1m DTM slope=11.46 deg <= 20.0 deg, sensitivity Jaccard=1.00."
       }
     },
     {

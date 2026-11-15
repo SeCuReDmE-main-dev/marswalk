@@ -1,99 +1,107 @@
-# MarsWalk Phase 2b — Neutrosophic Gates & Plithogenic Multi-Attribute Terrain Engine (`docs/ENGINE_MATH.md`)
+# MarsWalk Phase 2b v2 — Terrain Verification Engine Mathematics & Epistemic Tiers (`docs/ENGINE_MATH.md`)
 
-This document specifies the exact mathematical formulations implemented in `src/marswalk/engine/` for the 4-stage Martian terrain verification and EVA route planning pipeline.
+Every mathematical formula, design choice, and claim in `src/marswalk/engine/` and `src/marswalk/bench/` is classified into three explicit epistemic tiers:
 
----
-
-## 1. Four-Stage Asynchronous Pipeline with Neutrosophic Evidence Gates
-
-```text
-INGEST ──[G0]──► CLASSIFY ──[G1]──► SEARCH ──[G2]──► PLAN ──[G3]──► PACK
-                 (Plithogenic)      (2-Agent A*)    (xEVA Sortie)
-```
-
-Each gate $G_k$ ($k \in \{0, 1, 2, 3\}$) is an asynchronous function:
-$$\text{gate}_k(\text{ctx}) \longrightarrow \text{GateVerdict}\langle T, I, F, \text{decision}, \text{reasons} \rangle$$
-that evaluates **the quality of the evidence entering the next stage** (never conflated with terrain slope itself):
-
-- **`BLOCK`** if $F > \tau_F$: Hard closed failure — pipeline halts immediately and nothing is written.
-- **`HOLD`** if $I \ge \tau_I$ (and $F \le \tau_F$): High epistemic indeterminacy — the orchestrator automatically refines the scale or sampling window (up to `max_hold_retries = 2` retries). If $I \ge \tau_I$ persists after 2 retries, the gate transitions to `BLOCK`.
-- **`PASS`** if $T \ge \tau_T$ and $F \le \tau_F$ and $I < \tau_I$.
-
-Every gate evaluation is appended deterministically to `public_packs/jezero/v1/gate_log.jsonl`.
+1. **Established mathematics** — standard mathematical, geodetic, or planetary terrain definitions with primary source citations.
+2. **I propose** — domain heuristics, pre-registered thresholds, and multi-scale pruning choices designed for this Jezero EVA survival engine.
+3. **Tested by** — executable `pytest` verification proving deterministic invariants, adversarial failure guards, and empirical rover benchmarks on disk.
 
 ---
 
-## 2. Multi-Scale DTM Slope & Scale Divergence (`INGEST` & `CLASSIFY`)
+## 1. Mars Geodesy, Finite-Difference Slopes, and Pixel-Scale Exclusion (`prefilter.py`, `dtm_ingest.py`)
 
-From the USGS Mars 2020 TRN HiRISE Digital Terrain Model (`JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif`, `1.0 m/px` on the Mars sphere $R = 3\,396\,190\text{ m}$), terrain slope at baseline $L \in \{1, 4, 16, 64\}\text{ m}$ is computed via centered finite differences over step $L$:
+### Established mathematics
+- **Mars Equirectangular Projection (`ESRI:103885`, IAU 2015 sphere $R = 3\,396\,190\text{ m}$):**
+  $$x = R \cdot \lambda_{\text{rad}}, \qquad y = R \cdot \varphi_{\text{rad}}$$
+  and centered finite-difference slope at spatial baseline $L \in \{4, 16, 64\}\text{ m}$ on the `1.0 m/px` USGS Mars 2020 TRN HiRISE DTM (`SRC-USGS-HIRISE-DTM-1M`):
+  $$\frac{\partial z}{\partial x}\Big|_L = \frac{z(x + L/2, y) - z(x - L/2, y)}{L}, \qquad \frac{\partial z}{\partial y}\Big|_L = \frac{z(x, y + L/2) - z(x, y - L/2)}{L}$$
+  $$\theta_L(x, y) = \arctan\!\left(\sqrt{\left(\frac{\partial z}{\partial x}\Big|_L\right)^2 + \left(\frac{\partial z}{\partial y}\Big|_L\right)^2}\right) \cdot \frac{180}{\pi}$$
+  - Sources (Section 7.D):
+    - USGS Astrogeology, *HiRISE DTMs and Orthoimages* (vertical precision vs. baseline slope error: *"a 3-meter topographic error could turn flat terrain into a 9° slope over a 20-m baseline"*): https://stac.astrogeology.usgs.gov/docs/data/mars/hirise_dtms/
+    - *Slope and Roughness Maps from HiRISE DTMs* (PlanetData 2023): https://www.hou.usra.edu/meetings/planetdata2023/pdf/7031.pdf
+    - *Evaluating Stereo DTM Quality at Mars Rover Landing Sites* (Remote Sensing 2021): https://www.mdpi.com/2072-4292/13/17/3511
+- **Local Fractal Dimension ($D = 3 - H$) and Detrended Surface Roughness:**
+  - Isotropic variogram scaling $\gamma(h) = \frac{1}{2}\mathbb{E}[(z(\mathbf{u}+\mathbf{h}) - z(\mathbf{u}))^2] \propto h^{2H}$ yields Hurst exponent $H \in (0, 1)$ and local surface fractal dimension $D = 3 - H \in [2, 3]$.
+  - Sources (Section 7.D):
+    - NASA PGDA, *Lunar Slopes and Hurst Exponent* ($H \to D$ variogram relation): https://pgda.gsfc.nasa.gov/products/70
+    - Taud & Parrot (2005), *Measurement of DEM roughness using the local fractal dimension*: https://journals.openedition.org/geomorphologie/622
+    - Brožová et al. (2021), *Multiscale analysis of surface roughness*: https://nhess.copernicus.org/preprints/nhess-2021-85/nhess-2021-85-manuscript-version4.pdf
+- **Human xEVA Operational Constraints ($20^\circ$ slope, $2.0\text{ km}$ walkback):**
+  - NASA *xEVA System Concept of Operations*: https://www.nasa.gov/wp-content/uploads/2020/01/topic_1-_eva_lunar_surface_concept_of_operations.pdf
 
-$$\frac{\partial z}{\partial x}\Big|_L = \frac{z(x + L/2, y) - z(x - L/2, y)}{L}, \qquad \frac{\partial z}{\partial y}\Big|_L = \frac{z(x, y + L/2) - z(x, y - L/2)}{L}$$
+### I propose
+- **Boolean Layer-1 Pre-Filter (`prefilter.py`):** Before any graded determination, crisp binary conditions are resolved immediately and never leak into indeterminacy $I$:
+  1. Spatial baselines $L < 2 \times \Delta x_{\text{DTM}}$ (`1 m` on a `1.0 m/px` DTM) are excluded from the funnel (`slope_deg_by_baseline["1"]` is preserved in the v1 contract with `note: "below 2x DTM resolution: pixel-scale noise, excluded from the funnel"`).
+  2. Out-of-bbox coordinates, unadmitted upstream `source_id`, `NaN`/`nodata` cells (`nodata > 20%`), and vertical cliffs ($\theta > 45^\circ \to \text{NO\_GO}$, reason `"cliff"`) exit immediately.
 
-$$\theta_L(x, y) = \arctan\!\left(\sqrt{\left(\frac{\partial z}{\partial x}\Big|_L\right)^2 + \left(\frac{\partial z}{\partial y}\Big|_L\right)^2}\right) \cdot \frac{180}{\pi}$$
-
-The **Scale Divergence** $\Delta\theta$ and **Scale Roughness** $\sigma_{\text{res}}$ are:
-$$\Delta\theta(x, y) = \max_{L \in \{1,4,16,64\}} \theta_L(x, y) - \min_{L \in \{1,4,16,64\}} \theta_L(x, y)$$
-
-**Strict Ground-Truth Separation Rule:** Perseverance's measured `rover_tilt_deg` ($N = 708$ stops) is **never** passed into `CLASSIFY`, `SEARCH`, or `PLAN`. It is used exclusively in `VALIDATION` to compute the Mean Absolute Error (MAE) and signed bias of $\theta_L$ at $L \in \{1, 4, 16, 64\}\text{ m}$.
-
----
-
-## 3. Plithogenic Multi-Attribute Aggregation (`profiles/plithogenic_eva_v1.json`)
-
-Each cell is evaluated across 6 pre-registered attributes $A_1, \dots, A_6$, where each attribute $A_m$ yields a Neutrosophic triplet $(t_m, i_m, f_m) \in [0, 1]^3$ and a contradiction degree $c_m = c(v_m, v_{\text{dom}, m}) \in [0, 1]$ with respect to its dominant ideal value $v_{\text{dom}, m}$.
-
-### 3.1 Plithogenic Conjunction ($\wedge_p$), Disjunction ($\vee_p$), and Conflict-Aware Indeterminacy ($\oplus_p$)
-
-Given two attribute states $(t_a, i_a, f_a)$ and $(t_b, i_b, f_b)$ with effective contradiction degree $c \in [0, 1]$:
-
-1. **Plithogenic Truth Aggregation ($\wedge_p$):**
-   $$t_a \wedge_p t_b = (1 - c)\cdot (t_a \cdot t_b) + c \cdot (t_a + t_b - t_a \cdot t_b)$$
-2. **Plithogenic Falsehood Aggregation ($\vee_p$, dual of $\wedge_p$):**
-   $$f_a \vee_p f_b = (1 - c)\cdot (f_a + f_b - f_a \cdot f_b) + c \cdot (f_a \cdot f_b)$$
-3. **Conflict-Amplified Indeterminacy ($i_{a \oplus_p b}$):**
-   $$i_{a \oplus_p b} = \min\!\left(1.0, \; \frac{i_a + i_b}{2} + c \cdot |t_a - t_b|\right)$$
-
-### 3.2 Three Exact Hand-Calculated Verification Cases (Tested in `tests/test_engine_phase2b.py`)
-
-- **Case 1 — Zero Contradiction ($c = 0.0$, pure algebraic t-norm / t-conorm):**
-  Let $(t_a, i_a, f_a) = (0.80, 0.10, 0.10)$ and $(t_b, i_b, f_b) = (0.50, 0.20, 0.30)$ with $c = 0.0$:
-  - $t = 1.0 \cdot (0.80 \cdot 0.50) + 0 = 0.40$
-  - $f = 1.0 \cdot (0.10 + 0.30 - 0.03) + 0 = 0.37$
-  - $i = \frac{0.10 + 0.20}{2} + 0.0 \cdot |0.80 - 0.50| = 0.15$
-- **Case 2 — Full Contradiction ($c = 1.0$, boundary t-conorm / t-norm):**
-  With the same inputs and $c = 1.0$:
-  - $t = 0 + 1.0 \cdot (0.80 + 0.50 - 0.40) = 0.90$
-  - $f = 0 + 1.0 \cdot (0.10 \cdot 0.30) = 0.03$
-  - $i = \min(1.0, \, 0.15 + 1.0 \cdot |0.80 - 0.50|) = 0.45$
-- **Case 3 — Partial Contradiction ($c = 0.5$, conflict increases indeterminacy):**
-  With the same inputs and $c = 0.5$:
-  - $t = 0.5 \cdot 0.40 + 0.5 \cdot 0.90 = 0.65$
-  - $f = 0.5 \cdot 0.37 + 0.5 \cdot 0.03 = 0.20$
-  - $i = 0.15 + 0.5 \cdot 0.30 = 0.30$
+### Tested by
+- `test_prefilter_rejects_baseline_below_2x_resolution_1m_on_1m_dtm` (`tests/test_b0_prefilter_and_g1.py`)
+- `test_prefilter_nodata_and_nan_never_become_indeterminacy` (`tests/test_b0_prefilter_and_g1.py`)
+- `test_prefilter_cliff_above_45_deg_is_direct_no_go` (`tests/test_b0_prefilter_and_g1.py`)
+- `test_crs_roundtrip_and_mixed_sphere_attack` (`tests/test_b3_sweep_and_timing.py`)
+- `test_baseline_1m_kept_with_note_and_excluded_from_funnel` (`tests/test_b5_pack_funnel_and_1m_note.py`)
 
 ---
 
-## 4. Lexicographic Non-Compensatory Safety Veto
+## 2. Multi-Scale Fractal Pruning Funnel & Entropy Floor (`carriers.py`, `funnel.py`)
 
-Before plithogenic aggregation is allowed to assign a cell verdict:
-1. If $\theta_{1\text{m}} > 20.0^\circ$ (NASA xEVA suit limit) **or** walkback distance $d_{\text{walkback}} > 2000.0\text{ m}$, the cell is immediately locked to **`NO_GO`** ($f \ge 0.90$).
-2. **Science never compensates for safety:** even if $A_5$ (Delta target geology) and $A_6$ (Perseverance sample proximity) have $t = 1.0$, a safety veto unconditionally outputs `NO_GO`.
+### Established mathematics
+- **Discrete Shannon Entropy ($H(T)$ in bits) and Neutrosophic / Outlier-Robust Entropy Measures:**
+  $$H(T) = -\sum_{b=1}^{B} p_b \log_2 p_b$$
+  used as a diversity floor ($H(T) \ge H_{\min} > 0$) preventing survivor collapse to a zero-dispersion scalar ($I^* > 0$), alongside plithogenic contradiction-weighted aggregation:
+  $$t_a \wedge_p t_b = (1 - c)(t_a t_b) + c(t_a + t_b - t_a t_b), \qquad f_a \vee_p f_b = (1 - c)(f_a + f_b - f_a f_b) + c(f_a f_b)$$
+  $$i_{a \oplus_p b} = \min\!\left(1.0, \; \frac{i_a + i_b}{2} + c \cdot |t_a - t_b|\right)$$
+  - Sources (Sections 7.A & 7.B):
+    - Smarandache (2018), *Plithogeny, Plithogenic Set, Logic, Probability, and Statistics*: https://arxiv.org/abs/1808.03948
+    - Ye (2014), *Single valued neutrosophic cross-entropy*: https://www.sciencedirect.com/science/article/pii/S0307904X13004642
+    - Aydogdu (2015), *Entropy and Similarity of Interval Valued Neutrosophic Sets*: https://digitalrepository.unm.edu/cgi/viewcontent.cgi?article=1095&context=nss_journal
+    - Qamar & Hassan (2020), *Entropy, Distance and Similarity of Q-neutrosophic Soft Sets*: https://pmc.ncbi.nlm.nih.gov/articles/PMC7513197/
+    - *Neutrosophic Statistics with Outliers Data* (2025): https://distantreader.org/stacks/journals-ojs/ijaa/ijaa-4134.pdf
+    - *Dual-Indeterminacy Neutrosophic Fusion*: https://www.americaspg.com/article/4466/pdf/stream
+    - *Modified Plithogenic Sets in Criterion Reduction* (criterion ablation foundation): https://fs.unm.edu/NSS/5ModifiedPlithogenic.pdf
+
+### I propose
+- **Multi-Scale Persistence Pruning Funnel (`funnel.py`, `profiles/funnel_v1.json`):**
+  - Given cell triplets $E = \{(\text{carrier}, L, T, I, F)\}$ across $L \in \{64, 16, 4\}\text{ m}$:
+    1. At each step, identify $f^* = \arg\max F$ and $t^* = \arg\min T$.
+    2. **Persistence safety rule:** if $F(f^*) \ge 0.50$ (or $T(t^*) \le 0.50$) persists across $\ge p$ neighboring scales for the same carrier, the hazard is structural (a real delta scarp, never pixel noise): pruning stops immediately and fixes `NO_GO` or `CAUTION`.
+    3. Otherwise form $E' = E \setminus \{f^*, t^*\}$. Stop if $|E'| < 2$, pruned share $> \tau_{\max}$, or $H(T_{E'}) < H_{\min}$.
+    4. Converge on $T_c = \frac{1}{2}(Q_{0.75}(T_E) + \max T_E)$ when $|T_c^{(k)} - T_c^{(k-1)}| < \varepsilon$, bounded strictly to $\le \lfloor |E|/2 \rfloor$ iterations.
+- **Stage Evidence Gates (`gates.py`, `profiles/gates_v1.json`):**
+  - Discrete stage gates `G0..G3` emit `PASS | HOLD | BLOCK` over pipeline stage quality only; `G1` never fabricates terrain cell confidence from validation error.
+
+### Tested by
+- `test_funnel_terminates` (B1: iterations $\le |E| // 2$, `tests/test_b1_funnel_and_attacks.py`)
+- `test_deterministic` (B2: identical SHA-256 across 3 runs, `tests/test_b1_funnel_and_attacks.py`)
+- `test_persistent_hazard_never_pruned` (B3: $50/50 = 100\%$ survival, `tests/test_b1_funnel_and_attacks.py`)
+- `test_single_scale_spike_pruned` (B4: $\ge 95\%$ single-scale spike pruning, `tests/test_b1_funnel_and_attacks.py`)
+- `test_entropy_floor` (B9: $I^* > 0$ everywhere, `tests/test_b1_funnel_and_attacks.py`)
+- `test_p1_rejected`, `test_tau_max_1_rejected`, `test_h_min_zero_and_eps_zero_rejected` (`tests/test_b1_funnel_and_attacks.py`)
+- `test_g1_does_not_emit_terrain_tif` (`tests/test_b0_prefilter_and_g1.py`)
+- `test_plithogenic_hand_calculated_cases_and_boundary_identities` (`tests/test_engine_phase2b.py`)
 
 ---
 
-## 5. Two-Agent A* Path Search (`SEARCH`)
+## 3. Disjoint Rover Validation, Sweet Spot (B3/B5), Sensitivity (B7), and Carrier Reduction (B6)
 
-Grid search runs over the active window with edge traversal cost:
-$$\text{cost}(u \to v) = d(u, v) \cdot \left(1 + \alpha \cdot \theta_{1\text{m}}(v) + \beta \cdot (1 - T(v)) + \gamma \cdot I(v)\right)$$
-where $(\alpha, \beta, \gamma) = (0.12, 1.50, 1.20)$ and any cell with verdict `NO_GO` has $\text{cost} = +\infty$.
-1. **Scout Rover Pass:** Validates a continuous traversable corridor obeying JPL rover limits ($\le 20^\circ$ bedrock, $\le 10^\circ$ sand/aeolian).
-2. **Astronaut EVA Pass:** Computes the optimal crewed footpath within the rover-validated corridor obeying $d_{\text{walkback}} \le 2000\text{ m}$ and $\theta_{1\text{m}} \le 20^\circ$.
+### Established mathematics
+- **Strict Train/Test Disjoint Evaluation & Saltelli-Sobol Variance Decomposition:**
+  - Rover chassis tilt (`MEASURED` IMU inclination from `M20_waypoints.json`, https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json ; proxy formulation in *Learning to Drive on Mars*, https://arxiv.org/html/2609.24952v1) is partitioned into **odd sols** (`sol % 2 == 1`, $n_{\text{tune}} = 75$ in window) for hyperparameter tuning/ablation and **even sols** (`sol % 2 == 0`, $n_{\text{test}} = 72$ in window) for held-out test reporting.
+  - Global variance-based sensitivity indices ($S_1, S_T$) are computed via Saltelli sampling in `SALib` (https://salib.readthedocs.io/).
 
----
+### I propose
+- **Sweet-Spot Hyperparameters (`profiles/funnel_v1.json`, `bench/results/b3_sweep.json`):**
+  - Selected across 128 combinations ($p \in \{2,3\} \times \tau_{\max} \in \{0.1,0.2,0.3,0.4\} \times H_{\min} \in \{0.3,0.5,0.7,1.0\} \times \varepsilon \in \{0.005,0.01,0.02,0.05\}$) strictly on odd sols subject to `B3 = PASS` and `B9 = PASS`:
+    $$p = 3, \quad \tau_{\max} = 0.20, \quad H_{\min} = 0.70\text{ bit}, \quad \varepsilon = 0.005$$
+- **Carrier Reduction Decision (`bench/results/b6_ablation.json`):**
+  - **I keep 5 carriers (`I_scale`, `I_slope`, `I_rough`, `I_diverge`, `I_constraint`) because** each contributes $\ge 0.05$ of normalized determination variance across odd sols, whereas the 5 pruned carriers (`I_source`, `I_coverage`, `I_texture`, `I_uncertainty`, `I_fractal`) each have variance index $< 0.05$ (binary `source` and `nodata` checks are already enforced by `prefilter.py`) and their joint removal shifts odd-sol MAE by only $+0.0031^\circ$ ($1.3293^\circ \to 1.3324^\circ \le 0.10^\circ$) while keeping `B3` and `B9` at `PASS`.
+- **Empirical Held-Out Even-Sol Benchmark (`bench/results/b5_eval.json`, $n_{\text{test}} = 72$) & Timing (`b8_timing.json`):**
+  - Held-out even sols: `mae_funnel = 1.4792°` vs `mae_fixed_4m = 1.7127°` and `mae_fixed_64m = 1.7965°` (beats both `4 m` and `64 m` fixed baselines; honest disclosure: fixed `16 m` point MAE is `1.1437°` on benign rover stops because the ~3 m rover chassis + stop localization aligns with 16 m smoothing, whereas the funnel conservatively retains steeper 4 m slopes when hazards persist).
+  - Empirical wall-clock runtime on the `2 × 2 km` HiRISE `1.0 m/px` window (`384` cells) is recorded in `bench/results/b8_timing.json` without claiming any asymptotic complexity class.
 
-## 6. Hyperparameter Sensitivity (B7) and Carrier Ablation Decision (B6)
-
-- **Sobol Global Sensitivity (`bench/results/b7_sobol.json`, SALib Saltelli-Sobol across seeds `42` and `137` on `n_tune = 75` odd sols):**
-  - Persistence scale count $p$ dominates total-order variance ($S_T(p) = 0.9987$, seed drift $0.0001$), followed by entropy floor $H_{\min}$ ($S_T(H_{\min}) = 0.0004$) and maximum pruned share $\tau_{\max}$ ($S_T(\tau_{\max}) = 0.0001$).
-- **Leave-One-Out Carrier Reduction Decision (`bench/results/b6_ablation.json`):**
-  - **I keep 5 carriers (`I_scale`, `I_slope`, `I_rough`, `I_diverge`, `I_constraint`) because** each contributes $\ge 0.05$ of normalized determination variance across odd tuning sols (`I_slope`, `I_scale`, `I_rough`, `I_diverge`, `I_constraint`), whereas the 5 pruned carriers (`I_source`, `I_coverage`, `I_texture`, `I_uncertainty`, `I_fractal`) each have variance index $< 0.05$ (binary `source` and `nodata` checks are already enforced upstream by `prefilter.py` Layer 1) and their joint removal changes odd-sol tuning MAE by only $+0.0031^\circ$ ($1.3293^\circ \to 1.3324^\circ \le 0.10^\circ$) while keeping `B3` ($100\%$ persistent scarp survival) and `B9` ($I^* > 0$ everywhere) at `PASS`.
+### Tested by
+- `test_split_is_disjoint` and `test_b5_eval_writes_honest_even_sol_metrics` (`tests/test_b2_split_and_eval.py`)
+- `test_b3_128_combo_sweep_selects_valid_odd_sol_sweet_spot` and `test_b8_2x2km_window_timing_recorded_without_big_o` (`tests/test_b3_sweep_and_timing.py`)
+- `test_b7_sobol_sensitivity_two_seeds_stable` and `test_b6_leave_one_out_ablation_and_reduction_rule` (`tests/test_b4_sobol_and_ablation.py`)
+- `test_hazard_grid_is_strictly_independent_of_rover_tilt_deg` (`tests/test_pack_integrity.py`)
+- `test_b5_pack_sha256_matches_b5_eval_record` (`tests/test_b5_pack_funnel_and_1m_note.py`)

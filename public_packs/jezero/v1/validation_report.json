@@ -55,9 +55,96 @@
       "steep_bias_deg": -2.307
     }
   },
+  "split_rule": "odd_sols_tune_even_sols_test",
+  "tune_odd_waypoint_count": 75,
+  "test_even_waypoint_count": 72,
+  "tune_odd_metrics_by_baseline": {
+    "1": {
+      "baseline_m": 1,
+      "sample_count": 75,
+      "mae_deg": 1.855,
+      "rmse_deg": 2.369,
+      "bias_deg": 0.188,
+      "steep_sample_count": 23,
+      "steep_mae_deg": 2.306,
+      "steep_bias_deg": -1.145
+    },
+    "4": {
+      "baseline_m": 4,
+      "sample_count": 75,
+      "mae_deg": 1.53,
+      "rmse_deg": 1.965,
+      "bias_deg": 0.081,
+      "steep_sample_count": 23,
+      "steep_mae_deg": 1.882,
+      "steep_bias_deg": -0.953
+    },
+    "16": {
+      "baseline_m": 16,
+      "sample_count": 75,
+      "mae_deg": 1.108,
+      "rmse_deg": 1.678,
+      "bias_deg": -0.213,
+      "steep_sample_count": 23,
+      "steep_mae_deg": 1.774,
+      "steep_bias_deg": -0.554
+    },
+    "64": {
+      "baseline_m": 64,
+      "sample_count": 75,
+      "mae_deg": 1.614,
+      "rmse_deg": 2.442,
+      "bias_deg": -0.445,
+      "steep_sample_count": 23,
+      "steep_mae_deg": 2.842,
+      "steep_bias_deg": -1.758
+    }
+  },
+  "test_even_metrics_by_baseline": {
+    "1": {
+      "baseline_m": 1,
+      "sample_count": 72,
+      "mae_deg": 2.14,
+      "rmse_deg": 3.13,
+      "bias_deg": 0.741,
+      "steep_sample_count": 20,
+      "steep_mae_deg": 2.845,
+      "steep_bias_deg": -0.777
+    },
+    "4": {
+      "baseline_m": 4,
+      "sample_count": 72,
+      "mae_deg": 1.713,
+      "rmse_deg": 2.413,
+      "bias_deg": 0.452,
+      "steep_sample_count": 20,
+      "steep_mae_deg": 2.431,
+      "steep_bias_deg": -0.744
+    },
+    "16": {
+      "baseline_m": 16,
+      "sample_count": 72,
+      "mae_deg": 1.144,
+      "rmse_deg": 1.811,
+      "bias_deg": -0.246,
+      "steep_sample_count": 20,
+      "steep_mae_deg": 2.278,
+      "steep_bias_deg": -0.925
+    },
+    "64": {
+      "baseline_m": 64,
+      "sample_count": 72,
+      "mae_deg": 1.796,
+      "rmse_deg": 2.843,
+      "bias_deg": -0.895,
+      "steep_sample_count": 20,
+      "steep_mae_deg": 3.826,
+      "steep_bias_deg": -2.938
+    }
+  },
   "best_overall_baseline_m": 16,
   "worst_steep_baseline_m": 64,
-  "orbital_scale_gap_summary": "Across 147 ground-truth Perseverance stops in the 2x2 km Western Delta Front window (43 steep stops >= 8 deg), intermediate baselines (4m MAE=1.62 deg, 16m MAE=1.12 deg) closely track rover chassis tilt, whereas the 64m coarse orbital baseline systematically underestimates steep delta scarps (steep bias=-2.31 deg, steep MAE=3.30 deg; e.g. Sol 700 measured 20.33 deg vs 64m DTM 12.65 deg).",
+  "orbital_scale_gap_summary": "Disjoint split across 147 Perseverance stops in the 2x2 km Western Delta Front window (75 odd-sol tune stops, 72 even-sol test stops). On held-out even test sols: 4m MAE=1.71 deg, 16m MAE=1.14 deg, 64m MAE=1.80 deg (64m steep bias=-2.94 deg, steep MAE=3.83 deg).",
   "samples": [
     {
       "waypoint_id": "M20-22_0-SOL409",

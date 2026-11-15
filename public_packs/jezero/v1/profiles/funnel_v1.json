@@ -1,0 +1,23 @@
+{
+  "profile_id": "funnel_v1",
+  "version": "1.1.0",
+  "proposition_note": "Sweet-spot funnel parameters (B3) and 5 retained carriers after B6 leave-one-out ablation (<0.05 variance index and <=0.10 deg MAE impact) on odd Perseverance sols.",
+  "p": 3,
+  "tau_max": 0.20,
+  "h_min": 0.70,
+  "eps": 0.005,
+  "retained_carriers": [
+    "I_scale",
+    "I_slope",
+    "I_rough",
+    "I_diverge",
+    "I_constraint"
+  ],
+  "pruned_carriers": [
+    "I_source",
+    "I_coverage",
+    "I_texture",
+    "I_uncertainty",
+    "I_fractal"
+  ]
+}

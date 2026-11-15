@@ -16,5 +16,5 @@
   },
   "comparison_vs_4m_and_64m": "beats_4m_and_64m_fixed_baselines",
   "honest_16m_disclosure": "Honest disclosure: fixed 16m baseline has lower point MAE (1.1437 deg) than funnel (1.4792 deg) because rover chassis tilt (~3m wheelbase + stop localization) aligns with 16m smoothing on benign stops, whereas funnel conservatively retains higher 4m slopes when persistent hazards trigger.",
-  "sha256_pack": "42f842c75514e81990f438262d14c8b90b8bedffd59628dd86c20a7292dfe695"
+  "sha256_pack": "13f56f530ccf125c51cd96fa289475277127b03a5fdb4be124bb6ced895575ff"
 }

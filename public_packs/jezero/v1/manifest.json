@@ -149,18 +149,18 @@
     },
     {
       "path": "route.geojson",
-      "sha256": "af7821bf884e2e3986ba0d7a422dd1cb0c19252172ab1079be6650747ed45873",
-      "bytes": 28161
+      "sha256": "076e937e0148ac3ba7fe311ec8c2d5ab1f99275f603eccf10ad26d5720880c2a",
+      "bytes": 28512
     },
     {
       "path": "hazard_grid.json",
-      "sha256": "8aba19a5e49ae63b2f59c8e04ee53ddef85694b1811877fe6845dd83ec68b4af",
-      "bytes": 648885
+      "sha256": "32fd7e1692bf3bd9cc6463fb960289a6ed41116c72c038e9e6f3db134d1f2eb1",
+      "bytes": 645198
     },
     {
       "path": "hazard_overlay.png",
-      "sha256": "98bf03bbe3a2993391f659c4f3cb78e3869a64e018b48929fc38243f5290f120",
-      "bytes": 766
+      "sha256": "a2a2d149552a8c5e4620cccba0ed0cc44ec6fe15e6d582067c2a9f1d7c4b2438",
+      "bytes": 985
     },
     {
       "path": "eva_constraints.json",
@@ -169,12 +169,12 @@
     },
     {
       "path": "validation_report.json",
-      "sha256": "e7e3c70fb910d0c9c9a4dc48e259c31e6c93fd9f26e3fcadc9ba426625c39f04",
-      "bytes": 68382
+      "sha256": "40ad8fb505f5f026629498ba86c2a86f5593638c9ba3973d9643bfcdbd1c2e86",
+      "bytes": 70331
     },
     {
       "path": "gate_log.jsonl",
-      "sha256": "d1f25e80a619b6c4892c4a8e2e1faf9c18ba6db7ed6717f588c396568d84d535",
+      "sha256": "d76f3fb6fafa17fb603be0c82325d555eeee06544419b9ab0b1419d6219b9f71",
       "bytes": 1244
     },
     {
@@ -186,6 +186,11 @@
       "path": "profiles/plithogenic_eva_v1.json",
       "sha256": "5cea35910f9dce0b664a5dbe1d800a5ca1bb9cf61cec249c688f12d56521d853",
       "bytes": 3202
+    },
+    {
+      "path": "profiles/funnel_v1.json",
+      "sha256": "c8f68c9b384260e3cc7b7f60a3dcf96b5d68932e8fa897178198f92288bbb845",
+      "bytes": 533
     }
   ],
   "generated_at": "2026-11-14T21:00:00-05:00"

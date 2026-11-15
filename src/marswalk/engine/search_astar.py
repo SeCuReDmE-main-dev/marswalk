@@ -121,10 +121,10 @@ def run_single_leg_astar(
             if nxt != goal_rc and nxt != start_rc:
                 if nxt_cell.verdict == "NO_GO":
                     continue
-                s1 = nxt_cell.slope_deg_by_baseline["1"].value
-                if s1 > max_slope_deg:
+                s4 = nxt_cell.slope_deg_by_baseline["4"].value
+                if s4 > max_slope_deg:
                     continue
-                if "aeb" in nxt_cell.reason.lower() and s1 > sand_slope_deg:
+                if "aeb" in nxt_cell.reason.lower() and s4 > sand_slope_deg:
                     continue
                 wb = spherical_distance_m(
                     origin_lonlat[0], origin_lonlat[1], nxt_cell.lon, nxt_cell.lat
@@ -371,12 +371,12 @@ def run_two_agent_eva_astar(
 
     max_slope = (
         max(
-            grid_by_rc[rc].slope_deg_by_baseline["1"].value
+            grid_by_rc[rc].slope_deg_by_baseline["4"].value
             for rc in astro_rcs
             if rc not in (rc1, rc2, rc3)
         )
         if len(astro_rcs) > 3
-        else max(grid_by_rc[rc].slope_deg_by_baseline["1"].value for rc in astro_rcs)
+        else max(grid_by_rc[rc].slope_deg_by_baseline["4"].value for rc in astro_rcs)
     )
 
     return AStarRouteResult(
