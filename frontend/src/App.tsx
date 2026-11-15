@@ -29,6 +29,7 @@ import {
 import MapView, { type LayerState } from "./MapView";
 import RoverImage from "./RoverImage";
 import BenchmarkPanel from "./BenchmarkPanel";
+import DataAvailability from "./DataAvailability";
 const Terrain3D = lazy(() => import("./Terrain3D"));
 import {
   EngineTools,
@@ -1079,6 +1080,7 @@ function Workspace({
               {data.manifest.pack_version}
             </span>
           </div>
+          <DataAvailability data={data} />
           {data.manifest.sources.map((source) => (
             <article
               id={`source-${source.id}`}

@@ -111,6 +111,14 @@ The default satellite surface composites the manifest's NASA HiRISE WMTS imagery
 
 Validation: 22 frontend tests pass, including Mars-scale mesh distances, preservation of every original elevation sample, outside-window handling, legacy route fallback and WMTS texture alignment. Production build passes. Browser checks covered satellite texture loading, orbit/pause, reduced motion, surface/grid/height settings, sample inspection, map restoration, desktop and mobile layout with no horizontal overflow. The wider backend rebuild limitations documented above remain separate from this display-only feature.
 
+## Discussion #1 follow-up: data availability
+
+The **Sources** dialog now has **Local data & network limits**. It distinguishes bundled data from NASA tiles/photos and the optional engine server, reads the bundled JPEG count from `manifest.files`, and displays external-layer status/reasons/uncertainty from the current pack. The per-cell environment panel retains its detailed availability report. Geological units remain explicitly approximate.
+
+Bundled assets do not make the hosted app an offline installation: there is no service worker. A downloaded production build can be served locally; API pack mode still needs its configured server. Local canonical images are preferred and verified before using a remote fallback. NASA texture failures retain coarse relief; unavailable camera caches do not trigger live downloads.
+
+The image, route, benchmark and engine integration work is on `feat/frontend-engine-integration`; this does not mean it has been merged into `main`. The four independent Antigravity audits requested in `HO-002` are a separate outstanding handoff. Frontend checks here do not substitute for those audits or claim NASA certification.
+
 ## Build and validate
 
 ```powershell
