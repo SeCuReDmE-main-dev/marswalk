@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   ArrowDownToLine,
   ArrowLeft,
@@ -16,10 +23,13 @@ import {
   RotateCcw,
   ShieldAlert,
   X,
+  Box,
+  Map,
 } from "lucide-react";
 import MapView, { type LayerState } from "./MapView";
 import RoverImage from "./RoverImage";
 import BenchmarkPanel from "./BenchmarkPanel";
+const Terrain3D = lazy(() => import("./Terrain3D"));
 import {
   EngineTools,
   CameraPanel,
@@ -126,6 +136,7 @@ function Workspace({
   });
   const [lookupPoint, setLookupPoint] = useState<LonLat>();
   const [selectedBenchmark, setSelectedBenchmark] = useState<EvaRouteFeature>();
+  const [viewMode, setViewMode] = useState<"map" | "3d">("map");
   const [step, setStep] = useState(0),
     [expanded, setExpanded] = useState(true),
     [collapsed, setCollapsed] = useState(false),
@@ -367,31 +378,70 @@ function Workspace({
             )}
           </div>
           <div className="map-container">
-            <MapView
-              data={data}
-              cell={cell}
-              stop={selectedStop}
-              waypoint={waypoint}
-              benchmark={selectedBenchmark}
-              layers={layers}
-              onLayers={setLayers}
-              onCell={chooseCell}
-              onStop={chooseStop}
-              onWaypoint={chooseWaypoint}
-              onBenchmark={chooseBenchmark}
-              fit={fit}
-              fitTick={fitTick}
-              picking={picking}
-              planningPoints={planningPoints}
-              plannedRoute={plannedRoute}
-              onLocation={setLookupPoint}
-              onPick={(point) =>
-                setPlanningPoints((points) =>
-                  points.length < 32 ? [...points, point] : points,
-                )
-              }
-            />
-            <div className="fit-actions">
+            <div className="view-mode" role="group" aria-label="Terrain view">
+              <button
+                aria-pressed={viewMode === "map"}
+                onClick={() => setViewMode("map")}
+              >
+                <Map size={14} />
+                Map
+              </button>
+              <button
+                aria-pressed={viewMode === "3d"}
+                onClick={() => setViewMode("3d")}
+              >
+                <Box size={14} />
+                3D terrain
+              </button>
+            </div>
+            {viewMode === "3d" ? (
+              <Suspense
+                fallback={
+                  <div className="terrain-loading" role="status">
+                    Preparing terrain model…
+                  </div>
+                }
+              >
+                <Terrain3D
+                  data={data}
+                  cell={cell}
+                  onCell={chooseCell}
+                  plannedRoute={plannedRoute}
+                  picking={picking}
+                  onPick={(point) =>
+                    setPlanningPoints((points) =>
+                      points.length < 32 ? [...points, point] : points,
+                    )
+                  }
+                />
+              </Suspense>
+            ) : (
+              <MapView
+                data={data}
+                cell={cell}
+                stop={selectedStop}
+                waypoint={waypoint}
+                benchmark={selectedBenchmark}
+                layers={layers}
+                onLayers={setLayers}
+                onCell={chooseCell}
+                onStop={chooseStop}
+                onWaypoint={chooseWaypoint}
+                onBenchmark={chooseBenchmark}
+                fit={fit}
+                fitTick={fitTick}
+                picking={picking}
+                planningPoints={planningPoints}
+                plannedRoute={plannedRoute}
+                onLocation={setLookupPoint}
+                onPick={(point) =>
+                  setPlanningPoints((points) =>
+                    points.length < 32 ? [...points, point] : points,
+                  )
+                }
+              />
+            )}
+            <div className="fit-actions" hidden={viewMode !== "map"}>
               <button className="map-button" onClick={() => fitMap("route")}>
                 <LocateFixed size={15} /> Fit route
               </button>

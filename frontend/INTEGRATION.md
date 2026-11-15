@@ -101,6 +101,16 @@ The app is a planning/hackathon prototype, not astronaut navigation or NASA safe
 
 After pulling main through `3509d93`, the three science-stop photos use the five-image bundle introduced by `ffde828`. All three replacement remote URLs returned HTTP 200 JPEGs in a direct check; all three science-stop images also decoded at 800 px width in the browser from verified pack copies. Canonical local copies are matched by exact source URL, not just by sol, to avoid substituting an unrelated observation. Images at stops 1, 2 and 3 no longer depend on remote NASA access in static pack mode.
 
+## Optional 3D terrain presentation
+
+**Map / 3D terrain** switches the main workspace between Leaflet and a lazy-loaded Canvas terrain preview. The preview uses only the existing elevation samples from the assessed grid (currently 40 × 40, approximately 49 m spacing), with local east/north distances on the shared Mars sphere. The mesh interpolates between samples; it is not a new full-resolution 1 m terrain model. Selecting a model sample opens its existing terrain assessment in the guide. A 3D route pick snaps to a sample centre; outside-window route vertices are not projected onto the terrain.
+
+The default satellite surface composites the manifest's NASA HiRISE WMTS imagery using its geographic 2:1 tile grid, then maps it onto the coarse mesh. If tiles cannot load, shaded relief stays available with an explicit texture-unavailable message. The coarse imagery grid and view interpolation are presentation only; the scientific route planner and its 10 m raster remain backend-owned. No new npm dependency or startup pack request is required; the 3D code and optional texture requests start only when that view opens.
+
+**View settings** offers satellite imagery, shaded relief or supplied terrain-assessment colors, an optional model grid, and 1–4× vertical exaggeration. True scale is the default; any exaggeration is labeled and never changes a verdict or safety limit. **Orbit camera** is opt-in, stops during manual manipulation, respects the operating system's reduced-motion preference, and can be disabled through the local reduced-motion control. Keyboard arrows rotate; +/- zoom; Home resets. These are visual camera animations, not simulated telemetry or astronaut motion.
+
+Validation: 22 frontend tests pass, including Mars-scale mesh distances, preservation of every original elevation sample, outside-window handling, legacy route fallback and WMTS texture alignment. Production build passes. Browser checks covered satellite texture loading, orbit/pause, reduced motion, surface/grid/height settings, sample inspection, map restoration, desktop and mobile layout with no horizontal overflow. The wider backend rebuild limitations documented above remain separate from this display-only feature.
+
 ## Build and validate
 
 ```powershell
