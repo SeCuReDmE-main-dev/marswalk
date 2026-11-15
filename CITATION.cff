@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "MarsWalk: Multi-Scale Martian Terrain Verification & EVA Survival Guide"
+message: "If you use this software or the Jezero v1 data contract pack, please cite it using the metadata from this file."
+type: software
+authors:
+  - given-names: Jean-Sebastien
+    family-names: Beaulieu
+    orcid: "https://orcid.org/0009-0007-2904-0443"
+    affiliation: "SecuredMe / MarsWalk Engine & Middleware Lead"
+  - given-names: Philippe
+    family-names: Pierre
+    affiliation: "MarsWalk Frontend & Interactive Experience Lead"
+license: Apache-2.0
+version: 0.1.0
+date-released: "2026-11-14"
+keywords:
+  - mars
+  - jezero-crater
+  - perseverance
+  - eva-navigation
+  - multi-scale-terrain
+  - nasa-space-apps-2026
+abstract: >-
+  Open-source multi-scale Martian terrain verification middleware, static data
+  pack, and interactive EVA survival guide confronting orbital slope models
+  (1 m, 4 m, 16 m, 64 m) against 708 ground-truth Perseverance rover tilt
+  measurements in Jezero Crater.

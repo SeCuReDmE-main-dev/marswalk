@@ -1,0 +1,7 @@
+{
+  "codeReview": {
+    "styleguide": ".gemini/styleguide.md",
+    "enforceTests": true,
+    "enforceRuff": true
+  }
+}

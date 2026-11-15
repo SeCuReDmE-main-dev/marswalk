@@ -1,0 +1,19 @@
+{
+  "project": "marswalk",
+  "contractVersion": "1.0.0",
+  "verification": {
+    "lint": "ruff check .",
+    "format": "ruff format --check .",
+    "test": "pytest -q --tb=short",
+    "verifyPack": "python -m marswalk.middleware.cli verify-pack --site jezero"
+  },
+  "boundaries": {
+    "frontendOwner": "feat/ui",
+    "engineOwner": "feat/engine",
+    "immutablePaths": [
+      "src/marswalk/contracts/models.py",
+      "schemas/",
+      "public_packs/jezero/v1/"
+    ]
+  }
+}

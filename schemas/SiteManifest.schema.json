@@ -1,0 +1,287 @@
+{
+  "$defs": {
+    "BasemapLayer": {
+      "additionalProperties": false,
+      "description": "Tiled orbital basemap configuration compatible with NASA Mars Trek WMTS.",
+      "properties": {
+        "id": {
+          "description": "Mars Trek layer identifier.",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "description": "Human-readable layer title.",
+          "title": "Title",
+          "type": "string"
+        },
+        "template_url": {
+          "description": "WMTS/XYZ tile URL template containing {z}, {row}, and {col}.",
+          "title": "Template Url",
+          "type": "string"
+        },
+        "tile_grid": {
+          "const": "geographic_2to1_256px",
+          "default": "geographic_2to1_256px",
+          "description": "Mars Trek 2:1 equirectangular geographic grid (EPSG:4326 style, 256x256 px).",
+          "title": "Tile Grid",
+          "type": "string"
+        },
+        "min_zoom": {
+          "default": 0,
+          "maximum": 22,
+          "minimum": 0,
+          "title": "Min Zoom",
+          "type": "integer"
+        },
+        "max_zoom": {
+          "default": 17,
+          "maximum": 22,
+          "minimum": 0,
+          "title": "Max Zoom",
+          "type": "integer"
+        },
+        "bbox": {
+          "description": "Bounding box [min_lon, min_lat, max_lon, max_lat] in degrees East/North.",
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Bbox",
+          "type": "array"
+        },
+        "resolution_m_per_px": {
+          "default": 0.25,
+          "exclusiveMinimum": 0.0,
+          "title": "Resolution M Per Px",
+          "type": "number"
+        },
+        "source_id": {
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "template_url",
+        "bbox",
+        "source_id"
+      ],
+      "title": "BasemapLayer",
+      "type": "object"
+    },
+    "MarsCrs": {
+      "additionalProperties": false,
+      "description": "Coordinate Reference System definition for the Mars sphere R = 3,396,190 m.",
+      "properties": {
+        "name": {
+          "default": "IAU2015:49900 / Planetocentric East Sphere",
+          "title": "Name",
+          "type": "string"
+        },
+        "sphere_radius_m": {
+          "default": 3396190.0,
+          "title": "Sphere Radius M",
+          "type": "number"
+        },
+        "lon_domain": {
+          "const": "east_positive_0_360",
+          "default": "east_positive_0_360",
+          "title": "Lon Domain",
+          "type": "string"
+        },
+        "lat_type": {
+          "const": "planetocentric",
+          "default": "planetocentric",
+          "title": "Lat Type",
+          "type": "string"
+        }
+      },
+      "title": "MarsCrs",
+      "type": "object"
+    },
+    "PackFileDigest": {
+      "additionalProperties": false,
+      "description": "Integrity record for a file inside public_packs/<site>/v1/.",
+      "properties": {
+        "path": {
+          "description": "Relative filename inside the site pack.",
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "Lowercase hex SHA-256.",
+          "maxLength": 64,
+          "minLength": 64,
+          "title": "Sha256",
+          "type": "string"
+        },
+        "bytes": {
+          "description": "Exact file size in bytes.",
+          "exclusiveMinimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes"
+      ],
+      "title": "PackFileDigest",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "description": "Primary NASA, JPL, USGS, or peer-reviewed reference source.",
+      "properties": {
+        "id": {
+          "description": "Unique source identifier (e.g. SRC-NASA-XEVA).",
+          "minLength": 3,
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "description": "Document or dataset title.",
+          "minLength": 3,
+          "title": "Title",
+          "type": "string"
+        },
+        "mission": {
+          "description": "Mission or institution name.",
+          "minLength": 2,
+          "title": "Mission",
+          "type": "string"
+        },
+        "url": {
+          "description": "Canonical HTTPS URL.",
+          "minLength": 8,
+          "title": "Url",
+          "type": "string"
+        },
+        "license": {
+          "description": "License or public domain designation.",
+          "minLength": 3,
+          "title": "License",
+          "type": "string"
+        },
+        "citation": {
+          "description": "Full bibliographic citation.",
+          "minLength": 5,
+          "title": "Citation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "mission",
+        "url",
+        "license",
+        "citation"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Root manifest.json for a signed Martian site pack.",
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "site_id": {
+      "minLength": 2,
+      "title": "Site Id",
+      "type": "string"
+    },
+    "site_name": {
+      "minLength": 2,
+      "title": "Site Name",
+      "type": "string"
+    },
+    "crs": {
+      "$ref": "#/$defs/MarsCrs"
+    },
+    "bbox": {
+      "description": "[min_lon, min_lat, max_lon, max_lat] in planetocentric East degrees.",
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Bbox",
+      "type": "array"
+    },
+    "basemaps": {
+      "items": {
+        "$ref": "#/$defs/BasemapLayer"
+      },
+      "minItems": 1,
+      "title": "Basemaps",
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/PackFileDigest"
+      },
+      "minItems": 1,
+      "title": "Files",
+      "type": "array"
+    },
+    "generated_at": {
+      "description": "ISO-8601 UTC generation timestamp.",
+      "minLength": 10,
+      "title": "Generated At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "site_id",
+    "site_name",
+    "bbox",
+    "basemaps",
+    "sources",
+    "files",
+    "generated_at"
+  ],
+  "title": "SiteManifest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

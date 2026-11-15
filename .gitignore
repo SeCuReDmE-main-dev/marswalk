@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# Test / lint caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local raw datalake cache (large NASA/USGS binaries; tracked by SHA-256 in manifest)
+datalake/*
+!datalake/.gitkeep
+!datalake/README.md
+
+# OS / IDE artifacts
+.DS_Store
+Thumbs.db
+*.swp

@@ -1,0 +1,24 @@
+{
+  "name": "marswalk",
+  "version": "0.1.0",
+  "defaultBranch": "main",
+  "worktrees": {
+    "frontend": {
+      "branch": "feat/ui",
+      "root": "frontend",
+      "staticPack": "public_packs/jezero/v1"
+    },
+    "engine": {
+      "branch": "feat/engine",
+      "root": "src/marswalk"
+    }
+  },
+  "tasks": {
+    "exportSchemas": "python -m marswalk.middleware.cli export-schemas",
+    "buildPack": "python -m marswalk.middleware.cli build-pack --site jezero",
+    "verifyPack": "python -m marswalk.middleware.cli verify-pack --site jezero",
+    "devApi": "uvicorn marswalk.middleware.api:app --reload --port 8000",
+    "test": "pytest -q --tb=short",
+    "lint": "ruff check . && ruff format --check ."
+  }
+}

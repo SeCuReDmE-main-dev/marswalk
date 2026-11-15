@@ -1,0 +1,354 @@
+{
+  "$defs": {
+    "EvaRouteFeature": {
+      "additionalProperties": false,
+      "description": "Single GeoJSON Feature in `route.geojson`.",
+      "properties": {
+        "type": {
+          "const": "Feature",
+          "default": "Feature",
+          "title": "Type",
+          "type": "string"
+        },
+        "geometry": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GeoJsonLineGeometry"
+            },
+            {
+              "$ref": "#/$defs/GeoJsonPointGeometry"
+            }
+          ],
+          "title": "Geometry"
+        },
+        "properties": {
+          "$ref": "#/$defs/EvaRouteProperties"
+        }
+      },
+      "required": [
+        "geometry",
+        "properties"
+      ],
+      "title": "EvaRouteFeature",
+      "type": "object"
+    },
+    "EvaRouteProperties": {
+      "additionalProperties": false,
+      "description": "Properties for a feature in `route.geojson` (traverse, EVA path, or science stop).",
+      "properties": {
+        "feature_id": {
+          "minLength": 1,
+          "title": "Feature Id",
+          "type": "string"
+        },
+        "segment_type": {
+          "enum": [
+            "MEASURED_ROVER_TRAVERSE",
+            "SIMULATED_ASTRONAUT_EVA",
+            "SCIENCE_STOP"
+          ],
+          "title": "Segment Type",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 2,
+          "title": "Title",
+          "type": "string"
+        },
+        "tag": {
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "GO",
+            "CAUTION",
+            "NO_GO"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "distance_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "max_slope_deg": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "estimated_duration_h": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "estimated_radiation_msv": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sol": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sol"
+        },
+        "rover_tilt_deg": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "geologic_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Geologic Unit"
+        },
+        "panorama_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Panorama Url"
+        },
+        "notes": {
+          "minLength": 3,
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "feature_id",
+        "segment_type",
+        "title",
+        "tag",
+        "source_id",
+        "verdict",
+        "notes"
+      ],
+      "title": "EvaRouteProperties",
+      "type": "object"
+    },
+    "GeoJsonLineGeometry": {
+      "additionalProperties": false,
+      "description": "GeoJSON LineString geometry [[lon, lat], ...].",
+      "properties": {
+        "type": {
+          "const": "LineString",
+          "default": "LineString",
+          "title": "Type",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "minItems": 2,
+          "title": "Coordinates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "coordinates"
+      ],
+      "title": "GeoJsonLineGeometry",
+      "type": "object"
+    },
+    "GeoJsonPointGeometry": {
+      "additionalProperties": false,
+      "description": "GeoJSON Point geometry [lon, lat] or [lon, lat, elev_m].",
+      "properties": {
+        "type": {
+          "const": "Point",
+          "default": "Point",
+          "title": "Type",
+          "type": "string"
+        },
+        "coordinates": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 3,
+              "minItems": 3,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            }
+          ],
+          "title": "Coordinates"
+        }
+      },
+      "required": [
+        "coordinates"
+      ],
+      "title": "GeoJsonPointGeometry",
+      "type": "object"
+    },
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "Physical scalar quantity with mandatory unit, provenance tag, and source ID.",
+      "properties": {
+        "value": {
+          "description": "Numeric scalar value (finite float).",
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Physical unit (e.g. 'm', 'deg', 'mSv/day').",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Data provenance: MEASURED, DERIVED, or SIMULATED.",
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "Identifier matching an entry in SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "tag",
+        "source_id"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Complete `route.geojson` FeatureCollection combining measured traverse & simulated EVA.",
+  "properties": {
+    "type": {
+      "const": "FeatureCollection",
+      "default": "FeatureCollection",
+      "title": "Type",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "site_id": {
+      "minLength": 2,
+      "title": "Site Id",
+      "type": "string"
+    },
+    "features": {
+      "items": {
+        "$ref": "#/$defs/EvaRouteFeature"
+      },
+      "minItems": 2,
+      "title": "Features",
+      "type": "array"
+    }
+  },
+  "required": [
+    "site_id",
+    "features"
+  ],
+  "title": "EvaRoute",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

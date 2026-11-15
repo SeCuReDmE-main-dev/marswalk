@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "Physical scalar quantity with mandatory unit, provenance tag, and source ID.",
+      "properties": {
+        "value": {
+          "description": "Numeric scalar value (finite float).",
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Physical unit (e.g. 'm', 'deg', 'mSv/day').",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Data provenance: MEASURED, DERIVED, or SIMULATED.",
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "Identifier matching an entry in SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "tag",
+        "source_id"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Citable NASA xEVA, Apollo, JPL Rover, and Curiosity RAD safety thresholds.",
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "suit_max_slope_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "apollo_practical_slope_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "apollo_max_relief_m": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "walkback_max_km": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "eva_duration_min_h": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "eva_duration_max_h": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rover_max_slope_rock_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rover_max_slope_sand_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "ripple_hazard_height_cm": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rock_cfa_ok_pct": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rock_cfa_caution_pct": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "gcr_dose_msv_per_day": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "radiation_environment_note": {
+      "minLength": 10,
+      "title": "Radiation Environment Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "suit_max_slope_deg",
+    "apollo_practical_slope_deg",
+    "apollo_max_relief_m",
+    "walkback_max_km",
+    "eva_duration_min_h",
+    "eva_duration_max_h",
+    "rover_max_slope_rock_deg",
+    "rover_max_slope_sand_deg",
+    "ripple_hazard_height_cm",
+    "rock_cfa_ok_pct",
+    "rock_cfa_caution_pct",
+    "gcr_dose_msv_per_day",
+    "radiation_environment_note"
+  ],
+  "title": "EvaConstraints",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

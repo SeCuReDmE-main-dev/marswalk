@@ -1,0 +1,237 @@
+{
+  "$defs": {
+    "GeoJsonPointGeometry": {
+      "additionalProperties": false,
+      "description": "GeoJSON Point geometry [lon, lat] or [lon, lat, elev_m].",
+      "properties": {
+        "type": {
+          "const": "Point",
+          "default": "Point",
+          "title": "Type",
+          "type": "string"
+        },
+        "coordinates": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "maxItems": 3,
+              "minItems": 3,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            }
+          ],
+          "title": "Coordinates"
+        }
+      },
+      "required": [
+        "coordinates"
+      ],
+      "title": "GeoJsonPointGeometry",
+      "type": "object"
+    },
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "Physical scalar quantity with mandatory unit, provenance tag, and source ID.",
+      "properties": {
+        "value": {
+          "description": "Numeric scalar value (finite float).",
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Physical unit (e.g. 'm', 'deg', 'mSv/day').",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Data provenance: MEASURED, DERIVED, or SIMULATED.",
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "Identifier matching an entry in SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "tag",
+        "source_id"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    },
+    "Waypoint": {
+      "additionalProperties": false,
+      "description": "GeoJSON Feature representing one Perseverance rover waypoint.",
+      "properties": {
+        "type": {
+          "const": "Feature",
+          "default": "Feature",
+          "title": "Type",
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/$defs/GeoJsonPointGeometry"
+        },
+        "properties": {
+          "$ref": "#/$defs/WaypointProperties"
+        }
+      },
+      "required": [
+        "geometry",
+        "properties"
+      ],
+      "title": "Waypoint",
+      "type": "object"
+    },
+    "WaypointProperties": {
+      "additionalProperties": false,
+      "description": "Telemetry properties for a single Perseverance rover stop from M20_waypoints.json.",
+      "properties": {
+        "waypoint_id": {
+          "minLength": 1,
+          "title": "Waypoint Id",
+          "type": "string"
+        },
+        "sol": {
+          "description": "Mars 2020 mission sol.",
+          "minimum": 0,
+          "title": "Sol",
+          "type": "integer"
+        },
+        "site": {
+          "minimum": 0,
+          "title": "Site",
+          "type": "integer"
+        },
+        "drive": {
+          "minimum": 0,
+          "title": "Drive",
+          "type": "integer"
+        },
+        "lon": {
+          "maximum": 360.0,
+          "minimum": -180.0,
+          "title": "Lon",
+          "type": "number"
+        },
+        "lat": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Lat",
+          "type": "number"
+        },
+        "elev_geoid_m": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "rover_tilt_deg": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "rover_pitch_deg": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "rover_roll_deg": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "dist_total_m": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "panorama_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Panorama Url"
+        }
+      },
+      "required": [
+        "waypoint_id",
+        "sol",
+        "site",
+        "drive",
+        "lon",
+        "lat",
+        "elev_geoid_m",
+        "rover_tilt_deg",
+        "rover_pitch_deg",
+        "rover_roll_deg",
+        "dist_total_m"
+      ],
+      "title": "WaypointProperties",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "GeoJSON FeatureCollection of all Perseverance waypoints in the site pack.",
+  "properties": {
+    "type": {
+      "const": "FeatureCollection",
+      "default": "FeatureCollection",
+      "title": "Type",
+      "type": "string"
+    },
+    "contract_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "site_id": {
+      "minLength": 2,
+      "title": "Site Id",
+      "type": "string"
+    },
+    "features": {
+      "items": {
+        "$ref": "#/$defs/Waypoint"
+      },
+      "minItems": 1,
+      "title": "Features",
+      "type": "array"
+    }
+  },
+  "required": [
+    "site_id",
+    "features"
+  ],
+  "title": "WaypointFeatureCollection",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

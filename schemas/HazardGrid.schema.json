@@ -1,0 +1,303 @@
+{
+  "$defs": {
+    "ConfidenceVector": {
+      "additionalProperties": false,
+      "description": "3-component terrain confidence vector exposed to the UI as `confidence`.\n\n- `t`: Verified agreement between orbital baselines and ground-truth rover telemetry [0, 1].\n- `i`: Scale-gap or coverage uncertainty across baselines [0, 1].\n- `f`: Active hazard contradiction or safety limit exceedance [0, 1].",
+      "properties": {
+        "t": {
+          "description": "Verified safety agreement score [0..1].",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "T",
+          "type": "number"
+        },
+        "i": {
+          "description": "Scale/coverage uncertainty score [0..1].",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "I",
+          "type": "number"
+        },
+        "f": {
+          "description": "Hazard contradiction score [0..1].",
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "F",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "i",
+        "f"
+      ],
+      "title": "ConfidenceVector",
+      "type": "object"
+    },
+    "HazardCell": {
+      "additionalProperties": false,
+      "description": "Multi-scale terrain & EVA hazard assessment for a single grid cell.",
+      "properties": {
+        "cell_id": {
+          "minLength": 1,
+          "title": "Cell Id",
+          "type": "string"
+        },
+        "row": {
+          "minimum": 0,
+          "title": "Row",
+          "type": "integer"
+        },
+        "col": {
+          "minimum": 0,
+          "title": "Col",
+          "type": "integer"
+        },
+        "lon": {
+          "maximum": 360.0,
+          "minimum": -180.0,
+          "title": "Lon",
+          "type": "number"
+        },
+        "lat": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Lat",
+          "type": "number"
+        },
+        "size_m": {
+          "exclusiveMinimum": 0.0,
+          "title": "Size M",
+          "type": "number"
+        },
+        "elev_m": {
+          "$ref": "#/$defs/Quantity"
+        },
+        "slope_deg_by_baseline": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Quantity"
+          },
+          "description": "Orbital terrain slope in degrees at 1m, 4m, 16m, and 64m baselines.",
+          "propertyNames": {
+            "enum": [
+              "1",
+              "4",
+              "16",
+              "64"
+            ]
+          },
+          "title": "Slope Deg By Baseline",
+          "type": "object"
+        },
+        "scale_divergence": {
+          "$ref": "#/$defs/Quantity",
+          "description": "Slope divergence (deg) between fine (1m) and coarse (64m) baselines."
+        },
+        "rock_cfa_pct": {
+          "$ref": "#/$defs/Quantity",
+          "description": "Estimated Cumulative Fractional Area of rocks (%)."
+        },
+        "confidence": {
+          "$ref": "#/$defs/ConfidenceVector"
+        },
+        "verdict": {
+          "description": "Actionable EVA / rover traversability verdict: GO, CAUTION, or NO_GO.",
+          "enum": [
+            "GO",
+            "CAUTION",
+            "NO_GO"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Clear human-readable verdict explanation.",
+          "minLength": 3,
+          "title": "Reason",
+          "type": "string"
+        },
+        "nearest_waypoint_sol": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nearest Waypoint Sol"
+        },
+        "measured_rover_tilt_deg": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "cell_id",
+        "row",
+        "col",
+        "lon",
+        "lat",
+        "size_m",
+        "elev_m",
+        "slope_deg_by_baseline",
+        "scale_divergence",
+        "rock_cfa_pct",
+        "confidence",
+        "verdict",
+        "reason"
+      ],
+      "title": "HazardCell",
+      "type": "object"
+    },
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "Physical scalar quantity with mandatory unit, provenance tag, and source ID.",
+      "properties": {
+        "value": {
+          "description": "Numeric scalar value (finite float).",
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Physical unit (e.g. 'm', 'deg', 'mSv/day').",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Data provenance: MEASURED, DERIVED, or SIMULATED.",
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "Identifier matching an entry in SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "tag",
+        "source_id"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Complete multi-scale hazard grid (`hazard_grid.json`) for a site pack.",
+  "properties": {
+    "contract_version": {
+      "const": "1.0.0",
+      "default": "1.0.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "site_id": {
+      "minLength": 2,
+      "title": "Site Id",
+      "type": "string"
+    },
+    "bbox": {
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Bbox",
+      "type": "array"
+    },
+    "rows": {
+      "exclusiveMinimum": 0,
+      "title": "Rows",
+      "type": "integer"
+    },
+    "cols": {
+      "exclusiveMinimum": 0,
+      "title": "Cols",
+      "type": "integer"
+    },
+    "cell_size_m": {
+      "exclusiveMinimum": 0.0,
+      "title": "Cell Size M",
+      "type": "number"
+    },
+    "baselines_m": {
+      "default": [
+        1,
+        4,
+        16,
+        64
+      ],
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "title": "Baselines M",
+      "type": "array"
+    },
+    "overlay_file": {
+      "default": "hazard_overlay.png",
+      "title": "Overlay File",
+      "type": "string"
+    },
+    "cells": {
+      "items": {
+        "$ref": "#/$defs/HazardCell"
+      },
+      "minItems": 1,
+      "title": "Cells",
+      "type": "array"
+    }
+  },
+  "required": [
+    "site_id",
+    "bbox",
+    "rows",
+    "cols",
+    "cell_size_m",
+    "cells"
+  ],
+  "title": "HazardGrid",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
