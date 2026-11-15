@@ -1,5 +1,11 @@
 # Frontend Integration Guide (`frontend/README.md`)
 
+## Running frontend
+
+The implementation now lives in this directory. Run `cd frontend`, `npm ci`, then `npm run dev` from the repository root. It loads the shared static pack by default. For configuration, build steps, API endpoint mappings and the handoff to the middleware developer, see [INTEGRATION.md](INTEGRATION.md).
+
+The older integration notes below describe the original handoff. The implemented scale comparison uses 64/16/4 m; 1 m remains diagnostic and does not drive UI verdict changes. Current grid status and quantities are read from the pack.
+
 Welcome **Philippe (`teammate`)**!  
 You have **100% creative and technical ownership** of `frontend/` (on `main`) — framework, map library, visual style, and the final product brand name & `.spaceapps.earth` domain name.
 

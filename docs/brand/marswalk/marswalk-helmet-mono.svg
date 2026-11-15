@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title"><title id="title">Marswalk</title><defs><mask id="cutout"><rect width="256" height="256" fill="black"/><path d="M54 114c0-49 29-82 74-82s74 33 74 82v49c0 30-22 51-50 55h-48c-28-4-50-25-50-55Z" fill="white"/>
+  <path d="M70 114c0-39 22-65 58-65s58 26 58 65v36H70Z" fill="black"/>
+  <path d="M70 129c22-14 39-14 58-4s37 11 58-3v28H70Z" fill="white"/>
+  <path d="M93 177h70M108 194h40" stroke="black" stroke-width="8" stroke-linecap="round"/>
+  <path d="M42 119v33m172-33v33" stroke="white" stroke-width="12" stroke-linecap="round"/></mask></defs><rect width="256" height="256" fill="currentColor" mask="url(#cutout)"/></svg>
