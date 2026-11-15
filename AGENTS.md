@@ -11,8 +11,10 @@ I (Jean-Sébastien Beaulieu) build this repository with several AI coding assist
 | 1 | Data contract `v1.0.0`, signed static pack, FastAPI middleware | Done, on `main` |
 | 2 | Multi-scale terrain engine (funnel, gates, A*), real HiRISE 1 m DTM | Done, on `main` |
 | 3 | Contract `v1.1.0`, 40 × 40 engine grid (1,600 cells of ~48 m), `cos φ` ground metres, RF / radiation / metabolic / AOA layers, spatial-block CV | Done, audit `VERIFIED`, merged on `main` (`79064e3`) |
-| 5 | Fail-safe route evaluation, operator safe mode, repo hygiene, `demo-stable` tag | Done on `feat/phase3`, not merged yet, not yet audited by Claude |
-| 4 | Obstacle-aware route planner (`/plan-route`, `obstacles.geojson`, modules M1–M6) | **In progress, not shipped.** Nothing from Phase 4 is in the pack or the API yet |
+| 5 | Fail-safe route and cell lookup, operator safe mode, repo hygiene, `demo-stable` tag | Done, audit `VERIFIED`, on `feat/phase3` |
+| 4 | Obstacle-aware route planner: `POST /plan-route`, `obstacles.geojson`, `planner_grid_10m.png`, camera endpoint, modules M1–M6 | Done, audit `VERIFIED`, on `feat/phase3` (not merged to `main` yet) |
+
+Open limits (documented, not hidden): `geologic_unit` is an elevation/position approximation of SIM 3464, not the map polygons; M1 has no independent recall reference yet; `/plan-route` takes ~1.3–1.7 s on the 10 m grid (A* expands ~90 % of cells).
 
 Phase 5 was run before Phase 4 on purpose: the safety guards had to exist before a planner could build on them.
 
@@ -44,9 +46,10 @@ Phase 5 was run before Phase 4 on purpose: the safety guards had to exist before
 2. **Operator stop.** `MARSWALK_SAFE_MODE=1` (read on every request) forces route evaluation to `NO_GO` and shows `"safe_mode": true` on `GET /health`. Static map endpoints stay available. See [`SECURITY.md`](SECURITY.md).
 3. **`spe_alert = true` is a global abort.** It always gives `NO_GO`. Terrain shelter never compensates it.
 4. **More dust, more payload or an SPE never improves a verdict** (monotonicity, tested).
-5. **No route outside the grid is ever `GO`**, and a segment is checked on every cell it touches (supercover), not only at its vertices.
+5. **No route or click outside the grid is ever `GO`**, and a segment is checked on every cell it touches (supercover), not only at its vertices. `GET /cell` outside the window returns `NO_GO` with a `FAIL_SAFE:` reason.
 6. **Measured rover tilt is ground truth, never an input.** The prefilter, carriers, funnel, gates and A* must not read `rover_tilt_deg`. It is used only to validate.
 7. **No threshold without a source.** A new number that changes a verdict cites a primary source, or is tagged as an internal margin and documented.
+8. **No outbound call or disk write driven by a client alone.** The camera endpoint fetches live NASA data only if the operator sets `MARSWALK_ALLOW_CAMERA_FETCH=1`.
 
 ---
 

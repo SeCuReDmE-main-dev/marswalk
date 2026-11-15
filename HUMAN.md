@@ -34,7 +34,7 @@
 ## Where the project stands (2026-11-15)
 
 - **Done:** the data contract, the signed Jezero pack (`v1.1.0`, 1,600 cells of ~48 m from the real HiRISE terrain model), the live API, and the safety layer (fail-safe answers, operator safe mode, `demo-stable` rollback tag).
-- **In progress:** a route planner that draws a walk around scarps and rock formations (`/plan-route`). It is not in the pack or the API yet.
+- **Done (Phase 4):** a route planner that draws a walk around scarps and rock formations of about 4 m and more (`/plan-route`, `obstacles.geojson`). It takes about 1.5 s per plan today.
 - **Honest limits:** the engine is tested on one 2 × 2 km window and checked against 147 real rover stops. On those stops it is not yet better than a simple fixed 16 m slope; I publish that result instead of hiding it.
 
 The detailed phase table for agents is in [`AGENTS.md`](AGENTS.md).

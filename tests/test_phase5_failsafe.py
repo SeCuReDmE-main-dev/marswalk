@@ -188,3 +188,30 @@ def test_health_reports_safe_mode(monkeypatch: pytest.MonkeyPatch) -> None:
     r_on = client.get("/health")
     assert r_on.status_code == 200
     assert r_on.json() == {"status": "ok", "contract_version": "1.1.0", "safe_mode": True}
+
+
+def test_cell_lookup_outside_window_is_never_go() -> None:
+    """A click 2.3 km outside the analysed window must not inherit the edge cell's verdict."""
+    resp = client.get("/v1/sites/jezero/cell?lon=77.45&lat=18.44")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["cell"]["verdict"] == "NO_GO"
+    assert body["cell"]["reason"].startswith("FAIL_SAFE:")
+    assert body["cell"]["confidence"] == {"t": 0.0, "i": 1.0, "f": 0.0}
+
+    inside = client.get("/v1/sites/jezero/cell?lon=77.395&lat=18.465").json()
+    assert not inside["cell"]["reason"].startswith("FAIL_SAFE:")
+
+
+def test_camera_live_fetch_requires_operator_switch(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A client flag alone must never trigger an outbound call or a cache write."""
+    import urllib.request
+
+    def _no_network(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("outbound network call without MARSWALK_ALLOW_CAMERA_FETCH=1")
+
+    monkeypatch.delenv("MARSWALK_ALLOW_CAMERA_FETCH", raising=False)
+    monkeypatch.setattr(urllib.request, "urlopen", _no_network)
+    resp = client.get("/v1/sites/jezero/waypoints/999999/cameras?allow_network=true")
+    assert resp.status_code == 200
+    assert resp.json()["source_status"] != "live"

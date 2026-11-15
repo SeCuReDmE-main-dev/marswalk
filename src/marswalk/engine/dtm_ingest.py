@@ -228,9 +228,11 @@ def _parse_sim3464_metadata(datalake_dir: Path) -> tuple[tuple[str, ...], str | 
 
 
 def classify_sim3464_unit(lon: float, lat: float, elev_m: float, slope_16m_deg: float) -> str:
-    """Assign the USGS SIM 3464 geologic unit across the Western Delta Front window.
+    """Approximate the USGS SIM 3464 geologic unit across the Western Delta Front window.
 
-    Uses the official Sun & Stack (2020) SIM 3464 stratigraphic contact definitions:
+    HEURISTIC: hand-set longitude / elevation / slope thresholds inspired by the unit names of
+    Sun & Stack (2020) SIM 3464. It does NOT read the published map polygons (not ingested yet),
+    so contacts can be off by tens to hundreds of metres. Thresholds used:
     - `Njf` (Jezero floor unit): eastern floor below `-2535 m` (`lon >= 77.404`).
     - `Nle` (Lower etched / margin contact unit): transition apron (`-2535 m .. -2518 m`).
     - `NHjf1` (Jezero fan 1 unit): primary Western Delta layered sedimentary lobes.

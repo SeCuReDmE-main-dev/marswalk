@@ -549,6 +549,20 @@ class PackQueryService:
             if missing_field is not None
             else best_cell
         )
+        if not self._point_in_bbox(lon, lat):
+            # A click outside the analysed window must never inherit an edge cell's verdict.
+            safe_cell = safe_cell.model_copy(
+                update={
+                    "verdict": "NO_GO",
+                    "confidence": safe_cell.confidence.model_copy(
+                        update={"t": 0.0, "i": 1.0, "f": 0.0}
+                    ),
+                    "reason": (
+                        f"FAIL_SAFE: point ({lon:.6f}, {lat:.6f}) is outside the analysed "
+                        f"window {list(self.pack.hazards.bbox)}; nearest cell is context only"
+                    ),
+                }
+            )
         dist_cell = round(spherical_distance_m(lon, lat, safe_cell.lon, safe_cell.lat), 2)
 
         _, _, best_wp = min(

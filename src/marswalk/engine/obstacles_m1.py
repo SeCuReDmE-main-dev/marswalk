@@ -81,9 +81,9 @@ class M1GroundTruthValidation:
     even_sol_gentle_stops: int
     even_sol_false_positives: int
     even_sol_specificity: float
-    sim3464_scarp_margin_pixels: int
-    sim3464_scarp_detected_pixels: int
-    sim3464_scarp_recall: float
+    dtm_relief_scarp_pixels: int
+    dtm_relief_scarp_detected_pixels: int
+    dtm_relief_self_consistency_recall: float
     sol_700_slope_4m_deg: float
     sol_700_exceeds_20deg_limit: bool
     ono_rover_cfa_reference_pct: tuple[float, float]
@@ -585,7 +585,7 @@ def validate_m1_against_ground_truth(
 
         if sol_num == 700:
             local_max_s4 = float(np.max(slope_4m[rr - 2 : rr + 3, cc - 2 : cc + 3]))
-            sol_700_max_slope = max(sol_700_max_slope, local_max_s4, tilt_deg)
+            sol_700_max_slope = max(sol_700_max_slope, local_max_s4)  # DTM only, never tilt
 
         # Specificity measured strictly on EVEN sols with rover_tilt_deg < 15 deg (`C1`)
         if sol_num % 2 == 0 and tilt_deg < 15.0:
@@ -599,8 +599,10 @@ def validate_m1_against_ground_truth(
         else 1.0
     )
 
-    # Independent sensitivity reference (`C1`): SIM 3464 lower delta margin (`Nle`/`NHjf1`)
-    # pixels exhibiting >= 6.0 m local vertical drop over 16 m (independent stratigraphic scarp)
+    # Self-consistency check, NOT an independent sensitivity measure: the reference pixels
+    # (>= 6.0 m drop over 16 m) come from the same HiRISE DTM as the detector, and the unit
+    # filter `classify_sim3464_unit` is an elevation/position heuristic, not the SIM 3464
+    # map polygons (only SIM3464_metadata.xml is in datalake/). Independent recall is open.
     pad8 = np.pad(win_elev, pad_width=8, mode="edge")
     relief_16m = np.maximum(
         np.abs(pad8[8:-8, 16:] - pad8[8:-8, :-16]),
@@ -626,9 +628,9 @@ def validate_m1_against_ground_truth(
         even_sol_gentle_stops=even_gentle_total,
         even_sol_false_positives=even_false_pos,
         even_sol_specificity=round(spec, 4),
-        sim3464_scarp_margin_pixels=scarp_ref_count,
-        sim3464_scarp_detected_pixels=scarp_hit_count,
-        sim3464_scarp_recall=round(recall, 4),
+        dtm_relief_scarp_pixels=scarp_ref_count,
+        dtm_relief_scarp_detected_pixels=scarp_hit_count,
+        dtm_relief_self_consistency_recall=round(recall, 4),
         sol_700_slope_4m_deg=round(sol_700_max_slope, 4),
         sol_700_exceeds_20deg_limit=bool(sol_700_max_slope >= EVA_SUIT_MAX_SLOPE_DEG),
         ono_rover_cfa_reference_pct=(ROVER_CFA_OK_PCT, ROVER_CFA_CAUTION_PCT),

@@ -109,7 +109,7 @@ def test_x2_no_fabricated_cfa_threshold_11_or_10_pct() -> None:
 
 
 def test_c1_m1_specificity_even_sols_and_recall_sim3464_and_sol700() -> None:
-    """Verify `C1`: 147 in-window stops, even-sol specificity >= 0.95, SIM 3464 recall >= 0.85."""
+    """Verify `C1`: 147 stops, even-sol specificity, DTM self-consistency (not independent)."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
     win = select_optimal_delta_window_2x2km(pack.waypoints)
     dtm = asyncio.run(ingest_dtm_window_async(REPO_ROOT / "datalake", win))
@@ -124,8 +124,8 @@ def test_c1_m1_specificity_even_sols_and_recall_sim3464_and_sol700() -> None:
     assert val.total_window_stops == 147
     assert val.even_sol_gentle_stops > 30
     assert val.even_sol_specificity >= 0.95
-    assert val.sim3464_scarp_margin_pixels > 50
-    assert val.sim3464_scarp_recall >= 0.85
+    assert val.dtm_relief_scarp_pixels > 50
+    assert val.dtm_relief_self_consistency_recall >= 0.85
     # Sol 700 is a visited Perseverance stop on a > 20 deg slope (exceeds astronaut suit limit)
     assert val.sol_700_slope_4m_deg > 20.0
     assert val.sol_700_exceeds_20deg_limit is True

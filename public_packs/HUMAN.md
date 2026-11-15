@@ -59,11 +59,11 @@ The other four are for audit, not for drawing: `validation_report.json` and `gat
 | `rf_comms_verdict` | Can a suit radio (1.8 m) reach the rover mast (3.0 m) at 414.2 MHz from this cell? | Computed from the rover at the first science stop (Sol 413). Conservative: most cells behind the delta scarp are `NO_GO`. Separate from the terrain `verdict`. |
 | `sky_view_factor` | Fraction of open sky above the cell | Terrain blocks only a few % of radiation dose. It is **not** a shelter for a solar storm. |
 | `hurst_exponent_h`, `solar_shadow_fraction` | Roughness texture, shadowed fraction | Derived values, for experts. |
-| `geologic_unit` | USGS SIM 3464 map unit | From the published geologic map. |
+| `geologic_unit` | Approximate USGS SIM 3464 unit name | **Approximation** from elevation and position thresholds, not the published map polygons (not ingested yet). Contacts can be off by tens to hundreds of metres. |
 | `aoa_inside`, `calibrated_opinion` | Is this cell similar to places the rover actually visited, and the confidence learned from them | `aoa_inside = false` means the engine is extrapolating. Show it. |
 | `external_layers_status` (grid level) | Which extra data layers were used | THEMIS, CRISM and MEDA are `UNAVAILABLE` today (uncertainty 1.0): no value is invented for them. |
 
-Nothing from the route planner in progress (`obstacles.geojson`, planned routes) is in this pack yet.
+Since Phase 4 the pack also signs `obstacles.geojson` (82 outlines: 45 scarps, 37 rock formations of about 4 m and more, `DERIVED`) and `planner_grid_10m.png` (the planner's 10 m grid). `route.geojson` gains a separate `ROUTE-EVA-M2-OBSTACLE-AWARE` line (`DERIVED`); the measured rover traverse is unchanged. Rocks smaller than a few metres are **not** visible to the 1 m terrain model.
 
 ## Coordinates
 

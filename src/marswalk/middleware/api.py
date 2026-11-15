@@ -22,6 +22,7 @@ What it promises
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -189,12 +190,17 @@ def get_waypoint_cameras(
     page_size: int = Query(default=12, ge=1, le=100),
     allow_network: bool = Query(default=False),
 ) -> RoverCamerasResponse:
-    """Return paginated Mars 2020 `raw_images` camera frames for `sol` (`M5` dedicated endpoint)."""
+    """Return paginated Mars 2020 `raw_images` camera frames for `sol` (`M5` dedicated endpoint).
+
+    A live fetch (outbound call + cache write in `datalake/`) needs BOTH the client flag and the
+    operator switch `MARSWALK_ALLOW_CAMERA_FETCH=1`. Without it the endpoint is read-only.
+    """
+    operator_allows_fetch = os.environ.get("MARSWALK_ALLOW_CAMERA_FETCH", "").strip() == "1"
     return get_query_service(site_id).get_waypoint_cameras(
         sol=sol,
         azimuth_deg=azimuth_deg,
         max_azimuth_delta_deg=max_azimuth_delta_deg,
         page=page,
         page_size=page_size,
-        allow_network=allow_network,
+        allow_network=allow_network and operator_allows_fetch,
     )
