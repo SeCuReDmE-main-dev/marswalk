@@ -1030,16 +1030,18 @@
         "source_id": "SRC-M20-TRAVERSE",
         "verdict": "CAUTION",
         "distance_m": {
-          "value": 45245.71,
+          "value": 46049.6,
           "unit": "m",
           "tag": "MEASURED",
-          "source_id": "SRC-M20-WAYPOINTS"
+          "source_id": "SRC-M20-TRAVERSE",
+          "note": null
         },
         "max_slope_deg": {
           "value": 20.68,
           "unit": "deg",
           "tag": "MEASURED",
-          "source_id": "SRC-M20-WAYPOINTS"
+          "source_id": "SRC-M20-WAYPOINTS",
+          "note": null
         },
         "estimated_duration_h": null,
         "estimated_radiation_msv": null,
@@ -1056,63 +1058,67 @@
         "type": "LineString",
         "coordinates": [
           [
-            77.450886,
-            18.444627
+            77.45088572,
+            18.44462715
           ],
           [
-            77.4452,
-            18.4478
+            77.4475,
+            18.4552
           ],
           [
-            77.4395,
-            18.4512
+            77.44250357,
+            18.46558393
           ],
           [
-            77.4338,
-            18.4541
+            77.4305,
+            18.4602
           ],
           [
-            77.4292,
-            18.4559
+            77.41858362,
+            18.4553951
           ]
         ]
       },
       "properties": {
         "feature_id": "ROUTE-XEVA-SIMULATED-FAN-CORRIDOR",
         "segment_type": "SIMULATED_ASTRONAUT_EVA",
-        "title": "Simulated Astronaut EVA Safe Walkback Corridor (Jezero Western Fan Approach)",
+        "title": "Simulated Astronaut EVA Safe Walkback Corridor (<= 2.0 km from Sol 13 Origin)",
         "tag": "SIMULATED",
         "source_id": "SRC-NASA-XEVA",
         "verdict": "GO",
         "distance_m": {
-          "value": 1393.0,
+          "value": 2806.1,
           "unit": "m",
           "tag": "SIMULATED",
-          "source_id": "SRC-NASA-XEVA"
+          "source_id": "SRC-NASA-XEVA",
+          "note": null
         },
         "max_slope_deg": {
           "value": 9.4,
           "unit": "deg",
-          "tag": "DERIVED",
-          "source_id": "SRC-USGS-HIRISE-DTM-1M"
+          "tag": "SIMULATED",
+          "source_id": "synthetic-v1",
+          "note": null
         },
         "estimated_duration_h": {
           "value": 4.5,
           "unit": "h",
           "tag": "SIMULATED",
-          "source_id": "SRC-NASA-XEVA"
+          "source_id": "SRC-NASA-XEVA",
+          "note": null
         },
         "estimated_radiation_msv": {
           "value": 0.1256,
           "unit": "mSv",
-          "tag": "DERIVED",
-          "source_id": "SRC-RAD-GALE"
+          "tag": "SIMULATED",
+          "source_id": "SRC-RAD-GALE",
+          "note": "proxy Curiosity RAD, Gale"
         },
         "sol": null,
         "rover_tilt_deg": null,
-        "geologic_unit": "Crater floor fractured rough unit (Cf-fr) to Western Delta front",
+        "geologic_unit": "Crater floor fractured rough unit (Cf-fr) to Three Forks Delta Apron",
         "panorama_url": null,
-        "notes": "Candidate crewed EVA sortie staying strictly within the 2.0 km NASA xEVA walkback limit and < 10 deg sand/ripple slope envelope while avoiding the 20.3 deg delta scarp."
+        "notes": "Candidate crewed EVA sortie connecting Stop 1 (Sol 13), Stop 2 (Sol 398), and Stop 3 (Sol 407), staying strictly within the 2.0 km NASA xEVA walkback radius."
       }
     },
     {
@@ -1125,9 +1131,9 @@
         ]
       },
       "properties": {
-        "feature_id": "STOP-01-LANDING-BASE",
+        "feature_id": "STOP-01-SOL13-LANDING-BASE",
         "segment_type": "SCIENCE_STOP",
-        "title": "Stop 1 — Octavia E. Butler Landing & Hab Walkback Origin (Sol 13)",
+        "title": "Science Stop 1 — Octavia E. Butler Landing & EVA Origin (Sol 13, 0.0 km)",
         "tag": "MEASURED",
         "source_id": "SRC-M20-WAYPOINTS",
         "verdict": "GO",
@@ -1140,11 +1146,78 @@
           "value": 1.182,
           "unit": "deg",
           "tag": "MEASURED",
-          "source_id": "SRC-M20-WAYPOINTS"
+          "source_id": "SRC-M20-WAYPOINTS",
+          "note": null
         },
         "geologic_unit": "Crater floor fractured rough (Cf-fr, USGS SIM 3464)",
         "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0012XRAS_0030000_CYL_S_AUTOGENJ01.jpg",
-        "notes": "Flat baseline habitat & pressurized rover staging point (measured tilt 1.18 deg). All 1m, 4m, 16m, and 64m orbital slopes agree (GO)."
+        "notes": "EVA departure & walkback origin (walkback distance 0.0 m <= 2,000 m; measured rover tilt 1.18 deg -> GO)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.44250357,
+          18.46558393
+        ]
+      },
+      "properties": {
+        "feature_id": "STOP-02-SOL398-RAPID-TRAVERSE",
+        "segment_type": "SCIENCE_STOP",
+        "title": "Science Stop 2 — Crater Floor Northwest Traverse Contact (Sol 398, 1.33 km)",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "verdict": "GO",
+        "distance_m": null,
+        "max_slope_deg": null,
+        "estimated_duration_h": null,
+        "estimated_radiation_msv": null,
+        "sol": 398,
+        "rover_tilt_deg": {
+          "value": 1.2433,
+          "unit": "deg",
+          "tag": "MEASURED",
+          "source_id": "SRC-M20-WAYPOINTS",
+          "note": null
+        },
+        "geologic_unit": "Crater floor fractured rough margin (Cf-fr, USGS SIM 3464)",
+        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0398_RAS_0181622_CYL_S_AUTOGENJ01.jpg",
+        "notes": "Mid-corridor geological sampling stop on the astronaut EVA path (walkback distance 1,328.6 m <= 2,000 m; measured rover tilt 1.24 deg -> GO)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.41858362,
+          18.4553951
+        ]
+      },
+      "properties": {
+        "feature_id": "STOP-03-SOL407-DELTA-APRON",
+        "segment_type": "SCIENCE_STOP",
+        "title": "Science Stop 3 — Three Forks Delta Apron Turnaround (Sol 407, 1.93 km)",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "verdict": "GO",
+        "distance_m": null,
+        "max_slope_deg": null,
+        "estimated_duration_h": null,
+        "estimated_radiation_msv": null,
+        "sol": 407,
+        "rover_tilt_deg": {
+          "value": 0.777,
+          "unit": "deg",
+          "tag": "MEASURED",
+          "source_id": "SRC-M20-WAYPOINTS",
+          "note": null
+        },
+        "geologic_unit": "Delta apron / distal sedimentary contact (USGS SIM 3464)",
+        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0407_RAS_0211126_CYL_S_MANUGENJ01.jpg",
+        "notes": "Terminal science sampling stop at the 2.0 km NASA xEVA walkback boundary (walkback distance 1,925.2 m <= 2,000 m; measured rover tilt 0.78 deg -> GO)."
       }
     },
     {
@@ -1157,9 +1230,9 @@
         ]
       },
       "properties": {
-        "feature_id": "STOP-02-DELTA-SCARP-SCALE-GAP",
-        "segment_type": "SCIENCE_STOP",
-        "title": "Stop 2 — Western Delta Scarp Scale-Gap Hazard (Sol 700)",
+        "feature_id": "BENCHMARK-01-SOL700-DELTA-SCARP",
+        "segment_type": "BENCHMARK",
+        "title": "Benchmark 1 — Western Delta Scarp High-Tilt Reference (Sol 700)",
         "tag": "MEASURED",
         "source_id": "SRC-M20-WAYPOINTS",
         "verdict": "NO_GO",
@@ -1172,11 +1245,12 @@
           "value": 20.3345,
           "unit": "deg",
           "tag": "MEASURED",
-          "source_id": "SRC-M20-WAYPOINTS"
+          "source_id": "SRC-M20-WAYPOINTS",
+          "note": null
         },
         "geologic_unit": "Delta layered rough / steep scarp contact (D-lr, USGS SIM 3464)",
         "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0700_RZS_0330366_CYL_L_AUTOGENJ05.jpg",
-        "notes": "Primary Scale-Gap Demonstration: 64m orbital baseline smooths the delta front below 15 deg, whereas Perseverance measured 20.33 deg ground tilt (exceeding the 20.0 deg NASA xEVA suit & JPL bedrock limit -> NO_GO)."
+        "notes": "Out-of-walkback rover validation benchmark (2.5 km from Sol 13): Perseverance measured 20.33 deg ground tilt, exceeding the 20.0 deg NASA xEVA suit limit."
       }
     },
     {
@@ -1189,9 +1263,9 @@
         ]
       },
       "properties": {
-        "feature_id": "STOP-03-CRATER-RIM-MAX-TILT",
-        "segment_type": "SCIENCE_STOP",
-        "title": "Stop 3 — Western Crater Rim Maximum Rover Tilt Benchmark (Sol 1578)",
+        "feature_id": "BENCHMARK-02-SOL1578-CRATER-RIM",
+        "segment_type": "BENCHMARK",
+        "title": "Benchmark 2 — Western Crater Rim Maximum Rover Tilt Reference (Sol 1578)",
         "tag": "MEASURED",
         "source_id": "SRC-M20-WAYPOINTS",
         "verdict": "NO_GO",
@@ -1204,11 +1278,12 @@
           "value": 20.6765,
           "unit": "deg",
           "tag": "MEASURED",
-          "source_id": "SRC-M20-WAYPOINTS"
+          "source_id": "SRC-M20-WAYPOINTS",
+          "note": null
         },
         "geologic_unit": "Noachian crater rim megabreccia unit (Nr, USGS SIM 3464)",
         "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1578_RZS_0774816_CYL_L_AUTOGENJ01.jpg",
-        "notes": "Highest ground tilt recorded across all 708 Perseverance stops (20.68 deg at elev -1910.5 m), validating the NO_GO threshold on steep crater rim ascents."
+        "notes": "Out-of-walkback rover validation benchmark (10.9 km from Sol 13): highest ground tilt recorded across all 708 Perseverance stops (20.68 deg -> NO_GO)."
       }
     }
   ]

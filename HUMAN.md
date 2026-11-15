@@ -8,14 +8,14 @@
 
 ## 1. Core Team
 
-### Jean-Sebastien Beaulieu (`@EbaAaZ`) — Middleware, Data Contract & Terrain Engine Lead
+### Jean-Sebastien Beaulieu (`jean`) — Middleware, Data Contract & Terrain Engine Lead
 - **Responsibilities:**
   - Data Contract `v1.0.0` specification (`src/marswalk/contracts/`, `schemas/`, `docs/contracts/10_CONTRAT_DONNEES.md`).
   - NASA Mars 2020 (`M20_waypoints.json`, `M20_traverse.json`), USGS HiRISE DTM (`1 m`), and Mars Trek WMTS (`25 cm`) data ingestion and geodetic alignment (`R = 3,396,190 m`).
   - Deterministic static pack generation (`public_packs/jezero/v1/`), SHA-256 cryptographic verification, FastAPI middleware (`src/marswalk/middleware/`), and multi-scale terrain verification engine.
 - **ORCID:** [0009-0007-2904-0443](https://orcid.org/0009-0007-2904-0443)
 
-### Philippe Pierre (`@Maptop`) — Frontend Architecture, UX & Product Brand Lead
+### Philippe Pierre (`teammate`) — Frontend Architecture, UX & Product Brand Lead
 - **Responsibilities:**
   - Full creative and architectural ownership of `frontend/` (`feat/ui` branch).
   - Final product brand name and `.spaceapps.earth` domain selection reflecting the visual identity and user experience of the application.

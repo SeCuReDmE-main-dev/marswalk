@@ -1,4 +1,4 @@
-"""Repository hygiene tests enforcing zero local paths, zero secrets, and zero stubs."""
+"""Repository hygiene tests enforcing zero local paths, zero secrets, and zero Discord handles."""
 
 from __future__ import annotations
 
@@ -35,12 +35,14 @@ def _iter_repo_text_files() -> list[Path]:
 
 
 def test_zero_local_paths_and_zero_excluded_terms() -> None:
-    """Verify no tracked text file contains workstation paths or excluded claims."""
+    """Verify no tracked file contains local paths, Discord handles, or excluded claims."""
     forbidden_substrings = [
         "C:\\" + "Users",
         "c:\\" + "users",
         "C:/" + "Users",
         "c:/" + "users",
+        "@" + "EbaAaZ",
+        "@" + "Maptop",
         "WeatherNext",
         "orbital AI heat",
         "orbital digestion",

@@ -30,6 +30,19 @@
           "minLength": 3,
           "title": "Source Id",
           "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional provenance or proxy clarification note.",
+          "title": "Note"
         }
       },
       "required": [

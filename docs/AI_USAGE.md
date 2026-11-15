@@ -10,7 +10,7 @@ In full compliance with the **2026 NASA International Space Apps Challenge** rul
 | :--- | :--- | :--- |
 | **Claude Code (Anthropic)** | Scientific literature synthesis, verification of NASA Mars 2020 `M20_waypoints.json` schema (`708` Perseverance stops), Mars Trek WMTS projection check (`geographic_2to1_256px`), and contract specification review. | All URLs, HTTP 200/206 headers, and coordinate bounds were verified against live NASA/USGS endpoints and tested via `pytest`. |
 | **Google Antigravity IDE (Gemini)** | Repository scaffolding, Pydantic v2 contract modeling (`src/marswalk/contracts/`), deterministic pack builder (`src/marswalk/middleware/`), FastAPI endpoints, and automated test suite (`tests/`). | Every generated module is validated by `ruff check .`, `ruff format --check .`, JSON Schema Draft 2020-12 export checks, and a 500-request concurrency stress test. |
-| **OpenAI Codex (Optional Teammate Bridge)** | Optional frontend code assistance and workspace bridging on the frontend worktree. | Reviewed and integrated by the human Frontend Lead (`@Maptop`). |
+| **OpenAI Codex (Optional Teammate Bridge)** | Optional frontend code assistance and workspace bridging on the frontend worktree. | Reviewed and integrated by the human Frontend Lead (`teammate`). |
 
 ---
 

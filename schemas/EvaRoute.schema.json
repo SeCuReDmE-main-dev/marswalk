@@ -34,7 +34,7 @@
     },
     "EvaRouteProperties": {
       "additionalProperties": false,
-      "description": "Properties for a feature in `route.geojson` (traverse, EVA path, or science stop).",
+      "description": "Properties for a feature in `route.geojson` (traverse, EVA path, stop, or benchmark).",
       "properties": {
         "feature_id": {
           "minLength": 1,
@@ -45,7 +45,8 @@
           "enum": [
             "MEASURED_ROVER_TRAVERSE",
             "SIMULATED_ASTRONAUT_EVA",
-            "SCIENCE_STOP"
+            "SCIENCE_STOP",
+            "BENCHMARK"
           ],
           "title": "Segment Type",
           "type": "string"
@@ -303,6 +304,19 @@
           "minLength": 3,
           "title": "Source Id",
           "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional provenance or proxy clarification note.",
+          "title": "Note"
         }
       },
       "required": [

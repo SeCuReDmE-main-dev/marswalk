@@ -1,5 +1,6 @@
 {
   "contract_version": "1.0.0",
+  "pack_version": "1.0.1",
   "site_id": "jezero",
   "site_name": "Jezero Crater & Western Fan (Mars 2020 Perseverance Traverse)",
   "crs": {
@@ -104,34 +105,56 @@
       "url": "https://www.sciencedirect.com/science/article/pii/S0094576524003746",
       "license": "Open Scientific Reference Value",
       "citation": "Iqbal, Z., et al. (2024), Acta Astronautica (<15 deg practical slope, 150 m max elevation change)."
+    },
+    {
+      "id": "synthetic-v1",
+      "title": "MarsWalk Pass 1 Synthetic Placeholder Surface (UI Scaffold)",
+      "mission": "MarsWalk Synthetic Placeholder Generator",
+      "url": "https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/",
+      "license": "Apache-2.0",
+      "citation": "Synthetic multi-scale terrain placeholder surface (grid_status=PLACEHOLDER, source_id=synthetic-v1) generated without reading rover tilt or USGS DTM."
+    }
+  ],
+  "inputs": [
+    {
+      "source_id": "SRC-M20-WAYPOINTS",
+      "path_or_url": "datalake/M20_waypoints.json",
+      "sha256": "bd143ee69241229926abd373e6305b8bbb326d6b5a7b4a8d6935262696f93dc4",
+      "bytes_read": 603126
+    },
+    {
+      "source_id": "SRC-M20-TRAVERSE",
+      "path_or_url": "datalake/M20_traverse.json",
+      "sha256": "6ddd0ece913d75b45d105946082f95ed84e68f4718b68d32a4421dc30877e7e6",
+      "bytes_read": 1723218
     }
   ],
   "files": [
     {
       "path": "waypoints.geojson",
-      "sha256": "7eb88267d4fb03908b95a94f870c5c7c60e7fbfe3f92b43c17557b65e684e159",
-      "bytes": 934553
+      "sha256": "c04699e333e26d71f8de85c8433aa88b183260949e69b369bbb1646fb237eb08",
+      "bytes": 1019513
     },
     {
       "path": "route.geojson",
-      "sha256": "3d24a1ef4448d458c8b6270fae62c4f4d4f7a79e98bbc605d711375289ae3c7d",
-      "bytes": 24247
+      "sha256": "2f1292fb8dd49f1c9f46a46465fcde19d6fd220a776858caf8cd743e57f1b0de",
+      "bytes": 26836
     },
     {
       "path": "hazard_grid.json",
-      "sha256": "f5ab9e64df8de571121c8b2ad1794dd3c0ade9aa88d94b8ada250cc8413aedd5",
-      "bytes": 642435
+      "sha256": "ac9b4c42ece0690022d8b460bd9257d4176b1590c2430d60b702c977ee617719",
+      "bytes": 591945
     },
     {
       "path": "hazard_overlay.png",
-      "sha256": "3f89ce40630574f62a4b44272487f73defab8628f179d26912c7f328ecf706ff",
-      "bytes": 798
+      "sha256": "ed6ffdee01f012bfc790b677672d8c9ab3ef177f48dbdf46b7482b18e63a1dda",
+      "bytes": 1017
     },
     {
       "path": "eva_constraints.json",
-      "sha256": "813fd9b97b20539e6d623a3ea26bc78e13883985192d9f6a4d0882007deb7073",
-      "bytes": 1875
+      "sha256": "afcb7eeca0608f2e4742af59a304886324303e687b5767d60f43e01017c1b161",
+      "bytes": 2114
     }
   ],
-  "generated_at": "2026-11-14T20:00:00Z"
+  "generated_at": "2026-11-14T20:25:00-05:00"
 }

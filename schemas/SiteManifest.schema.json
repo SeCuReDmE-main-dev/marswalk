@@ -83,6 +83,45 @@
       "title": "BasemapLayer",
       "type": "object"
     },
+    "ManifestInputDigest": {
+      "additionalProperties": false,
+      "description": "Cryptographic record of an upstream raw file actually read during pack generation.",
+      "properties": {
+        "source_id": {
+          "description": "Source ID matching SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "path_or_url": {
+          "description": "Relative file path or canonical URL.",
+          "minLength": 3,
+          "title": "Path Or Url",
+          "type": "string"
+        },
+        "sha256": {
+          "description": "Lowercase hex SHA-256.",
+          "maxLength": 64,
+          "minLength": 64,
+          "title": "Sha256",
+          "type": "string"
+        },
+        "bytes_read": {
+          "description": "Exact number of bytes read from the raw input.",
+          "exclusiveMinimum": 0,
+          "title": "Bytes Read",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_id",
+        "path_or_url",
+        "sha256",
+        "bytes_read"
+      ],
+      "title": "ManifestInputDigest",
+      "type": "object"
+    },
     "MarsCrs": {
       "additionalProperties": false,
       "description": "Coordinate Reference System definition for the Mars sphere R = 3,396,190 m.",
@@ -147,7 +186,7 @@
     },
     "Source": {
       "additionalProperties": false,
-      "description": "Primary NASA, JPL, USGS, or peer-reviewed reference source.",
+      "description": "Primary NASA, JPL, USGS, or synthetic scaffold reference source.",
       "properties": {
         "id": {
           "description": "Unique source identifier (e.g. SRC-NASA-XEVA).",
@@ -207,6 +246,12 @@
       "title": "Contract Version",
       "type": "string"
     },
+    "pack_version": {
+      "default": "1.0.1",
+      "minLength": 3,
+      "title": "Pack Version",
+      "type": "string"
+    },
     "site_id": {
       "minLength": 2,
       "title": "Site Id",
@@ -257,6 +302,14 @@
       "title": "Sources",
       "type": "array"
     },
+    "inputs": {
+      "description": "Verified raw input files read during pack construction.",
+      "items": {
+        "$ref": "#/$defs/ManifestInputDigest"
+      },
+      "title": "Inputs",
+      "type": "array"
+    },
     "files": {
       "items": {
         "$ref": "#/$defs/PackFileDigest"
@@ -266,7 +319,7 @@
       "type": "array"
     },
     "generated_at": {
-      "description": "ISO-8601 UTC generation timestamp.",
+      "description": "ISO-8601 generation timestamp.",
       "minLength": 10,
       "title": "Generated At",
       "type": "string"

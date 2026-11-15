@@ -8,8 +8,8 @@ This document maps the exact directory structure, branch topology, and data flow
 
 ```text
 main  (Frozen Data Contract v1.0.0 + Signed Pack public_packs/jezero/v1/ + FastAPI Middleware)
- ├──► feat/ui      (Philippe Pierre / @Maptop — Full ownership of frontend/**)
- └──► feat/engine  (Jean-Sebastien Beaulieu / @EbaAaZ — Multi-scale DTM engine & Pass 2 analytics)
+ ├──► feat/ui      (Philippe Pierre / teammate — Full ownership of frontend/**)
+ └──► feat/engine  (Jean-Sebastien Beaulieu / jean — Multi-scale DTM engine & Pass 2 analytics)
 ```
 
 - **Why this structure works:** Because `public_packs/jezero/v1/` is committed and SHA-256 verified on `main`, `feat/ui` can build and deploy the complete interactive web application immediately using static JSON/GeoJSON/PNG fetches, while `feat/engine` upgrades the multi-scale terrain engine in parallel without touching `frontend/`.
@@ -43,7 +43,7 @@ marswalk/
 │   └── contracts/
 │       └── 10_CONTRAT_DONNEES.md      # Frozen v1.0.0 Data Contract specification
 ├── frontend/
-│   └── README.md                      # 10-line fetch() quickstart + Mars Trek WMTS guide for @Maptop
+│   └── README.md                      # 10-line fetch() quickstart + Mars Trek WMTS guide for teammate
 ├── schemas/                           # Auto-generated JSON Schemas (Draft 2020-12)
 │   ├── SiteManifest.schema.json
 │   ├── WaypointFeatureCollection.schema.json

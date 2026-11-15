@@ -1,12 +1,12 @@
 {
   "id": "HO-001",
-  "created_at": "2026-11-14T20:10:00Z",
-  "sender": "engine-js",
-  "to": "frontend-philippe-codex-antigravity",
+  "created_at": "2026-11-14T20:30:00-05:00",
+  "sender": "jean",
+  "to": "teammate-frontend-codex-antigravity",
   "status": "OPEN",
   "acked_by": null,
   "acked_at": null,
   "ack_note": null,
-  "title": "Jezero v1 Signed Data Pack Ready (708 Perseverance Stops + Multi-Scale Hazard Grid)",
-  "body": "All static files are live in public_packs/jezero/v1/ (1.6 MB total): manifest.json, waypoints.geojson (708 stops with rover_tilt_deg & panorama_url), route.geojson (MEASURED traverse + SIMULATED <2km EVA corridor + 3 stops), hazard_grid.json (1m/4m/16m/64m slopes + confidence {t,i,f} + GO/CAUTION/NO_GO), hazard_overlay.png (transparent RGBA heatmap), and eva_constraints.json. Note: Mars Trek 25cm HiRISE tiles use a 2:1 geographic grid (EPSG:4326 style) which renders natively in Leaflet (L.CRS.EPSG4326), OpenLayers, or Cesium."
+  "title": "Jezero v1.0.1 Signed Data Pack Ready (708 Measured M20 Stops + Synthetic Placeholder Grid)",
+  "body": "All static files are live in public_packs/jezero/v1/ (1.6 MB total): manifest.json (pack_version 1.0.1 with inputs[] SHA-256), waypoints.geojson (708 MEASURED Perseverance stops with rover_tilt_deg & panorama_url), route.geojson (MEASURED 45.2 km traverse + SIMULATED <=2km EVA corridor + 3 science stops on-route + 2 Sol 700/1578 benchmarks), hazard_grid.json (SIMULATED synthetic-v1 placeholder grid, grid_status=PLACEHOLDER, zero rover_tilt_deg leakage), hazard_overlay.png, and eva_constraints.json. Note: Mars Trek 25cm HiRISE tiles use a 2:1 geographic grid (EPSG:4326 style) which renders natively in Leaflet (L.CRS.EPSG4326), OpenLayers, or Cesium."
 }

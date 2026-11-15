@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Data Contract](https://img.shields.io/badge/Data_Contract-v1.0.0_Frozen-success)](docs/contracts/10_CONTRAT_DONNEES.md)
 
-> **Naming Note (`NB-T08`):** `marswalk` is the technical repository and Python package code name for the multi-scale Martian terrain & EVA verification engine. Our frontend lead **Philippe Pierre (`@Maptop`)** has full creative freedom to choose the final product brand name and `.spaceapps.earth` domain that best reflects his visual design and user experience.
+> **Naming Note (`NB-T08`):** `marswalk` is the technical repository and Python package code name for the multi-scale Martian terrain & EVA verification engine. Our frontend lead **Philippe Pierre (`teammate`)** has full creative freedom to choose the final product brand name and `.spaceapps.earth` domain that best reflects his visual design and user experience.
 
 ---
 

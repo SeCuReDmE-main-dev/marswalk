@@ -24,9 +24,9 @@ This repository is engineered for seamless collaboration between human developer
 
 | Path / Branch | Primary Owner | Rule |
 | :--- | :--- | :--- |
-| `frontend/**` (`feat/ui`) | **Philippe Pierre (`@Maptop`)** | 100% Frontend Lead freedom (stack, UI components, brand name). Backend/middleware agents MUST NEVER modify `frontend/` beyond the initial `frontend/README.md` contract handoff. |
+| `frontend/**` (`feat/ui`) | **Philippe Pierre (`teammate`)** | 100% Frontend Lead freedom (stack, UI components, brand name). Backend/middleware agents MUST NEVER modify `frontend/` beyond the initial `frontend/README.md` contract handoff. |
 | `src/marswalk/contracts/**`, `schemas/**`, `public_packs/**` | **Shared Contract Layer** | Locked at `v1.0.0`. Verified by `pytest tests/test_contracts_and_schemas.py` and `tests/test_pack_integrity.py`. |
-| `src/marswalk/middleware/**` (`feat/engine`) | **Jean-Sebastien Beaulieu (`@EbaAaZ`)** | Deterministic pack builder, SHA-256 verifier, and FastAPI query service. |
+| `src/marswalk/middleware/**` (`feat/engine`) | **Jean-Sebastien Beaulieu (`jean`)** | Deterministic pack builder, SHA-256 verifier, and FastAPI query service. |
 | `datalake/**` | **Local Ignored Cache** | Raw NASA GeoTIFFs / JSONs live here locally and are **never** committed to Git. |
 
 ---

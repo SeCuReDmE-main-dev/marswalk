@@ -17,6 +17,7 @@ MARS_SPHERE_RADIUS_M: float = 3_396_190.0
 ProvenanceTag = Literal["MEASURED", "DERIVED", "SIMULATED"]
 VerdictLiteral = Literal["GO", "CAUTION", "NO_GO"]
 BaselineKey = Literal["1", "4", "16", "64"]
+GridStatusLiteral = Literal["PLACEHOLDER", "ENGINE"]
 REQUIRED_BASELINES: frozenset[str] = frozenset({"1", "4", "16", "64"})
 
 
@@ -40,6 +41,10 @@ class Quantity(FrozenContractModel):
         min_length=3,
         description="Identifier matching an entry in SiteManifest.sources.",
     )
+    note: str | None = Field(
+        default=None,
+        description="Optional provenance or proxy clarification note.",
+    )
 
     @field_validator("value")
     @classmethod
@@ -50,7 +55,7 @@ class Quantity(FrozenContractModel):
 
 
 class Source(FrozenContractModel):
-    """Primary NASA, JPL, USGS, or peer-reviewed reference source."""
+    """Primary NASA, JPL, USGS, or synthetic scaffold reference source."""
 
     id: str = Field(..., min_length=3, description="Unique source identifier (e.g. SRC-NASA-XEVA).")
     title: str = Field(..., min_length=3, description="Document or dataset title.")
@@ -63,10 +68,7 @@ class Source(FrozenContractModel):
 class BasemapLayer(FrozenContractModel):
     """Tiled orbital basemap configuration compatible with NASA Mars Trek WMTS."""
 
-    id: str = Field(
-        ...,
-        description="Mars Trek layer identifier.",
-    )
+    id: str = Field(..., description="Mars Trek layer identifier.")
     title: str = Field(..., description="Human-readable layer title.")
     template_url: str = Field(
         ...,
@@ -110,10 +112,22 @@ class PackFileDigest(FrozenContractModel):
     bytes: int = Field(..., gt=0, description="Exact file size in bytes.")
 
 
+class ManifestInputDigest(FrozenContractModel):
+    """Cryptographic record of an upstream raw file actually read during pack generation."""
+
+    source_id: str = Field(
+        ..., min_length=3, description="Source ID matching SiteManifest.sources."
+    )
+    path_or_url: str = Field(..., min_length=3, description="Relative file path or canonical URL.")
+    sha256: str = Field(..., min_length=64, max_length=64, description="Lowercase hex SHA-256.")
+    bytes_read: int = Field(..., gt=0, description="Exact number of bytes read from the raw input.")
+
+
 class SiteManifest(FrozenContractModel):
     """Root manifest.json for a signed Martian site pack."""
 
     contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    pack_version: str = Field(default="1.0.1", min_length=3)
     site_id: str = Field(..., min_length=2)
     site_name: str = Field(..., min_length=2)
     crs: MarsCrs = Field(default_factory=MarsCrs)
@@ -123,8 +137,12 @@ class SiteManifest(FrozenContractModel):
     )
     basemaps: list[BasemapLayer] = Field(..., min_length=1)
     sources: list[Source] = Field(..., min_length=1)
+    inputs: list[ManifestInputDigest] = Field(
+        default_factory=list,
+        description="Verified raw input files read during pack construction.",
+    )
     files: list[PackFileDigest] = Field(..., min_length=1)
-    generated_at: str = Field(..., min_length=10, description="ISO-8601 UTC generation timestamp.")
+    generated_at: str = Field(..., min_length=10, description="ISO-8601 generation timestamp.")
 
     @model_validator(mode="after")
     def _validate_bbox_and_sources(self) -> SiteManifest:
@@ -135,6 +153,11 @@ class SiteManifest(FrozenContractModel):
         for bm in self.basemaps:
             if bm.source_id not in source_ids:
                 raise ValueError(f"Basemap {bm.id} references unknown source_id {bm.source_id}")
+        for inp in self.inputs:
+            if inp.source_id not in source_ids:
+                raise ValueError(
+                    f"Input {inp.path_or_url} references unknown source_id {inp.source_id}"
+                )
         return self
 
 
@@ -225,15 +248,15 @@ class HazardCell(FrozenContractModel):
     elev_m: Quantity
     slope_deg_by_baseline: dict[BaselineKey, Quantity] = Field(
         ...,
-        description="Orbital terrain slope in degrees at 1m, 4m, 16m, and 64m baselines.",
+        description="Terrain slope in degrees at 1m, 4m, 16m, and 64m baselines.",
     )
     scale_divergence: Quantity = Field(
         ...,
-        description="Slope divergence (deg) between fine (1m) and coarse (64m) baselines.",
+        description="Slope divergence (deg) across the 1m..64m baselines.",
     )
-    rock_cfa_pct: Quantity = Field(
-        ...,
-        description="Estimated Cumulative Fractional Area of rocks (%).",
+    rock_cfa_pct: Quantity | None = Field(
+        default=None,
+        description="Estimated Cumulative Fractional Area of rocks (%), or None when unavailable.",
     )
     confidence: ConfidenceVector
     verdict: VerdictLiteral = Field(
@@ -256,6 +279,10 @@ class HazardGrid(FrozenContractModel):
     """Complete multi-scale hazard grid (`hazard_grid.json`) for a site pack."""
 
     contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    grid_status: GridStatusLiteral = Field(
+        default="PLACEHOLDER",
+        description="PLACEHOLDER in Pass 1 synthetic scaffold; ENGINE when built from HiRISE DTM.",
+    )
     site_id: str = Field(..., min_length=2)
     bbox: tuple[float, float, float, float]
     rows: int = Field(..., gt=0)
@@ -286,13 +313,14 @@ class EvaConstraints(FrozenContractModel):
 
 
 class EvaRouteProperties(FrozenContractModel):
-    """Properties for a feature in `route.geojson` (traverse, EVA path, or science stop)."""
+    """Properties for a feature in `route.geojson` (traverse, EVA path, stop, or benchmark)."""
 
     feature_id: str = Field(..., min_length=1)
     segment_type: Literal[
         "MEASURED_ROVER_TRAVERSE",
         "SIMULATED_ASTRONAUT_EVA",
         "SCIENCE_STOP",
+        "BENCHMARK",
     ]
     title: str = Field(..., min_length=2)
     tag: ProvenanceTag

@@ -77,7 +77,7 @@
           "additionalProperties": {
             "$ref": "#/$defs/Quantity"
           },
-          "description": "Orbital terrain slope in degrees at 1m, 4m, 16m, and 64m baselines.",
+          "description": "Terrain slope in degrees at 1m, 4m, 16m, and 64m baselines.",
           "propertyNames": {
             "enum": [
               "1",
@@ -91,11 +91,19 @@
         },
         "scale_divergence": {
           "$ref": "#/$defs/Quantity",
-          "description": "Slope divergence (deg) between fine (1m) and coarse (64m) baselines."
+          "description": "Slope divergence (deg) across the 1m..64m baselines."
         },
         "rock_cfa_pct": {
-          "$ref": "#/$defs/Quantity",
-          "description": "Estimated Cumulative Fractional Area of rocks (%)."
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Estimated Cumulative Fractional Area of rocks (%), or None when unavailable."
         },
         "confidence": {
           "$ref": "#/$defs/ConfidenceVector"
@@ -150,7 +158,6 @@
         "elev_m",
         "slope_deg_by_baseline",
         "scale_divergence",
-        "rock_cfa_pct",
         "confidence",
         "verdict",
         "reason"
@@ -188,6 +195,19 @@
           "minLength": 3,
           "title": "Source Id",
           "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional provenance or proxy clarification note.",
+          "title": "Note"
         }
       },
       "required": [
@@ -207,6 +227,16 @@
       "const": "1.0.0",
       "default": "1.0.0",
       "title": "Contract Version",
+      "type": "string"
+    },
+    "grid_status": {
+      "default": "PLACEHOLDER",
+      "description": "PLACEHOLDER in Pass 1 synthetic scaffold; ENGINE when built from HiRISE DTM.",
+      "enum": [
+        "PLACEHOLDER",
+        "ENGINE"
+      ],
+      "title": "Grid Status",
       "type": "string"
     },
     "site_id": {

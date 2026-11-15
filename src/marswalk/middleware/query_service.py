@@ -59,7 +59,7 @@ class RouteEvaluationResult(FrozenContractModel):
 
 
 class PackQueryService:
-    """Fast O(N_cells) spatial lookup and route evaluator over a LoadedSitePack."""
+    """Fast spatial lookup and route evaluator over a LoadedSitePack."""
 
     def __init__(self, pack: LoadedSitePack) -> None:
         self.pack = pack
@@ -120,6 +120,10 @@ class PackQueryService:
         walkback_limit_m = self.pack.constraints.walkback_max_km.value * 1000.0
         walkback_ok = max_walkback_m <= walkback_limit_m
 
+        c_first = traversed_cells[0].slope_deg_by_baseline["1"]
+        slope_tag = c_first.tag
+        slope_src = c_first.source_id
+
         max_s1 = max(c.slope_deg_by_baseline["1"].value for c in traversed_cells)
         max_s64 = max(c.slope_deg_by_baseline["64"].value for c in traversed_cells)
         max_div = max(c.scale_divergence.value for c in traversed_cells)
@@ -176,20 +180,22 @@ class PackQueryService:
                 value=max_walkback_m, unit="m", tag="SIMULATED", source_id="SRC-NASA-XEVA"
             ),
             walkback_within_limit=walkback_ok,
-            max_slope_1m_deg=Quantity(
-                value=max_s1, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
-            ),
+            max_slope_1m_deg=Quantity(value=max_s1, unit="deg", tag=slope_tag, source_id=slope_src),
             max_slope_64m_deg=Quantity(
-                value=max_s64, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                value=max_s64, unit="deg", tag=slope_tag, source_id=slope_src
             ),
             max_scale_divergence_deg=Quantity(
-                value=max_div, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                value=max_div, unit="deg", tag=slope_tag, source_id=slope_src
             ),
             estimated_duration_h=Quantity(
                 value=duration_h, unit="h", tag="SIMULATED", source_id="SRC-NASA-XEVA"
             ),
             estimated_radiation_msv=Quantity(
-                value=rad_msv, unit="mSv", tag="DERIVED", source_id="SRC-RAD-GALE"
+                value=rad_msv,
+                unit="mSv",
+                tag="SIMULATED",
+                source_id="SRC-RAD-GALE",
+                note="proxy Curiosity RAD, Gale",
             ),
             verdict=verdict,
             reasons=reasons,

@@ -1,6 +1,6 @@
 # Frontend Integration Guide (`frontend/README.md`)
 
-Welcome **Philippe (`@Maptop`)**!  
+Welcome **Philippe (`teammate`)**!  
 You have **100% creative and technical ownership** of `frontend/` (`feat/ui` branch) — framework, map library, visual style, and the final product brand name & `.spaceapps.earth` domain name.
 
 Everything you need to render the Jezero Crater map, the **708 real Perseverance stops**, the multi-scale hazard grid (`1 m / 4 m / 16 m / 64 m`), and the EVA route is already pre-computed, validated, and committed as static files inside [`../public_packs/jezero/v1/`](../public_packs/jezero/v1/). **You do not need to run Python or a backend server to build or deploy the UI.**

@@ -1,8 +1,13 @@
 """Deterministic builder for `public_packs/jezero/v1/` and JSON Schemas (`schemas/`).
 
-Ingests official NASA Mars 2020 MMGIS telemetry (`M20_waypoints.json`, `M20_traverse.json`),
-computes multi-scale terrain slope baselines (1 m, 4 m, 16 m, 64 m) on the Mars sphere
-R = 3,396,190 m, generates `hazard_overlay.png`, and signs all artifacts with SHA-256.
+Pass 1 / Phase 2a:
+- Ingests official NASA Mars 2020 MMGIS telemetry (`M20_waypoints.json`, `M20_traverse.json`)
+  and records their exact SHA-256 and byte counts in `manifest.inputs[]`.
+- Builds an explicitly tagged `SIMULATED` (`source_id="synthetic-v1"`, `grid_status="PLACEHOLDER"`)
+  hazard grid with zero access to `rover_tilt_deg` (strictly reserved for validation).
+- Places all 3 `SCIENCE_STOP` features directly on the `SIMULATED_ASTRONAUT_EVA` trajectory
+  within <= 2.0 km of the Sol 13 starting point, and separates Sol 700 and Sol 1578 as
+  `segment_type="BENCHMARK"`.
 """
 
 from __future__ import annotations
@@ -29,6 +34,7 @@ from marswalk.contracts.models import (
     GeoJsonPointGeometry,
     HazardCell,
     HazardGrid,
+    ManifestInputDigest,
     MarsCrs,
     PackFileDigest,
     Quantity,
@@ -43,7 +49,9 @@ from marswalk.contracts.models import (
 M20_WAYPOINTS_URL = "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
 M20_TRAVERSE_URL = "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
 M20_PANORAMA_BASE_URL = "https://mars.nasa.gov/mmgis-maps/M20/"
-DETERMINISTIC_GENERATED_AT = "2026-11-14T20:00:00Z"
+DETERMINISTIC_GENERATED_AT = "2026-11-14T20:25:00-05:00"
+PACK_VERSION = "1.0.1"
+SYNTHETIC_SOURCE_ID = "synthetic-v1"
 
 JEZERO_SITE_BBOX: tuple[float, float, float, float] = (77.215, 18.307, 77.584, 18.669)
 JEZERO_GRID_BBOX: tuple[float, float, float, float] = (77.215, 18.415, 77.475, 18.505)
@@ -135,7 +143,9 @@ def build_sources_registry() -> list[Source]:
             mission="U.S. Geological Survey (USGS)",
             url="https://pubs.usgs.gov/sim/3464/sim3464_database.zip",
             license="Public Domain (17 U.S.C. 105)",
-            citation="Sun, V. Z., & Stack, K. M. (2020), USGS SIM 3464, https://doi.org/10.3133/sim3464.",
+            citation=(
+                "Sun, V. Z., & Stack, K. M. (2020), USGS SIM 3464, https://doi.org/10.3133/sim3464."
+            ),
         ),
         Source(
             id="SRC-NASA-XEVA",
@@ -192,6 +202,17 @@ def build_sources_registry() -> list[Source]:
                 "(<15 deg practical slope, 150 m max elevation change)."
             ),
         ),
+        Source(
+            id=SYNTHETIC_SOURCE_ID,
+            title="MarsWalk Pass 1 Synthetic Placeholder Surface (UI Scaffold)",
+            mission="MarsWalk Synthetic Placeholder Generator",
+            url="https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/",
+            license="Apache-2.0",
+            citation=(
+                "Synthetic multi-scale terrain placeholder surface (grid_status=PLACEHOLDER, "
+                "source_id=synthetic-v1) generated without reading rover tilt or USGS DTM."
+            ),
+        ),
     ]
 
 
@@ -226,7 +247,11 @@ def build_eva_constraints() -> EvaConstraints:
             value=15.0, unit="pct", tag="MEASURED", source_id="SRC-JPL-TRAVERSABILITY"
         ),
         gcr_dose_msv_per_day=Quantity(
-            value=0.67, unit="mSv/day", tag="MEASURED", source_id="SRC-RAD-GALE"
+            value=0.67,
+            unit="mSv/day",
+            tag="MEASURED",
+            source_id="SRC-RAD-GALE",
+            note="proxy Curiosity RAD, Gale",
         ),
         radiation_environment_note=(
             "Galactic Cosmic Ray (GCR) surface baseline of 0.67 mSv/day (approx. 28 uSv/h) "
@@ -296,11 +321,45 @@ def build_waypoints_collection(raw_waypoints: dict[str, Any]) -> WaypointFeature
     return WaypointFeatureCollection(site_id="jezero", features=features)
 
 
-def build_hazard_grid_and_overlay(
-    waypoints: WaypointFeatureCollection,
-    overlay_output_path: Path,
-) -> HazardGrid:
-    """Compute multi-scale (1m, 4m, 16m, 64m) hazard grid and render hazard_overlay.png."""
+def _synthetic_elevation_m(lon: float, lat: float, offset_x_m: float, offset_y_m: float) -> float:
+    """Purely synthetic multi-scale elevation surface z(x, y) for Pass 1 placeholder.
+
+    Does not read rover_tilt_deg or any external telemetry. Combines a broad regional ramp,
+    intermediate terrace undulations (where 64m slope can exceed 1m local flat terrace slope),
+    and localized short-wavelength ridges (where 1m slope exceeds 64m slope).
+    """
+    m_per_deg_lat = MARS_SPHERE_RADIUS_M * (math.pi / 180.0)
+    m_per_deg_lon = m_per_deg_lat * math.cos(math.radians(lat))
+    x_m = (lon - 77.215) * m_per_deg_lon + offset_x_m
+    y_m = (lat - 18.415) * m_per_deg_lat + offset_y_m
+
+    broad = -2570.0 + 650.0 * max(0.0, min(1.0, (14000.0 - x_m) / 14000.0)) ** 1.25
+    terrace = 3.8 * math.sin(x_m / 14.5) * math.cos(y_m / 18.0)
+    scarp_env = math.exp(-(((lon - 77.405) / 0.022) ** 2)) + 1.15 * math.exp(
+        -(((lon - 77.265) / 0.032) ** 2)
+    )
+    fine = scarp_env * (0.42 * math.sin(x_m / 0.55 + y_m / 0.85))
+    return broad + terrace + fine
+
+
+def _synthetic_slope_at_baseline_deg(lon: float, lat: float, baseline_m: float) -> float:
+    """Compute finite-difference slope (deg) at step size `baseline_m` on synthetic surface."""
+    half = 0.5 * baseline_m
+    dz_dx = (
+        _synthetic_elevation_m(lon, lat, half, 0.0) - _synthetic_elevation_m(lon, lat, -half, 0.0)
+    ) / baseline_m
+    dz_dy = (
+        _synthetic_elevation_m(lon, lat, 0.0, half) - _synthetic_elevation_m(lon, lat, 0.0, -half)
+    ) / baseline_m
+    grad = math.hypot(dz_dx, dz_dy)
+    return round(math.degrees(math.atan(grad)), 2)
+
+
+def build_hazard_grid_and_overlay(overlay_output_path: Path) -> HazardGrid:
+    """Build the Pass 1 `PLACEHOLDER` synthetic hazard grid (`SIMULATED` / `synthetic-v1`).
+
+    Strictly independent of `rover_tilt_deg` and M20 waypoints (`R1/R2/R3` compliance).
+    """
     min_lon, min_lat, max_lon, max_lat = JEZERO_GRID_BBOX
     cols = 24
     rows = 16
@@ -309,111 +368,61 @@ def build_hazard_grid_and_overlay(
     mid_lat = 0.5 * (min_lat + max_lat)
     cell_size_m = round(spherical_distance_m(min_lon, mid_lat, min_lon + dlon, mid_lat), 2)
 
-    wp_list = waypoints.features
     cells: list[HazardCell] = []
-
-    # Render a crisp 10x upscaled RGBA overlay image (240 x 160 px)
     scale_px = 10
     img = Image.new("RGBA", (cols * scale_px, rows * scale_px), (0, 0, 0, 0))
     pixels = img.load()
 
     for r in range(rows):
-        # Row 0 is northernmost so image rows align with geographic North-up
         lat = round(max_lat - (r + 0.5) * dlat, 6)
         for c in range(cols):
             lon = round(min_lon + (c + 0.5) * dlon, 6)
 
-            # Find nearest and local neighborhood Perseverance waypoints
-            best_wp = min(
-                wp_list,
-                key=lambda w: (w.properties.lon - lon) ** 2 + (w.properties.lat - lat) ** 2,
-            )
-            dist_nearest_m = spherical_distance_m(
-                lon, lat, best_wp.properties.lon, best_wp.properties.lat
-            )
+            elev_val = round(_synthetic_elevation_m(lon, lat, 0.0, 0.0), 2)
+            s1 = _synthetic_slope_at_baseline_deg(lon, lat, 1.0)
+            s4 = _synthetic_slope_at_baseline_deg(lon, lat, 4.0)
+            s16 = _synthetic_slope_at_baseline_deg(lon, lat, 16.0)
+            s64 = _synthetic_slope_at_baseline_deg(lon, lat, 64.0)
 
-            # Collect waypoints within 750 m to capture local high-slope roughness
-            nearby = [
-                w
-                for w in wp_list
-                if spherical_distance_m(lon, lat, w.properties.lon, w.properties.lat) <= 750.0
-            ]
+            slopes_all = (s1, s4, s16, s64)
+            max_slope = max(slopes_all)
+            min_slope = min(slopes_all)
+            divergence = round(max_slope - min_slope, 2)
 
-            if nearby:
-                max_local_tilt = max(w.properties.rover_tilt_deg.value for w in nearby)
-                mean_local_tilt = sum(w.properties.rover_tilt_deg.value for w in nearby) / len(
-                    nearby
-                )
-                elev_val = round(
-                    sum(w.properties.elev_geoid_m.value for w in nearby) / len(nearby), 2
-                )
-                anchor_wp = max(nearby, key=lambda w: w.properties.rover_tilt_deg.value)
-            else:
-                # Topographic model from Jezero floor (-2570 m east) to crater rim (-1850 m west)
-                west_fraction = max(0.0, min(1.0, (77.46 - lon) / 0.24))
-                elev_val = round(-2570.0 + 720.0 * (west_fraction**1.35), 2)
-                # Delta front scarp (lon 77.38..77.42) and western rim (lon 77.22..77.29)
-                scarp_factor = math.exp(-(((lon - 77.405) / 0.018) ** 2))
-                rim_factor = math.exp(-(((lon - 77.265) / 0.035) ** 2))
-                mean_local_tilt = 3.2 + 7.5 * scarp_factor + 9.8 * rim_factor
-                max_local_tilt = mean_local_tilt * 1.45
-                anchor_wp = best_wp
-
-            # Multi-scale slopes: 64m smooths out scarps; 1m captures true local slope
-            s64 = round(max(1.1, min(16.5, mean_local_tilt * 0.72)), 2)
-            s16 = round(max(s64 + 0.4, min(18.5, mean_local_tilt * 0.95)), 2)
-            s4 = round(
-                max(s16 + 0.5, min(21.0, 0.55 * mean_local_tilt + 0.45 * max_local_tilt)),
-                2,
-            )
-            s1 = round(max(s4 + 0.4, max_local_tilt), 2)
-            divergence = round(max(0.0, s1 - s64), 2)
-
-            # Rock abundance CFA (%) higher on delta scarp and crater rim boulder fields
-            cfa_pct = round(min(22.0, max(3.5, 3.0 + 0.62 * s1 + 0.25 * divergence)), 2)
-
-            # Determine verdict and 3-component confidence {t, i, f}
-            if s1 >= 20.0 or cfa_pct >= 15.0:
+            if max_slope >= 20.0:
                 verdict: VerdictLiteral = "NO_GO"
-                f_score = round(min(0.95, max(0.60, (s1 - 15.0) / 10.0)), 2)
+                f_score = round(min(0.95, max(0.60, (max_slope - 15.0) / 12.0)), 2)
                 i_score = round(min(0.30, max(0.05, divergence / 25.0)), 2)
                 t_score = round(max(0.02, 1.0 - f_score - i_score), 2)
                 reason = (
-                    f"1m slope ({s1:.1f} deg) or rock CFA ({cfa_pct:.1f}%) exceeds NASA xEVA / JPL "
-                    f"20 deg limit while 64m orbital slope reads {s64:.1f} deg "
-                    f"(scale gap +{divergence:.1f} deg)."
+                    f"[PLACEHOLDER SIMULATED] Synthetic slope ({max_slope:.1f} deg) exceeds "
+                    f"20.0 deg NASA xEVA suit limit (1m={s1:.1f} deg, 64m={s64:.1f} deg)."
                 )
-                rgba = (220, 38, 38, 135)  # Crimson NO_GO
-            elif s1 >= 10.0 or divergence >= 5.0 or cfa_pct >= 7.0:
+                rgba = (220, 38, 38, 135)
+            elif max_slope >= 10.0 or divergence >= 5.0:
                 verdict = "CAUTION"
                 i_score = round(min(0.55, max(0.20, divergence / 14.0)), 2)
-                f_score = round(min(0.40, max(0.15, (s1 - 8.0) / 25.0)), 2)
+                f_score = round(min(0.40, max(0.15, (max_slope - 8.0) / 25.0)), 2)
                 t_score = round(max(0.15, 1.0 - i_score - f_score), 2)
                 reason = (
-                    f"Moderate 1m slope ({s1:.1f} deg) and rock CFA ({cfa_pct:.1f}%) require "
-                    f"rover sand/ripple caution (10 deg limit); scale divergence across "
-                    f"1m-64m is {divergence:.1f} deg."
+                    f"[PLACEHOLDER SIMULATED] Moderate synthetic slope (max {max_slope:.1f} deg) "
+                    f"or baseline spread ({divergence:.1f} deg across 1m..64m)."
                 )
-                rgba = (245, 158, 11, 115)  # Amber CAUTION
+                rgba = (245, 158, 11, 115)
             else:
                 verdict = "GO"
-                t_score = round(min(0.94, max(0.72, 1.0 - (s1 / 25.0))), 2)
+                t_score = round(min(0.94, max(0.72, 1.0 - (max_slope / 25.0))), 2)
                 i_score = round(min(0.20, max(0.04, divergence / 20.0)), 2)
                 f_score = round(max(0.02, 1.0 - t_score - i_score), 2)
                 reason = (
-                    f"Low multi-scale slope (1m: {s1:.1f} deg, 64m: {s64:.1f} deg) and benign "
-                    f"rock CFA ({cfa_pct:.1f}%) within NASA xEVA and JPL rover safety envelopes."
+                    f"[PLACEHOLDER SIMULATED] Low synthetic slope across all baselines "
+                    f"(1m={s1:.1f} deg, 64m={s64:.1f} deg) within xEVA envelope."
                 )
-                rgba = (16, 185, 129, 95)  # Emerald GO
+                rgba = (16, 185, 129, 95)
 
             for py in range(r * scale_px, (r + 1) * scale_px):
                 for px in range(c * scale_px, (c + 1) * scale_px):
                     pixels[px, py] = rgba
-
-            nearest_sol = anchor_wp.properties.sol if dist_nearest_m <= 1200.0 else None
-            measured_tilt_q = (
-                anchor_wp.properties.rover_tilt_deg if dist_nearest_m <= 1200.0 else None
-            )
 
             cells.append(
                 HazardCell(
@@ -426,40 +435,47 @@ def build_hazard_grid_and_overlay(
                     elev_m=Quantity(
                         value=elev_val,
                         unit="m",
-                        tag="DERIVED",
-                        source_id="SRC-USGS-HIRISE-DTM-1M",
+                        tag="SIMULATED",
+                        source_id=SYNTHETIC_SOURCE_ID,
                     ),
                     slope_deg_by_baseline={
                         "1": Quantity(
-                            value=s1, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                            value=s1,
+                            unit="deg",
+                            tag="SIMULATED",
+                            source_id=SYNTHETIC_SOURCE_ID,
                         ),
                         "4": Quantity(
-                            value=s4, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                            value=s4,
+                            unit="deg",
+                            tag="SIMULATED",
+                            source_id=SYNTHETIC_SOURCE_ID,
                         ),
                         "16": Quantity(
-                            value=s16, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                            value=s16,
+                            unit="deg",
+                            tag="SIMULATED",
+                            source_id=SYNTHETIC_SOURCE_ID,
                         ),
                         "64": Quantity(
-                            value=s64, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                            value=s64,
+                            unit="deg",
+                            tag="SIMULATED",
+                            source_id=SYNTHETIC_SOURCE_ID,
                         ),
                     },
                     scale_divergence=Quantity(
                         value=divergence,
                         unit="deg",
-                        tag="DERIVED",
-                        source_id="SRC-USGS-HIRISE-DTM-1M",
+                        tag="SIMULATED",
+                        source_id=SYNTHETIC_SOURCE_ID,
                     ),
-                    rock_cfa_pct=Quantity(
-                        value=cfa_pct,
-                        unit="pct",
-                        tag="DERIVED",
-                        source_id="SRC-JPL-TRAVERSABILITY",
-                    ),
+                    rock_cfa_pct=None,
                     confidence=ConfidenceVector(t=t_score, i=i_score, f=f_score),
                     verdict=verdict,
                     reason=reason,
-                    nearest_waypoint_sol=nearest_sol,
-                    measured_rover_tilt_deg=measured_tilt_q,
+                    nearest_waypoint_sol=None,
+                    measured_rover_tilt_deg=None,
                 )
             )
 
@@ -467,6 +483,7 @@ def build_hazard_grid_and_overlay(
     img.save(overlay_output_path, format="PNG", optimize=False, compress_level=6)
 
     return HazardGrid(
+        grid_status="PLACEHOLDER",
         site_id="jezero",
         bbox=JEZERO_GRID_BBOX,
         rows=rows,
@@ -480,10 +497,12 @@ def build_eva_route(
     waypoints: WaypointFeatureCollection,
     raw_traverse: dict[str, Any],
 ) -> EvaRoute:
-    """Build `route.geojson` with MEASURED M20 traverse, SIMULATED EVA loop, and 3 stops."""
-    # 1. Extract continuous decimated polyline from M20_traverse.json (or waypoints fallback)
+    """Build `route.geojson` (MEASURED traverse, SIMULATED EVA path, 3 stops, 2 benchmarks)."""
     traverse_coords: list[tuple[float, float]] = []
+    total_traverse_length_m = 0.0
     for feat in raw_traverse.get("features", []):
+        props = feat.get("properties") or {}
+        total_traverse_length_m += float(props.get("length") or 0.0)
         geom = feat.get("geometry") or {}
         coords = geom.get("coordinates") or []
         for pt in coords:
@@ -493,7 +512,6 @@ def build_eva_route(
                 if not traverse_coords or traverse_coords[-1] != (lon_pt, lat_pt):
                     traverse_coords.append((lon_pt, lat_pt))
 
-    # Keep ~250 representative vertices along the full traverse so route.geojson stays ultra-fast
     if len(traverse_coords) > 250:
         step = max(1, len(traverse_coords) // 250)
         sampled = traverse_coords[::step]
@@ -501,7 +519,11 @@ def build_eva_route(
             sampled.append(traverse_coords[-1])
         traverse_coords = sampled
 
-    max_dist_m = max(w.properties.dist_total_m.value for w in waypoints.features)
+    max_dist_m = (
+        round(total_traverse_length_m, 2)
+        if total_traverse_length_m > 0.0
+        else max(w.properties.dist_total_m.value for w in waypoints.features)
+    )
     max_measured_tilt = max(w.properties.rover_tilt_deg.value for w in waypoints.features)
 
     measured_traverse_feature = EvaRouteFeature(
@@ -517,7 +539,7 @@ def build_eva_route(
                 value=round(max_dist_m, 2),
                 unit="m",
                 tag="MEASURED",
-                source_id="SRC-M20-WAYPOINTS",
+                source_id="SRC-M20-TRAVERSE",
             ),
             max_slope_deg=Quantity(
                 value=round(max_measured_tilt, 2),
@@ -532,13 +554,17 @@ def build_eva_route(
         ),
     )
 
-    # 2. Simulated Astronaut EVA Safe Walkback Corridor (< 2.0 km) on the Western Fan Margin
+    by_sol = {w.properties.sol: w for w in waypoints.features}
+    wp_stop1 = by_sol.get(13, waypoints.features[0])
+    wp_stop2 = by_sol.get(398, waypoints.features[min(100, len(waypoints.features) - 1)])
+    wp_stop3 = by_sol.get(407, waypoints.features[min(115, len(waypoints.features) - 1)])
+
     eva_loop_coords: list[tuple[float, float]] = [
-        (77.450886, 18.444627),
-        (77.445200, 18.447800),
-        (77.439500, 18.451200),
-        (77.433800, 18.454100),
-        (77.429200, 18.455900),
+        (wp_stop1.properties.lon, wp_stop1.properties.lat),
+        (77.447500, 18.455200),
+        (wp_stop2.properties.lon, wp_stop2.properties.lat),
+        (77.430500, 18.460200),
+        (wp_stop3.properties.lon, wp_stop3.properties.lat),
     ]
     eva_dist_m = 0.0
     for i in range(len(eva_loop_coords) - 1):
@@ -550,7 +576,6 @@ def build_eva_route(
         )
     eva_dist_m = round(eva_dist_m, 1)
     eva_duration_h = 4.5
-    # 0.67 mSv/day * (4.5 / 24.0) days = 0.1256 mSv
     eva_rad_msv = round(0.67 * (eva_duration_h / 24.0), 4)
 
     simulated_eva_feature = EvaRouteFeature(
@@ -558,7 +583,7 @@ def build_eva_route(
         properties=EvaRouteProperties(
             feature_id="ROUTE-XEVA-SIMULATED-FAN-CORRIDOR",
             segment_type="SIMULATED_ASTRONAUT_EVA",
-            title="Simulated Astronaut EVA Safe Walkback Corridor (Jezero Western Fan Approach)",
+            title="Simulated Astronaut EVA Safe Walkback Corridor (<= 2.0 km from Sol 13 Origin)",
             tag="SIMULATED",
             source_id="SRC-NASA-XEVA",
             verdict="GO",
@@ -566,59 +591,104 @@ def build_eva_route(
                 value=eva_dist_m, unit="m", tag="SIMULATED", source_id="SRC-NASA-XEVA"
             ),
             max_slope_deg=Quantity(
-                value=9.4, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                value=9.4, unit="deg", tag="SIMULATED", source_id=SYNTHETIC_SOURCE_ID
             ),
             estimated_duration_h=Quantity(
                 value=eva_duration_h, unit="h", tag="SIMULATED", source_id="SRC-NASA-XEVA"
             ),
             estimated_radiation_msv=Quantity(
-                value=eva_rad_msv, unit="mSv", tag="DERIVED", source_id="SRC-RAD-GALE"
+                value=eva_rad_msv,
+                unit="mSv",
+                tag="SIMULATED",
+                source_id="SRC-RAD-GALE",
+                note="proxy Curiosity RAD, Gale",
             ),
-            geologic_unit="Crater floor fractured rough unit (Cf-fr) to Western Delta front",
+            geologic_unit="Crater floor fractured rough unit (Cf-fr) to Three Forks Delta Apron",
             notes=(
-                "Candidate crewed EVA sortie staying strictly within the 2.0 km NASA xEVA "
-                "walkback limit and < 10 deg sand/ripple slope envelope while avoiding the "
-                "20.3 deg delta scarp."
+                "Candidate crewed EVA sortie connecting Stop 1 (Sol 13), Stop 2 (Sol 398), and "
+                "Stop 3 (Sol 407), staying strictly within the 2.0 km NASA xEVA walkback radius."
             ),
         ),
     )
 
-    # 3. Three Science & Scale-Gap Demonstration Stops anchored to real M20 waypoints
-    by_sol = {w.properties.sol: w for w in waypoints.features}
-    wp_landing = by_sol.get(13, waypoints.features[0])
-    wp_scarp = by_sol.get(700, waypoints.features[len(waypoints.features) // 2])
-    wp_rim = by_sol.get(1578, waypoints.features[-1])
-
-    stop_features = [
+    science_stops = [
         EvaRouteFeature(
             geometry=GeoJsonPointGeometry(
-                coordinates=(wp_landing.properties.lon, wp_landing.properties.lat)
+                coordinates=(wp_stop1.properties.lon, wp_stop1.properties.lat)
             ),
             properties=EvaRouteProperties(
-                feature_id="STOP-01-LANDING-BASE",
+                feature_id="STOP-01-SOL13-LANDING-BASE",
                 segment_type="SCIENCE_STOP",
-                title="Stop 1 — Octavia E. Butler Landing & Hab Walkback Origin (Sol 13)",
+                title="Science Stop 1 — Octavia E. Butler Landing & EVA Origin (Sol 13, 0.0 km)",
                 tag="MEASURED",
                 source_id="SRC-M20-WAYPOINTS",
                 verdict="GO",
-                sol=wp_landing.properties.sol,
-                rover_tilt_deg=wp_landing.properties.rover_tilt_deg,
+                sol=wp_stop1.properties.sol,
+                rover_tilt_deg=wp_stop1.properties.rover_tilt_deg,
                 geologic_unit="Crater floor fractured rough (Cf-fr, USGS SIM 3464)",
-                panorama_url=wp_landing.properties.panorama_url,
+                panorama_url=wp_stop1.properties.panorama_url,
                 notes=(
-                    "Flat baseline habitat & pressurized rover staging point "
-                    "(measured tilt 1.18 deg). All 1m, 4m, 16m, and 64m orbital slopes agree (GO)."
+                    "EVA departure & walkback origin (walkback distance 0.0 m <= 2,000 m; "
+                    "measured rover tilt 1.18 deg -> GO)."
                 ),
             ),
         ),
         EvaRouteFeature(
             geometry=GeoJsonPointGeometry(
+                coordinates=(wp_stop2.properties.lon, wp_stop2.properties.lat)
+            ),
+            properties=EvaRouteProperties(
+                feature_id="STOP-02-SOL398-RAPID-TRAVERSE",
+                segment_type="SCIENCE_STOP",
+                title="Science Stop 2 — Crater Floor Northwest Traverse Contact (Sol 398, 1.33 km)",
+                tag="MEASURED",
+                source_id="SRC-M20-WAYPOINTS",
+                verdict="GO",
+                sol=wp_stop2.properties.sol,
+                rover_tilt_deg=wp_stop2.properties.rover_tilt_deg,
+                geologic_unit="Crater floor fractured rough margin (Cf-fr, USGS SIM 3464)",
+                panorama_url=wp_stop2.properties.panorama_url,
+                notes=(
+                    "Mid-corridor geological sampling stop on the astronaut EVA path "
+                    "(walkback distance 1,328.6 m <= 2,000 m; measured rover tilt 1.24 deg -> GO)."
+                ),
+            ),
+        ),
+        EvaRouteFeature(
+            geometry=GeoJsonPointGeometry(
+                coordinates=(wp_stop3.properties.lon, wp_stop3.properties.lat)
+            ),
+            properties=EvaRouteProperties(
+                feature_id="STOP-03-SOL407-DELTA-APRON",
+                segment_type="SCIENCE_STOP",
+                title="Science Stop 3 — Three Forks Delta Apron Turnaround (Sol 407, 1.93 km)",
+                tag="MEASURED",
+                source_id="SRC-M20-WAYPOINTS",
+                verdict="GO",
+                sol=wp_stop3.properties.sol,
+                rover_tilt_deg=wp_stop3.properties.rover_tilt_deg,
+                geologic_unit="Delta apron / distal sedimentary contact (USGS SIM 3464)",
+                panorama_url=wp_stop3.properties.panorama_url,
+                notes=(
+                    "Terminal science sampling stop at the 2.0 km NASA xEVA walkback boundary "
+                    "(walkback distance 1,925.2 m <= 2,000 m; measured rover tilt 0.78 deg -> GO)."
+                ),
+            ),
+        ),
+    ]
+
+    wp_scarp = by_sol.get(700, waypoints.features[len(waypoints.features) // 2])
+    wp_rim = by_sol.get(1578, waypoints.features[-1])
+
+    benchmark_features = [
+        EvaRouteFeature(
+            geometry=GeoJsonPointGeometry(
                 coordinates=(wp_scarp.properties.lon, wp_scarp.properties.lat)
             ),
             properties=EvaRouteProperties(
-                feature_id="STOP-02-DELTA-SCARP-SCALE-GAP",
-                segment_type="SCIENCE_STOP",
-                title="Stop 2 — Western Delta Scarp Scale-Gap Hazard (Sol 700)",
+                feature_id="BENCHMARK-01-SOL700-DELTA-SCARP",
+                segment_type="BENCHMARK",
+                title="Benchmark 1 — Western Delta Scarp High-Tilt Reference (Sol 700)",
                 tag="MEASURED",
                 source_id="SRC-M20-WAYPOINTS",
                 verdict="NO_GO",
@@ -627,9 +697,8 @@ def build_eva_route(
                 geologic_unit="Delta layered rough / steep scarp contact (D-lr, USGS SIM 3464)",
                 panorama_url=wp_scarp.properties.panorama_url,
                 notes=(
-                    "Primary Scale-Gap Demonstration: 64m orbital baseline smooths the delta front "
-                    "below 15 deg, whereas Perseverance measured 20.33 deg ground tilt (exceeding "
-                    "the 20.0 deg NASA xEVA suit & JPL bedrock limit -> NO_GO)."
+                    "Out-of-walkback rover validation benchmark (2.5 km from Sol 13): Perseverance "
+                    "measured 20.33 deg ground tilt, exceeding the 20.0 deg NASA xEVA suit limit."
                 ),
             ),
         ),
@@ -638,9 +707,9 @@ def build_eva_route(
                 coordinates=(wp_rim.properties.lon, wp_rim.properties.lat)
             ),
             properties=EvaRouteProperties(
-                feature_id="STOP-03-CRATER-RIM-MAX-TILT",
-                segment_type="SCIENCE_STOP",
-                title="Stop 3 — Western Crater Rim Maximum Rover Tilt Benchmark (Sol 1578)",
+                feature_id="BENCHMARK-02-SOL1578-CRATER-RIM",
+                segment_type="BENCHMARK",
+                title="Benchmark 2 — Western Crater Rim Maximum Rover Tilt Reference (Sol 1578)",
                 tag="MEASURED",
                 source_id="SRC-M20-WAYPOINTS",
                 verdict="NO_GO",
@@ -649,8 +718,8 @@ def build_eva_route(
                 geologic_unit="Noachian crater rim megabreccia unit (Nr, USGS SIM 3464)",
                 panorama_url=wp_rim.properties.panorama_url,
                 notes=(
-                    "Highest ground tilt recorded across all 708 Perseverance stops (20.68 deg at "
-                    "elev -1910.5 m), validating the NO_GO threshold on steep crater rim ascents."
+                    "Out-of-walkback rover validation benchmark (10.9 km from Sol 13): highest "
+                    "ground tilt recorded across all 708 Perseverance stops (20.68 deg -> NO_GO)."
                 ),
             ),
         ),
@@ -658,7 +727,12 @@ def build_eva_route(
 
     return EvaRoute(
         site_id="jezero",
-        features=[measured_traverse_feature, simulated_eva_feature, *stop_features],
+        features=[
+            measured_traverse_feature,
+            simulated_eva_feature,
+            *science_stops,
+            *benchmark_features,
+        ],
     )
 
 
@@ -676,6 +750,17 @@ def _compute_file_digest(path: Path) -> PackFileDigest:
         path=path.name,
         sha256=hashlib.sha256(raw).hexdigest(),
         bytes=len(raw),
+    )
+
+
+def _compute_input_digest(source_id: str, path: Path, rel_label: str) -> ManifestInputDigest:
+    """Compute SHA-256 hex digest and bytes_read for an ingested raw file."""
+    raw = path.read_bytes()
+    return ManifestInputDigest(
+        source_id=source_id,
+        path_or_url=rel_label,
+        sha256=hashlib.sha256(raw).hexdigest(),
+        bytes_read=len(raw),
     )
 
 
@@ -716,7 +801,7 @@ def build_jezero_pack(
     constraints = build_eva_constraints()
     route = build_eva_route(waypoints, raw_traverse)
     overlay_path = pack_dir / "hazard_overlay.png"
-    hazard_grid = build_hazard_grid_and_overlay(waypoints, overlay_path)
+    hazard_grid = build_hazard_grid_and_overlay(overlay_path)
 
     wp_out = pack_dir / "waypoints.geojson"
     route_out = pack_dir / "route.geojson"
@@ -734,6 +819,11 @@ def build_jezero_pack(
         _compute_file_digest(hazard_out),
         _compute_file_digest(overlay_path),
         _compute_file_digest(constraints_out),
+    ]
+
+    input_digests = [
+        _compute_input_digest("SRC-M20-WAYPOINTS", wp_raw_path, "datalake/M20_waypoints.json"),
+        _compute_input_digest("SRC-M20-TRAVERSE", tr_raw_path, "datalake/M20_traverse.json"),
     ]
 
     basemap = BasemapLayer(
@@ -754,12 +844,14 @@ def build_jezero_pack(
 
     manifest = SiteManifest(
         contract_version=CONTRACT_VERSION,
+        pack_version=PACK_VERSION,
         site_id="jezero",
         site_name="Jezero Crater & Western Fan (Mars 2020 Perseverance Traverse)",
         crs=MarsCrs(),
         bbox=JEZERO_SITE_BBOX,
         basemaps=[basemap],
         sources=build_sources_registry(),
+        inputs=input_digests,
         files=pack_files,
         generated_at=generated_at,
     )

@@ -26,6 +26,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
     r_manifest = client.get("/v1/sites/jezero/manifest")
     assert r_manifest.status_code == 200
     assert r_manifest.json()["site_id"] == "jezero"
+    assert r_manifest.json()["pack_version"] == "1.0.1"
 
     r_wp = client.get("/v1/sites/jezero/waypoints")
     assert r_wp.status_code == 200
@@ -33,10 +34,11 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
 
     r_route = client.get("/v1/sites/jezero/route")
     assert r_route.status_code == 200
-    assert len(r_route.json()["features"]) == 5
+    assert len(r_route.json()["features"]) == 7
 
     r_haz = client.get("/v1/sites/jezero/hazards")
     assert r_haz.status_code == 200
+    assert r_haz.json()["grid_status"] == "PLACEHOLDER"
     assert len(r_haz.json()["cells"]) == 384
 
     r_png = client.get("/v1/sites/jezero/hazard-overlay.png")
@@ -57,7 +59,6 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
 
 def test_route_evaluation_go_and_nogo() -> None:
     """Verify POST /v1/sites/jezero/evaluate-route distinguishes safe and unsafe routes."""
-    # Short traverse near Octavia E. Butler Landing -> GO / CAUTION within 2 km walkback
     r_safe = client.post(
         "/v1/sites/jezero/evaluate-route",
         json={
@@ -73,7 +74,6 @@ def test_route_evaluation_go_and_nogo() -> None:
     assert safe_body["walkback_within_limit"] is True
     assert safe_body["verdict"] in ("GO", "CAUTION")
 
-    # Long traverse from Landing (77.45 E) all the way to Crater Rim (77.25 E) > 11 km -> NO_GO
     r_unsafe = client.post(
         "/v1/sites/jezero/evaluate-route",
         json={
