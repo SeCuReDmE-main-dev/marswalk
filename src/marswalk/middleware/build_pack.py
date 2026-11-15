@@ -48,7 +48,7 @@ from marswalk.contracts.models import (
 
 M20_WAYPOINTS_URL = "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
 M20_TRAVERSE_URL = "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
-M20_PANORAMA_BASE_URL = "https://mars.nasa.gov/mmgis-maps/M20/"
+M20_RAW_IMAGES_ASSET_PREFIX = "https://mars.nasa.gov/mars2020-raw-images/"
 DETERMINISTIC_GENERATED_AT = "2026-11-14T20:25:00-05:00"
 PACK_VERSION = "1.0.1"
 SYNTHETIC_SOURCE_ID = "synthetic-v1"
@@ -114,6 +114,14 @@ def build_sources_registry() -> list[Source]:
             citation=(
                 "NASA/JPL-Caltech Mars 2020 Mission Operations MMGIS Traverse Layer (2021-2026)."
             ),
+        ),
+        Source(
+            id="SRC-M20-RAW-IMAGES",
+            title="Mars 2020 Perseverance Rover Raw Images Archive (Navcam & Mastcam-Z)",
+            mission="NASA / JPL-Caltech / ASU Mars 2020",
+            url="https://mars.nasa.gov/mars2020/multimedia/raw-images/",
+            license="Public Domain (17 U.S.C. 105) — Credit: NASA/JPL-Caltech/ASU",
+            citation="NASA/JPL-Caltech/ASU Mars 2020 Raw Images Archive (2021-2026).",
         ),
         Source(
             id="SRC-TREK-HIRISE-25CM",
@@ -195,10 +203,11 @@ def build_sources_registry() -> list[Source]:
             id="SRC-APOLLO-SLOPE",
             title="Historical Apollo Lunar EVA Slope and Elevation Envelope",
             mission="Apollo Program / Comparative Planetary EVA Literature",
-            url="https://www.sciencedirect.com/science/article/pii/S0094576524003746",
-            license="Open Scientific Reference Value",
+            url="https://ntrs.nasa.gov/citations/19730016106",
+            license="Open Scientific Reference Value (NASA Technical Reports Server)",
             citation=(
-                "Iqbal, Z., et al. (2024), Acta Astronautica "
+                "NASA NTRS 19730016106; Iqbal, Z., et al. (2024), Acta Astronautica, "
+                "doi:10.1016/j.actaastro.2024.06.038 "
                 "(<15 deg practical slope, 150 m max elevation change)."
             ),
         ),
@@ -206,7 +215,7 @@ def build_sources_registry() -> list[Source]:
             id=SYNTHETIC_SOURCE_ID,
             title="MarsWalk Pass 1 Synthetic Placeholder Surface (UI Scaffold)",
             mission="MarsWalk Synthetic Placeholder Generator",
-            url="https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/",
+            url="https://github.com/nasa/spaceapps",
             license="Apache-2.0",
             citation=(
                 "Synthetic multi-scale terrain placeholder surface (grid_status=PLACEHOLDER, "
@@ -261,8 +270,15 @@ def build_eva_constraints() -> EvaConstraints:
     )
 
 
-def build_waypoints_collection(raw_waypoints: dict[str, Any]) -> WaypointFeatureCollection:
-    """Convert raw M20_waypoints.json into validated WaypointFeatureCollection."""
+def build_waypoints_collection(
+    raw_waypoints: dict[str, Any],
+    verified_panoramas: dict[str, dict[str, Any]] | None = None,
+) -> WaypointFeatureCollection:
+    """Convert raw M20_waypoints.json into validated WaypointFeatureCollection.
+
+    Resolves `panorama_url` strictly from `verified_panoramas` (`mars2020-raw-images`
+    public browse assets) and never emits restricted `mmgis-maps/M20/Layers/mosaics/` URLs.
+    """
     features: list[Waypoint] = []
     for idx, feat in enumerate(raw_waypoints.get("features", [])):
         props = feat.get("properties", {})
@@ -278,16 +294,15 @@ def build_waypoints_collection(raw_waypoints: dict[str, Any]) -> WaypointFeature
         roll = round(float(props.get("roll") or 0.0), 4)
         dist_total = round(float(props.get("dist_total_m") or 0.0), 2)
 
-        images = props.get("images") or []
         pan_url: str | None = None
-        if isinstance(images, list) and images:
-            rel_url = images[0].get("url")
-            if isinstance(rel_url, str) and rel_url:
-                pan_url = (
-                    rel_url
-                    if rel_url.startswith("http")
-                    else f"{M20_PANORAMA_BASE_URL}{rel_url.lstrip('/')}"
-                )
+        if verified_panoramas:
+            pan_entry = verified_panoramas.get(f"{sol}:{site}:{drive}") or verified_panoramas.get(
+                str(sol)
+            )
+            if isinstance(pan_entry, dict):
+                cand_url = pan_entry.get("image_url")
+                if isinstance(cand_url, str) and cand_url.startswith(M20_RAW_IMAGES_ASSET_PREFIX):
+                    pan_url = cand_url
 
         features.append(
             Waypoint(
@@ -818,11 +833,20 @@ def build_jezero_pack(
         canonical_root = Path(__file__).resolve().parents[3]
         datalake_dir = repo_root / "datalake"
         datalake_dir.mkdir(parents=True, exist_ok=True)
-        for fname in ("JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif", "SIM3464_metadata.xml"):
+        for fname in (
+            "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif",
+            "SIM3464_metadata.xml",
+            "M20_verified_panoramas.json",
+        ):
             src_f = canonical_root / "datalake" / fname
             dst_f = datalake_dir / fname
             if src_f.exists() and not dst_f.exists():
                 shutil.copyfile(src_f, dst_f)
+
+        src_pan_dir = canonical_root / "datalake" / "panoramas"
+        dst_pan_dir = datalake_dir / "panoramas"
+        if src_pan_dir.exists() and not dst_pan_dir.exists():
+            shutil.copytree(src_pan_dir, dst_pan_dir, dirs_exist_ok=True)
 
         profiles_dir = repo_root / "profiles"
         if not profiles_dir.exists() and (canonical_root / "profiles").exists():

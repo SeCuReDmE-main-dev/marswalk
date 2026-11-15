@@ -51,6 +51,14 @@
       "citation": "NASA/JPL-Caltech Mars 2020 Mission Operations MMGIS Traverse Layer (2021-2026)."
     },
     {
+      "id": "SRC-M20-RAW-IMAGES",
+      "title": "Mars 2020 Perseverance Rover Raw Images Archive (Navcam & Mastcam-Z)",
+      "mission": "NASA / JPL-Caltech / ASU Mars 2020",
+      "url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/",
+      "license": "Public Domain (17 U.S.C. 105) — Credit: NASA/JPL-Caltech/ASU",
+      "citation": "NASA/JPL-Caltech/ASU Mars 2020 Raw Images Archive (2021-2026)."
+    },
+    {
       "id": "SRC-TREK-HIRISE-25CM",
       "title": "Mars 2020 TRN HiRISE Orthorectified Mosaic (25 cm/px WMTS)",
       "mission": "NASA Solar System Treks / USGS / MRO HiRISE",
@@ -102,15 +110,15 @@
       "id": "SRC-APOLLO-SLOPE",
       "title": "Historical Apollo Lunar EVA Slope and Elevation Envelope",
       "mission": "Apollo Program / Comparative Planetary EVA Literature",
-      "url": "https://www.sciencedirect.com/science/article/pii/S0094576524003746",
-      "license": "Open Scientific Reference Value",
-      "citation": "Iqbal, Z., et al. (2024), Acta Astronautica (<15 deg practical slope, 150 m max elevation change)."
+      "url": "https://ntrs.nasa.gov/citations/19730016106",
+      "license": "Open Scientific Reference Value (NASA Technical Reports Server)",
+      "citation": "NASA NTRS 19730016106; Iqbal, Z., et al. (2024), Acta Astronautica, doi:10.1016/j.actaastro.2024.06.038 (<15 deg practical slope, 150 m max elevation change)."
     },
     {
       "id": "synthetic-v1",
       "title": "MarsWalk Pass 1 Synthetic Placeholder Surface (UI Scaffold)",
       "mission": "MarsWalk Synthetic Placeholder Generator",
-      "url": "https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/",
+      "url": "https://github.com/nasa/spaceapps",
       "license": "Apache-2.0",
       "citation": "Synthetic multi-scale terrain placeholder surface (grid_status=PLACEHOLDER, source_id=synthetic-v1) generated without reading rover tilt or USGS DTM."
     }
@@ -139,18 +147,24 @@
       "path_or_url": "datalake/SIM3464_metadata.xml",
       "sha256": "5f686fbcf1d0d90e0d106bfafea28f950095b7564e580a85119d46b29842f078",
       "bytes_read": 20351
+    },
+    {
+      "source_id": "SRC-M20-RAW-IMAGES",
+      "path_or_url": "datalake/M20_verified_panoramas.json",
+      "sha256": "f0a8c1c251899f5434cbec5e0c5bb3a27b7f74874099837d31c77ded7c76d690",
+      "bytes_read": 570696
     }
   ],
   "files": [
     {
       "path": "waypoints.geojson",
-      "sha256": "f458c4827471be3161599c21662dd2864193296dd9d8bf7172fcb7fca7a106d4",
-      "bytes": 1019513
+      "sha256": "2afbeb2caa96cd4dccb9c2b2125066900ac3f90dbc51316933bfd0685e4b9f86",
+      "bytes": 1058705
     },
     {
       "path": "route.geojson",
-      "sha256": "cb67705919bbc13211a45c2506f05cf5741b1ef4b5e9583f2a933a14dac682ba",
-      "bytes": 34599
+      "sha256": "265901a60bd66e476fa91ede4e4a50bf6b4e598881ddc30c0ad419a79d1ee2a1",
+      "bytes": 34869
     },
     {
       "path": "hazard_grid.json",
@@ -201,6 +215,31 @@
       "path": "profiles/funnel_v1.json",
       "sha256": "c8f68c9b384260e3cc7b7f60a3dcf96b5d68932e8fa897178198f92288bbb845",
       "bytes": 533
+    },
+    {
+      "path": "panoramas/sol_0413_ncam.jpg",
+      "sha256": "592d98c96d2e52e49a42d87a9fe736372c97ebef7b5141adb8ccdf0d80ceb604",
+      "bytes": 44268
+    },
+    {
+      "path": "panoramas/sol_0609_ncam.jpg",
+      "sha256": "3e3d23e61407628361cac91ef2d8c8a2be9400edff07ac21d2321ca369ecf70e",
+      "bytes": 40945
+    },
+    {
+      "path": "panoramas/sol_0700_ncam.jpg",
+      "sha256": "75c7e0a1c298243bdf83d6e88d01b1c0241277514a794b872c6b9ec65df61a6e",
+      "bytes": 47364
+    },
+    {
+      "path": "panoramas/sol_0753_ncam.jpg",
+      "sha256": "a8a90ddd5baa6720f496edb7231ef6b3b53f4a63e503e01fe6ec8461e818cf96",
+      "bytes": 59611
+    },
+    {
+      "path": "panoramas/sol_1578_ncam.jpg",
+      "sha256": "d6b7ff599444263414fe8b57581bda69f3dc218632702826126bcf30a05eb845",
+      "bytes": 64443
     }
   ],
   "generated_at": "2026-11-14T21:00:00-05:00"

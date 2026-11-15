@@ -73,6 +73,11 @@ from marswalk.engine.gates import (
     gate_g3_plan,
     run_gate_with_hold_loop,
 )
+from marswalk.engine.m20_raw_images_m5 import (
+    VERIFIED_PANORAMAS_CACHE_NAME,
+    ensure_verified_waypoint_panoramas,
+    materialize_canonical_pack_panoramas,
+)
 from marswalk.engine.meda_envelope import load_cached_meda_summary
 from marswalk.engine.obstacles_m1 import (
     PlannerGrid10m,
@@ -896,7 +901,10 @@ async def run_engine_pipeline_async(
     wp_raw_path, tr_raw_path = ensure_m20_datalake(datalake_dir)
     raw_waypoints = json.loads(wp_raw_path.read_text(encoding="utf-8"))
     raw_traverse = json.loads(tr_raw_path.read_text(encoding="utf-8"))
-    waypoints = build_waypoints_collection(raw_waypoints)
+    pan_cache_path, verified_panoramas = ensure_verified_waypoint_panoramas(
+        datalake_dir, raw_waypoints
+    )
+    waypoints = build_waypoints_collection(raw_waypoints, verified_panoramas=verified_panoramas)
 
     selected_win = select_optimal_delta_window_2x2km(waypoints)
     dtm = await ingest_dtm_window_async(datalake_dir, selected_win)
@@ -1129,6 +1137,29 @@ async def run_engine_pipeline_async(
         ),
     ]
 
+    by_sol_all = {w.properties.sol: w for w in waypoints.features}
+    wp_scarp = by_sol_all.get(700, waypoints.features[len(waypoints.features) // 2])
+    wp_rim = by_sol_all.get(1578, waypoints.features[-1])
+    canonical_stop_triples = [
+        (w.properties.sol, w.properties.site, w.properties.drive)
+        for w in (stops[0], stops[1], stops[2], wp_scarp, wp_rim)
+    ]
+    pan_files = materialize_canonical_pack_panoramas(
+        datalake_dir,
+        pack_dir,
+        verified_panoramas,
+        canonical_stop_triples,
+    )
+    for pan_file in pan_files:
+        pan_raw = pan_file.read_bytes()
+        pack_files.append(
+            PackFileDigest(
+                path=f"panoramas/{pan_file.name}",
+                sha256=hashlib.sha256(pan_raw).hexdigest(),
+                bytes=len(pan_raw),
+            )
+        )
+
     input_digests = [
         _compute_input_digest("SRC-M20-WAYPOINTS", wp_raw_path, "datalake/M20_waypoints.json"),
         _compute_input_digest("SRC-M20-TRAVERSE", tr_raw_path, "datalake/M20_traverse.json"),
@@ -1145,6 +1176,14 @@ async def run_engine_pipeline_async(
                 "SRC-USGS-SIM3464",
                 sim_xml_path,
                 f"datalake/{SIM3464_METADATA_NAME}",
+            )
+        )
+    if pan_cache_path is not None and pan_cache_path.exists():
+        input_digests.append(
+            _compute_input_digest(
+                "SRC-M20-RAW-IMAGES",
+                pan_cache_path,
+                f"datalake/{VERIFIED_PANORAMAS_CACHE_NAME}",
             )
         )
 

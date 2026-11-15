@@ -29,13 +29,15 @@ def test_jezero_pack_loads_and_verifies_sha256() -> None:
     assert pack.site_id == "jezero"
     assert pack.manifest.contract_version == "1.1.0"
     assert pack.manifest.pack_version == "1.1.0"
-    assert len(pack.manifest.files) == 12
-    assert len(pack.manifest.inputs) == 4
+    assert len(pack.manifest.files) == 17
+    assert len(pack.manifest.inputs) == 5
     input_sources = {inp.source_id for inp in pack.manifest.inputs}
     assert "SRC-USGS-HIRISE-DTM-1M" in input_sources
     assert "SRC-USGS-SIM3464" in input_sources
+    assert "SRC-M20-RAW-IMAGES" in input_sources
 
     total_bytes = sum(f.bytes for f in pack.manifest.files)
+    assert total_bytes < 5_000_000
     assert total_bytes < 5 * 1024 * 1024
 
     assert len(pack.waypoints.features) == 708
@@ -196,3 +198,61 @@ def test_committed_pack_matches_fresh_rebuild(tmp_path: Path) -> None:
         committed_sha = hashlib.sha256((committed_dir / rel_path).read_bytes()).hexdigest()
         rebuilt_sha = hashlib.sha256((rebuilt_dir / rel_path).read_bytes()).hexdigest()
         assert committed_sha == rebuilt_sha, f"pack is stale: run build-pack ({rel_path})"
+
+
+def test_zero_mmgis_403_panorama_urls_and_bundled_panoramas_valid() -> None:
+    """Verify zero restricted mmgis-maps panorama URLs remain and all 5 bundled JPEGs serve."""
+    from fastapi.testclient import TestClient
+    from PIL import Image
+
+    from marswalk.middleware.api import app, get_query_service
+
+    pack_dir = REPO_ROOT / "public_packs" / "jezero" / "v1"
+    for geojson_name in ("route.geojson", "waypoints.geojson"):
+        raw_txt = (pack_dir / geojson_name).read_text(encoding="utf-8")
+        assert "mmgis-maps/M20/Layers/mosaics" not in raw_txt
+
+    pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
+    non_null_wp_pans = 0
+    for wp in pack.waypoints.features:
+        pan = wp.properties.panorama_url
+        if pan is not None:
+            assert pan.startswith("https://mars.nasa.gov/mars2020-raw-images/")
+            non_null_wp_pans += 1
+    assert non_null_wp_pans >= 500
+
+    stop_features = [
+        f for f in pack.route.features if f.properties.segment_type in ("SCIENCE_STOP", "BENCHMARK")
+    ]
+    assert len(stop_features) == 5
+    for sf in stop_features:
+        assert sf.properties.panorama_url is not None
+        assert sf.properties.panorama_url.startswith("https://mars.nasa.gov/mars2020-raw-images/")
+
+    expected_jpgs = [
+        "panoramas/sol_0413_ncam.jpg",
+        "panoramas/sol_0609_ncam.jpg",
+        "panoramas/sol_0700_ncam.jpg",
+        "panoramas/sol_0753_ncam.jpg",
+        "panoramas/sol_1578_ncam.jpg",
+    ]
+    manifest_paths = {f.path for f in pack.manifest.files}
+    for rel_jpg in expected_jpgs:
+        assert rel_jpg in manifest_paths
+        with Image.open(pack_dir / rel_jpg) as img:
+            assert img.format == "JPEG"
+            assert img.width >= 640
+
+    get_query_service.cache_clear()
+    client = TestClient(app)
+    resp_ok = client.get("/v1/sites/jezero/panoramas/sol_0753_ncam.jpg")
+    assert resp_ok.status_code == 200
+    assert resp_ok.headers["content-type"] == "image/jpeg"
+    assert resp_ok.content.startswith(b"\xff\xd8")
+
+    for bad_path in (
+        "/v1/sites/jezero/panoramas/evil.png",
+        "/v1/sites/jezero/panoramas/sol_9999_ncam.jpg",
+        "/v1/sites/jezero/panoramas/sub/sol_0753_ncam.jpg",
+    ):
+        assert client.get(bad_path).status_code == 404

@@ -1543,7 +1543,7 @@
           "note": null
         },
         "geologic_unit": "Nle (Lower etched delta margin contact, USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0413_RAS_0220412_CYL_S_AUTOGENJ01.jpg",
+        "panorama_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00413/ids/edr/browse/ncam/NLF_0413_0703605103_696ECM_N0220412NCAM00387_01_095J01_800.jpg",
         "notes": "Arrival T+0.0h | Walkback distance=0.0 m (remaining walkback budget=2000.0 m) | Cumulative dose=0.0000 mSv (proxy Curiosity RAD, Gale) | Measured rover tilt=0.63 deg."
       }
     },
@@ -1576,7 +1576,7 @@
           "note": null
         },
         "geologic_unit": "NHjf1 (Jezero fan 1 layered sedimentary unit, USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0609_RZS_0301172_CYL_L_AUTOGENJ01.jpg",
+        "panorama_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00609/ids/edr/browse/ncam/NLF_0609_0721016186_051ECM_N0301172NCAM03609_01_195J01_800.jpg",
         "notes": "Arrival T+1.2h | Walkback distance=555.1 m (remaining walkback budget=1444.9 m) | Cumulative dose=0.0335 mSv (proxy Curiosity RAD, Gale) | Measured rover tilt=5.37 deg."
       }
     },
@@ -1609,7 +1609,7 @@
           "note": null
         },
         "geologic_unit": "NHjf2 (Jezero fan 2 upper topset unit, USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0753_RZS_0371798_CYL_L_AUTOGENJ04.jpg",
+        "panorama_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00753/ids/edr/browse/ncam/NLF_0753_0733796720_987ECM_N0371798NCAM03753_01_195J01_800.jpg",
         "notes": "Arrival T+2.6h | Walkback distance=1925.7 m (remaining walkback budget=74.3 m) | Cumulative dose=0.0726 mSv (proxy Curiosity RAD, Gale) | Measured rover tilt=7.49 deg."
       }
     },
@@ -1642,7 +1642,7 @@
           "note": null
         },
         "geologic_unit": "NHjf1 steep scarp contact (USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0700_RZS_0330366_CYL_L_AUTOGENJ05.jpg",
+        "panorama_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00700/ids/edr/browse/ncam/NLF_0700_0729092948_288ECM_N0330366NCAM03700_01_195J01_800.jpg",
         "notes": "In-window scale-gap benchmark: Perseverance measured 20.33 deg ground tilt and 1m HiRISE DTM peaks at 23.13 deg (> 20 deg NASA xEVA limit -> NO_GO), whereas the 64m coarse baseline reports only 12.65 deg."
       }
     },
@@ -1675,7 +1675,7 @@
           "note": null
         },
         "geologic_unit": "Crater rim unit (cr, USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1578_RZS_0774816_CYL_L_AUTOGENJ01.jpg",
+        "panorama_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/01578/ids/edr/browse/ncam/NLF_1578_0807026624_979ECM_N0774816NCAM03578_01_195J01_800.jpg",
         "notes": "Out-of-walkback rover validation benchmark: highest ground tilt recorded across all 708 Perseverance stops (20.68 deg -> NO_GO)."
       }
     }

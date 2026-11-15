@@ -29,18 +29,35 @@ Almost every number is wrapped like this:
 
 ## The files
 
-`manifest.json` signs ten files. The six you draw:
+`manifest.json` signs **17 files** (`< 4.7 MB` total). The ones you draw or show directly:
 
 | File | What it is | Key fields for the UI | Real or simulated today |
 |---|---|---|---|
 | `manifest.json` | The pack's identity card and signature | `bbox` (the whole Jezero region), `crs`, `basemaps[0]` (Mars Trek tiles), `sources[]`, `files[]` | Real |
-| `waypoints.geojson` | The **708 real Perseverance stops** (sol 13 → 2022) | `properties.sol`, `lon`, `lat`, `rover_tilt_deg`, `rover_pitch_deg`, `rover_roll_deg`, `elev_geoid_m`, `dist_total_m`, `panorama_url` | **MEASURED** |
-| `route.geojson` | The rover's real traverse + a candidate astronaut walk + science stops | `properties.segment_type`, `tag`, `verdict`, `distance_m`, `max_slope_deg` | Traverse **MEASURED**, astronaut walk **SIMULATED** |
-| `hazard_grid.json` | The multi-scale hazard grid | `grid_status`, `cell_size_m`, `rows`, `cols`, `baselines_m`, `cells[]` | See below |
+| `waypoints.geojson` | The **708 real Perseverance stops** (sol 13 → 2022) | `properties.sol`, `lon`, `lat`, `rover_tilt_deg`, `rover_pitch_deg`, `rover_roll_deg`, `elev_geoid_m`, `dist_total_m`, `panorama_url` | **MEASURED** (`panorama_url` points to verified `HTTP 200` `mars2020-raw-images` browse JPEGs; `null` if a sol has no public frame) |
+| `route.geojson` | The rover's real traverse + a candidate astronaut walk + obstacle-aware walk + science stops + benchmarks | `properties.segment_type`, `tag`, `verdict`, `distance_m`, `max_slope_deg`, `panorama_url` | Traverse **MEASURED**, 2-agent walk **SIMULATED**, obstacle-aware walk **DERIVED** |
+| `hazard_grid.json` | The multi-scale hazard grid (`40 × 40`) | `grid_status`, `cell_size_m`, `rows`, `cols`, `baselines_m`, `cells[]` | **DERIVED** (`grid_status = "ENGINE"`) |
 | `hazard_overlay.png` | Transparent color image of the grid, aligned to `hazard_grid.bbox` | Drop it on the map as one image layer | Same status as the grid |
+| `obstacles.geojson` + `planner_grid_10m.png` | 82 vectorized scarp/boulder outlines (`>= ~4 m`) and the 10 m planner grid | `properties.obstacle_kind`, `relief_m`, `tag` (`DERIVED`) | **DERIVED** from 1 m HiRISE DTM |
 | `eva_constraints.json` | Human and rover limits, each with its source | `suit_max_slope_deg` (20°), `walkback_max_km` (2), `eva_duration_min_h` / `max_h` (4 / 8 h), `rock_cfa_ok_pct` / `rock_cfa_caution_pct` (7 / 15 %, rover), `gcr_dose_msv_per_day` | Sourced thresholds |
+| `panoramas/sol_XXXX_ncam.jpg` (5 files) | Unmodified NASA `medium` (`800 px`) Navcam JPEGs for Sols `0413`, `0609`, `0700`, `0753`, `1578` | Byte-identical offline mirrors of the 5 `route.geojson` stop/benchmark `panorama_url`s (`Credit: NASA/JPL-Caltech`) | **MEASURED** (official Mars 2020 raw images) |
 
-The other four are for audit, not for drawing: `validation_report.json` and `gate_log.jsonl` (how the engine decided), and `profiles/*.json` (the engine's frozen parameters).
+The remaining five files are for audit, not for drawing: `validation_report.json`, `gate_log.jsonl` (how the engine decided), and `profiles/*.json` (`gates_v1.json`, `plithogenic_eva_v1.json`, `funnel_v1.json`).
+
+---
+
+## Data availability matrix (Local vs. Live Network vs. Unavailable)
+
+To keep offline demos and judge grading rock-solid, every resource falls into one of three explicit buckets:
+
+1. **Bundled 100% locally in `public_packs/jezero/v1/` (zero network needed):**
+   - All `708` rover waypoints (`waypoints.geojson`), the rover traverse, both EVA corridors, the 3 science stops and 2 benchmarks (`route.geojson`), the `1,600`-cell multi-scale hazard grid (`hazard_grid.json` + `hazard_overlay.png`), the `82` obstacle polygons and 10 m planner raster (`obstacles.geojson` + `planner_grid_10m.png`), `eva_constraints.json`, `validation_report.json`, `gate_log.jsonl`, `profiles/*.json`, and **the 5 canonical stop/benchmark Navcam JPEGs (`panoramas/sol_0413_ncam.jpg`, `sol_0609_ncam.jpg`, `sol_0700_ncam.jpg`, `sol_0753_ncam.jpg`, `sol_1578_ncam.jpg`)**—also served at `GET /v1/sites/jezero/panoramas/{filename}` and copied into `frontend/public/data/jezero/v1/panoramas/` by `npm run sync:data`.
+2. **Live NASA network with clean local fallback:**
+   - **Basemap tiles:** NASA Mars Trek WMTS (`https://trek.nasa.gov/tiles/Mars/EQ/...`, `HTTP 200`, CORS `*`). If offline, `hazard_overlay.png`, `obstacles.geojson`, `route.geojson`, and `waypoints.geojson` still render in full Mars lon/lat coordinates.
+   - **Rover stop photos (`panorama_url`):** Verified `HTTP 200` `https://mars.nasa.gov/mars2020-raw-images/...` URLs across all `708` waypoints (the restricted `mmgis-maps/M20/Layers/mosaics/` `HTTP 403` links have been eliminated everywhere). For the 5 canonical stops/benchmarks (`Sol 413, 609, 700, 753, 1578`), the exact same JPEG bytes are bundled locally under `panoramas/sol_XXXX_ncam.jpg` as an offline fallback (`onError` or local mode).
+   - **Interactive middleware API (`http://127.0.0.1:8000`):** Live `/cell`, `/evaluate-route`, `/plan-route`, and `/waypoints/{sol}/cameras` when `uvicorn` is running; static pack mode works standalone when the API is off. Note: `/waypoints/{sol}/cameras` is read-only/cached unless `MARSWALK_ALLOW_CAMERA_FETCH=1` is set on the server.
+3. **Explicitly `UNAVAILABLE` today (honest uncertainty `i = 1.0`, zero fabricated values):**
+   - `external_layers_status` marks **THEMIS thermal inertia**, **CRISM mineralogy**, and **MEDA environmental telemetry** as `UNAVAILABLE` (`indeterminacy_i = 1.0`), and `geologic_unit` uses an elevation/position approximation pending full USGS SIM 3464 shapefile polygon ingestion. Never invent numbers for `UNAVAILABLE` layers.
 
 ## The hazard grid, honestly
 

@@ -22,6 +22,7 @@ What it promises
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -200,6 +201,27 @@ def get_planner_grid_10m_png(site_id: str) -> FileResponse:
     if not png_path.exists():
         raise HTTPException(status_code=404, detail="planner_grid_10m.png not present in site pack")
     return FileResponse(png_path, media_type="image/png")
+
+
+_SAFE_PANORAMA_FILENAME_RE = re.compile(r"^[a-z0-9_-]+\.jpg$")
+
+
+@app.get("/v1/sites/{site_id}/panoramas/{filename:path}")
+def get_pack_panorama_jpg(site_id: str, filename: str) -> FileResponse:
+    """Return a SHA-256-verified static `panoramas/sol_XXXX_ncam.jpg` bundled in the site pack."""
+    if not _SAFE_PANORAMA_FILENAME_RE.fullmatch(filename):
+        raise HTTPException(status_code=404, detail="Invalid panorama filename")
+    svc = get_query_service(site_id)
+    rel_path = f"panoramas/{filename}"
+    if not any(f.path == rel_path for f in svc.pack.manifest.files):
+        raise HTTPException(status_code=404, detail=f"{rel_path} not signed in manifest.files")
+    try:
+        jpg_path = resolve_pack_relative_path(svc.pack.pack_dir, rel_path)
+    except PackIntegrityError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if not jpg_path.is_file():
+        raise HTTPException(status_code=404, detail=f"{rel_path} not present in site pack")
+    return FileResponse(jpg_path, media_type="image/jpeg")
 
 
 @app.get("/v1/sites/{site_id}/waypoints/{sol}/cameras", response_model=RoverCamerasResponse)

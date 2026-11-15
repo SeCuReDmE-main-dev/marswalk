@@ -45,5 +45,5 @@
     "Funnel parameters (p, tau_max, h_min, eps) are loaded frozen from the odd-sol tuning run and are NOT refit per fold: only the AOA/Josang model is refit per held-out block. The funnel MAE is a spatial-block evaluation, not a full nested CV.",
     "Ground truth is measured rover tilt at stops the rover chose (presence-only)."
   ],
-  "sha256_pack": "256eaefeb68a595da5a5b064cc7bd8d7e412eec4cdc98676659b228d9924a145"
+  "sha256_pack": "86339bf48e92eb60673d48a190986f07469d9476b056b52a4d5f5d03ba88a9e1"
 }
