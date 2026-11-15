@@ -1,4 +1,24 @@
-"""Optional FastAPI middleware serving the verified `public_packs/<site>/v1/` data pack."""
+"""Optional live API over the verified `public_packs/<site>/v1/` data pack.
+
+Who this is for
+    The frontend can work from static files alone. I keep this server for two
+    things static files cannot do: finding the cell under a click
+    (`GET /v1/sites/{site_id}/cell`) and judging a route the user draws
+    (`POST /v1/sites/{site_id}/evaluate-route`).
+
+How to run it
+    pip install -e .
+    uvicorn marswalk.middleware.api:app --reload
+    -> interactive docs at http://127.0.0.1:8000/docs
+
+What it promises
+    - Every GET returns exactly the content of the signed pack, validated
+      against the v1.0.0 contract. Nothing is recomputed on the fly.
+    - If one byte of the pack does not match its SHA-256 fingerprint, the
+      pack is refused and the endpoint answers 404 instead of serving
+      altered data.
+    - CORS is open for GET/POST so a local frontend dev server can call it.
+"""
 
 from __future__ import annotations
 

@@ -28,3 +28,25 @@
 1. **Human Direction First:** Every architectural decision, dataset selection, and physical threshold in this repository was reviewed, verified against primary NASA/JPL/USGS documentation, and approved by the human team.
 2. **Strict Separation of Facts and Simulation:** Real telemetry from Perseverance (`708` stops, `Sol 13 → Sol 2022`) is strictly separated from derived orbital slopes and simulated astronaut EVA paths via the `MEASURED | DERIVED | SIMULATED` tag system.
 3. **Transparent AI Disclosure:** In compliance with official NASA Space Apps Challenge rules, all AI tools used to accelerate code generation, schema validation, and documentation are transparently disclosed in [`docs/AI_USAGE.md`](docs/AI_USAGE.md).
+
+---
+
+## 3. Where each of us works (start here)
+
+Every folder a human needs has its own `HUMAN.md`: a short, honest map written for people, not for machines.
+
+| Folder | Owner | Read first |
+|---|---|---|
+| `frontend/` | Frontend lead (full ownership) | [`frontend/HUMAN.md`](frontend/HUMAN.md) |
+| `public_packs/` | Engine (read only for the UI) | [`public_packs/HUMAN.md`](public_packs/HUMAN.md) |
+| `schemas/` | Engine (read only for the UI) | [`schemas/HUMAN.md`](schemas/HUMAN.md) |
+| `shared/` | Both of us | [`shared/HUMAN.md`](shared/HUMAN.md) |
+| `src/marswalk/` | Engine | [`src/marswalk/HUMAN.md`](src/marswalk/HUMAN.md) |
+
+## 4. Why I build this
+
+I have spent years chasing things that are hard to see: neutrinos, fractal structure, the moment a phenomenon begins or ends depending on the scale you look at it. Mars gave me a concrete version of that question. An orbital map is true at one scale and quietly wrong at another, and an astronaut pays for the difference with their legs, their oxygen and their safety.
+
+So I hold this project to one rule: **say what is measured, what is derived and what is simulated, every time, on every number.** Beautiful is welcome. Fake is not.
+
+— Jean-Sébastien Beaulieu

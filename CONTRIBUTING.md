@@ -7,8 +7,8 @@ Thank you for contributing to **MarsWalk**! To keep parallel frontend (`feat/ui`
 ## 1. Branch Workflow
 
 - **`main`:** Protected baseline containing the frozen `v1.0.0` data contract (`src/marswalk/contracts/`, `schemas/`, `public_packs/jezero/v1/`) and verified releases.
-- **`feat/ui`:** Owned by **Philippe Pierre (`@Maptop`)** for all work under `frontend/`.
-- **`feat/engine`:** Owned by **Jean-Sebastien Beaulieu (`@EbaAaZ`)** for middleware and multi-scale terrain engine upgrades under `src/marswalk/` and `tests/`.
+- **`feat/ui`:** Owned by **Philippe Pierre** for all work under `frontend/`.
+- **`feat/engine`:** Owned by **Jean-Sebastien Beaulieu** for middleware and multi-scale terrain engine upgrades under `src/marswalk/` and `tests/`.
 
 ---
 
