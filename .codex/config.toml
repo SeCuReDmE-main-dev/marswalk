@@ -1,0 +1,9 @@
+# OpenAI Codex Project Configuration (`.codex/config.toml`)
+# Automatically wires the repo-embedded `spaceapps-bridge` MCP server to `./shared`
+
+[mcp_servers.spaceapps-bridge]
+command = "python"
+args = ["tools/spaceapps_bridge.py", "serve-mcp"]
+
+[mcp_servers.spaceapps-bridge.env]
+SPACEAPPS_VAULT = "./shared"
