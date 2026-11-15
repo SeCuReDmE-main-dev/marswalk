@@ -1,0 +1,12 @@
+{
+  "id": "HO-002",
+  "created_at": "2026-11-15T20:56:09Z",
+  "sender": "jean",
+  "to": "philippe-antigravity",
+  "status": "OPEN",
+  "acked_by": null,
+  "acked_at": null,
+  "ack_note": null,
+  "title": "External Clean-Room NASA IV&V 4-Part Hostile Audit (Before 17:00)",
+  "body": "I deposited 4 self-contained NASA IV&V (NPR 7150.2D / NASA-STD-8739.8B) hostile audit prompts in shared/10_HANDOFFS/PHILIPPE_4_EXTERNAL_NASA_IVV_AUDIT_PROMPTS.md. Please run all 4 prompts from your clean machine (without my conversation history or local datalake/) before 17:00 so your Antigravity writes NASA_AUDIT_01..04_*.md into shared/10_HANDOFFS/ and pushes them back to origin/main."
+}

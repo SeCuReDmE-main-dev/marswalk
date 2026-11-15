@@ -90,9 +90,34 @@ pytest -q --tb=short
 
 ## 5. Repository Governance & Documentation
 
-- **Data Contract (`v1.0.0` Frozen):** [`docs/contracts/10_CONTRAT_DONNEES.md`](docs/contracts/10_CONTRAT_DONNEES.md)
+- **Data Contract (`v1.0.0` / `v1.1.0` Frozen):** [`docs/contracts/10_CONTRAT_DONNEES.md`](docs/contracts/10_CONTRAT_DONNEES.md)
+- **Mathematical Specification (`Plithogenic <T, I, F>`, Funnel & Anisotropic `A*`):** [`docs/ENGINE_MATH.md`](docs/ENGINE_MATH.md)
+- **Standalone SVG Survival Map Card:** [`docs/assets/jezero_eva_survival_map.svg`](docs/assets/jezero_eva_survival_map.svg)
 - **Frontend Integration Guide:** [`frontend/README.md`](frontend/README.md)
 - **Branch history (now a single `main`):** [`docs/WORKTREE_TRACE.md`](docs/WORKTREE_TRACE.md)
 - **Human-AI Collaboration & AI Disclosure:** [`HUMAN.md`](HUMAN.md) & [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - **Multi-Agent Rules:** [`AGENTS.md`](AGENTS.md) (`.claude/`, `.antigravity/`, `.antigravity-ide/`, `.gemini/`)
 - **Data Licenses & Canadian Open Government Licence Attribution:** [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
+
+---
+
+## 6. References & Data Sources
+
+Every `MEASURED`, `DERIVED`, and `SIMULATED` quantity in `public_packs/jezero/v1/` is cryptographically bound via `manifest.json` (`SHA-256`) to the following official NASA, JPL, USGS, and peer-reviewed planetary science sources:
+
+1. **NASA/JPL-Caltech Mars 2020 Mission Operations MMGIS Waypoints (`SRC-M20-WAYPOINTS`, `708` stops, Sol 13–2022):** https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json
+2. **NASA/JPL-Caltech Mars 2020 Mission Operations MMGIS Traverse Path (`SRC-M20-TRAVERSE`, `45.2 km`):** https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json
+3. **NASA/JPL-Caltech/ASU Mars 2020 Raw Images Archive (`SRC-M20-RAW-IMAGES`, Navcam & Mastcam-Z):** https://mars.nasa.gov/mars2020/multimedia/raw-images/
+4. **NASA Solar System Treks / MRO HiRISE 25 cm/px Orthorectified Mosaic (`SRC-TREK-HIRISE-25CM`, Fergason et al. 2020):** https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars
+5. **USGS Astrogeology Mars 2020 TRN HiRISE 1 m/px Digital Terrain Model Blended with MOLA (`SRC-USGS-HIRISE-DTM-1M`, Fergason et al. 2020):** https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif
+6. **USGS Scientific Investigations Map 3464 — Geologic Map of Jezero Crater (`SRC-USGS-SIM3464`, Sun & Stack 2020):** https://doi.org/10.3133/sim3464
+7. **NASA Extravehicular Activity (xEVA) System Concept of Operations (`SRC-NASA-XEVA`, EVA-EXP-0042 Rev B, 2020):** https://www.nasa.gov/wp-content/uploads/2017/02/eva-exp-0042_xeva_system_con_ops_rev_b_final_dtd_10192020_ref_doc.pdf
+8. **JPL Mars 2020 Surface Traversability Analysis (`SRC-JPL-TRAVERSABILITY`, Ono et al. 2016, IEEE Aerospace Conference):** https://www-robotics.jpl.nasa.gov/media/documents/Data-driven%20surface%20traversability%20analysis%20for%20Mars%202020%20landing%20site%20selection.pdf
+9. **MSL Curiosity Radiation Assessment Detector (`SRC-RAD-GALE`, Hassler et al. 2014, *Science* 343(6169), 0.64 mSv/day GCR baseline):** https://www.swri.org/newsroom/press-releases/swri-scientists-publish-first-radiation-measurements-the-surface-of-mars
+10. **Apollo EVA Slope & Elevation Envelope (`SRC-APOLLO-SLOPE`, Iqbal et al. 2024, *Acta Astronautica* 223, 184–196):** https://doi.org/10.1016/j.actaastro.2024.07.006
+
+---
+
+## 7. Thoughtful Use of AI (AI Usage Disclosure)
+
+This project was engineered through an iterative, human-directed collaboration between **Jean-Sébastien Beaulieu** (Engine, Plithogenic Math, Geodesy & Middleware Lead) and **Philippe Pierre** (Frontend Cartography, 3D Terrain & UX Lead), using AI coding assistants (Claude Code, Google Gemini / Antigravity, and OpenAI Codex) strictly as verification, code-generation, and hostile-audit instruments under human architectural authority. All scientific equations, physical thresholds, dataset choices, and safety vetoes were defined, cross-checked against primary NASA/USGS data, and verified by deterministic automated test suites (`pytest` + `vitest`) by the human authors. See [`docs/AI_USAGE.md`](docs/AI_USAGE.md) for the complete module-by-module AI disclosure.
