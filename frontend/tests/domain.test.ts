@@ -42,7 +42,11 @@ test("distance uses the Mars sphere, not Earth", () => {
 });
 test("candidate/stops exclude rover traverses and benchmark records", () => {
   const p = routeParts(data);
-  assert.equal(p.candidate?.properties.tag, "SIMULATED");
+  assert.equal(p.candidate?.properties.tag, "DERIVED");
+  assert.equal(
+    p.candidate?.properties.segment_type,
+    "DERIVED_OBSTACLE_AWARE_EVA",
+  );
   assert.equal(p.stops.length, 3);
   assert.equal(p.traverse.length, 1);
   assert.ok(
@@ -52,7 +56,7 @@ test("candidate/stops exclude rover traverses and benchmark records", () => {
 });
 test("summary preserves quantity provenance and labels the prototype limitations", () => {
   const x = exportSummary(data);
-  assert.equal(x.route?.properties.distance_m?.tag, "SIMULATED");
+  assert.equal(x.route?.properties.distance_m?.tag, "DERIVED");
   assert.equal(x.science_stops[0].properties.rover_tilt_deg?.tag, "MEASURED");
   assert.equal(x.pack_version, data.manifest.pack_version);
   assert.match(x.limitation, /not operational/);
@@ -60,4 +64,41 @@ test("summary preserves quantity provenance and labels the prototype limitations
 test("external links reject script URLs", () => {
   assert.equal(safeUrl("javascript:alert(1)"), undefined);
   assert.equal(safeUrl("https://nasa.gov/"), "https://nasa.gov/");
+});
+test("benchmarks remain separate from science stops and do not extrapolate terrain outside coverage", () => {
+  const parts = routeParts(data);
+  assert.equal(parts.benchmarks.length, 2);
+  assert.ok(parts.benchmarks.every((b) => b.properties.tag === "MEASURED"));
+  const scarp = parts.benchmarks.find((b) => b.properties.sol === 700)!;
+  const rim = parts.benchmarks.find((b) => b.properties.sol === 1578)!;
+  assert.ok(
+    cellAt(
+      data.hazards,
+      scarp.geometry.coordinates.map(Number) as [number, number],
+    ),
+  );
+  assert.equal(
+    cellAt(
+      data.hazards,
+      rim.geometry.coordinates.map(Number) as [number, number],
+    ),
+    undefined,
+  );
+  const summary = exportSummary(data);
+  assert.equal(summary.science_stops.length, 3);
+  assert.equal(summary.validation_benchmarks.length, 2);
+  assert.equal(summary.obstacle_aware_route?.properties.tag, "DERIVED");
+  assert.equal(summary.simulated_route?.properties.tag, "SIMULATED");
+});
+test("legacy packs still use their simulated candidate when no computed route exists", () => {
+  const legacy = {
+    ...data,
+    route: {
+      ...data.route,
+      features: data.route.features.filter(
+        (f) => f.properties.segment_type !== "DERIVED_OBSTACLE_AWARE_EVA",
+      ),
+    },
+  };
+  assert.equal(routeParts(legacy).candidate?.properties.tag, "SIMULATED");
 });

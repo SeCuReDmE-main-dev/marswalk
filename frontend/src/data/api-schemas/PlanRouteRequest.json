@@ -1,0 +1,66 @@
+{
+  "additionalProperties": false,
+  "description": "Request payload for `POST /v1/sites/{site_id}/plan-route` (`M2`).",
+  "properties": {
+    "waypoints": {
+      "description": "Ordered [lon, lat] stops on the Mars sphere to connect avoiding scarps.",
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "maxItems": 32,
+      "minItems": 2,
+      "title": "Waypoints",
+      "type": "array"
+    },
+    "heuristic_weight": {
+      "default": 1.0,
+      "description": "A* heuristic weight (1.0 = strictly optimal, >1.0 = bounded-suboptimal).",
+      "maximum": 3.0,
+      "minimum": 1.0,
+      "title": "Heuristic Weight",
+      "type": "number"
+    },
+    "spe_alert": {
+      "default": false,
+      "description": "Solar Particle Event (SPE) switch: forces NO_GO + fastest pure-time egress.",
+      "title": "Spe Alert",
+      "type": "boolean"
+    },
+    "dust_tau_880nm": {
+      "default": 0.45,
+      "maximum": 10.0,
+      "minimum": 0.0,
+      "title": "Dust Tau 880Nm",
+      "type": "number"
+    },
+    "payload_kg": {
+      "default": 0.0,
+      "maximum": 120.0,
+      "minimum": 0.0,
+      "title": "Payload Kg",
+      "type": "number"
+    },
+    "rf_link_margin_db": {
+      "default": 6.0,
+      "maximum": 40.0,
+      "minimum": 0.0,
+      "title": "Rf Link Margin Db",
+      "type": "number"
+    }
+  },
+  "required": [
+    "waypoints"
+  ],
+  "title": "PlanRouteRequest",
+  "type": "object"
+}

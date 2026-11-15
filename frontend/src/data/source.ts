@@ -1,4 +1,5 @@
 import Ajv2020 from "ajv/dist/2020";
+import { validateEngine } from "./engine";
 import manifestSchema from "../../../schemas/SiteManifest.schema.json";
 import hazardSchema from "../../../schemas/HazardGrid.schema.json";
 import routeSchema from "../../../schemas/EvaRoute.schema.json";
@@ -85,7 +86,12 @@ export function createDataSource(
         );
       const loaded: Record<string, unknown> = { manifest };
       await Promise.all(
-        Object.entries(files).map(async ([key, filename]) => {
+        Object.entries({
+          ...files,
+          ...(manifest.files.some((f) => f.path === "obstacles.geojson")
+            ? { obstacles: "obstacles.geojson" }
+            : {}),
+        }).map(async ([key, filename]) => {
           const result = await get(
             config.mode === "api" ? key : filename,
             signal,
@@ -103,7 +109,9 @@ export function createDataSource(
                 `Integrity check failed for ${filename}. Ask the pack owner for a consistent pack.`,
               );
           }
-          validatePart(key as keyof typeof validators, result.data);
+          if (key === "obstacles")
+            validateEngine("obstacles", result.data, manifest);
+          else validatePart(key as keyof typeof validators, result.data);
           if (
             (result.data as { site_id?: string }).site_id &&
             (result.data as { site_id?: string }).site_id !== config.siteId

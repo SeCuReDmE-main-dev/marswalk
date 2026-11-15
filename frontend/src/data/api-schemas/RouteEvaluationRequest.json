@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "description": "Request payload for `POST /v1/sites/{site_id}/evaluate-route`.",
+  "properties": {
+    "points": {
+      "description": "Ordered list of [lon, lat] waypoints on the Mars sphere.",
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "maxItems": 500,
+      "minItems": 2,
+      "title": "Points",
+      "type": "array"
+    },
+    "walking_speed_km_h": {
+      "default": 2.2,
+      "exclusiveMinimum": 0.1,
+      "maximum": 15.0,
+      "title": "Walking Speed Km H",
+      "type": "number"
+    },
+    "spe_alert": {
+      "default": false,
+      "description": "Solar Particle Event (SPE) radiation emergency switch.",
+      "title": "Spe Alert",
+      "type": "boolean"
+    },
+    "dust_tau_880nm": {
+      "default": 0.45,
+      "description": "MEDA 880 nm atmospheric dust optical depth (nominal clear season = 0.45).",
+      "maximum": 10.0,
+      "minimum": 0.0,
+      "title": "Dust Tau 880Nm",
+      "type": "number"
+    },
+    "payload_kg": {
+      "default": 0.0,
+      "description": "Additional carried sample / tool payload mass in kg.",
+      "maximum": 120.0,
+      "minimum": 0.0,
+      "title": "Payload Kg",
+      "type": "number"
+    },
+    "rf_link_margin_db": {
+      "default": 6.0,
+      "description": "UHF 414.2 MHz link margin (dB) between suit (1.8 m) and rover mast (3.0 m).",
+      "maximum": 40.0,
+      "minimum": 0.0,
+      "title": "Rf Link Margin Db",
+      "type": "number"
+    }
+  },
+  "required": [
+    "points"
+  ],
+  "title": "RouteEvaluationRequest",
+  "type": "object"
+}

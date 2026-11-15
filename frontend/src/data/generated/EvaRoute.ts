@@ -24,6 +24,7 @@ export type FeatureId = string;
 export type SegmentType =
   | "MEASURED_ROVER_TRAVERSE"
   | "SIMULATED_ASTRONAUT_EVA"
+  | "DERIVED_OBSTACLE_AWARE_EVA"
   | "SCIENCE_STOP"
   | "BENCHMARK";
 export type Title = string;

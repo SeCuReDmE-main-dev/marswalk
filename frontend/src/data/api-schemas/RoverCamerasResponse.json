@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "RoverCameraItem": {
+      "additionalProperties": false,
+      "description": "Single Mars 2020 raw camera frame returned by `GET .../waypoints/{sol}/cameras` (`M5`).",
+      "properties": {
+        "image_id": {
+          "title": "Image Id",
+          "type": "string"
+        },
+        "sol": {
+          "title": "Sol",
+          "type": "integer"
+        },
+        "site": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Site"
+        },
+        "drive": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Drive"
+        },
+        "instrument": {
+          "title": "Instrument",
+          "type": "string"
+        },
+        "image_url": {
+          "title": "Image Url",
+          "type": "string"
+        },
+        "mast_azimuth_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mast Azimuth Deg"
+        },
+        "mast_elevation_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mast Elevation Deg"
+        },
+        "attitude_quaternion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attitude Quaternion"
+        },
+        "camera_model_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Camera Model Type"
+        },
+        "azimuth_delta_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Azimuth Delta Deg"
+        }
+      },
+      "required": [
+        "image_id",
+        "sol",
+        "instrument",
+        "image_url"
+      ],
+      "title": "RoverCameraItem",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Paginated response for `GET /v1/sites/{site_id}/waypoints/{sol}/cameras` (`M5`).",
+  "properties": {
+    "site_id": {
+      "title": "Site Id",
+      "type": "string"
+    },
+    "sol": {
+      "title": "Sol",
+      "type": "integer"
+    },
+    "source_status": {
+      "enum": [
+        "cached",
+        "live",
+        "offline_unavailable"
+      ],
+      "title": "Source Status",
+      "type": "string"
+    },
+    "cache_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cache Sha256"
+    },
+    "total_matching": {
+      "title": "Total Matching",
+      "type": "integer"
+    },
+    "page": {
+      "title": "Page",
+      "type": "integer"
+    },
+    "page_size": {
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/RoverCameraItem"
+      },
+      "title": "Items",
+      "type": "array"
+    }
+  },
+  "required": [
+    "site_id",
+    "sol",
+    "source_status",
+    "total_matching",
+    "page",
+    "page_size",
+    "items"
+  ],
+  "title": "RoverCamerasResponse",
+  "type": "object"
+}

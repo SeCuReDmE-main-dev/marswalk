@@ -1,0 +1,197 @@
+{
+  "$defs": {
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "Physical scalar quantity with mandatory unit, provenance tag, and source ID.",
+      "properties": {
+        "value": {
+          "description": "Numeric scalar value (finite float).",
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Physical unit (e.g. 'm', 'deg', 'mSv/day').",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Data provenance: MEASURED, DERIVED, or SIMULATED.",
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED",
+            "UNAVAILABLE"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "Identifier matching an entry in SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional provenance or proxy clarification note.",
+          "title": "Note"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "tag",
+        "source_id"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Response payload for `POST /v1/sites/{site_id}/evaluate-route`.",
+  "properties": {
+    "site_id": {
+      "title": "Site Id",
+      "type": "string"
+    },
+    "point_count": {
+      "title": "Point Count",
+      "type": "integer"
+    },
+    "total_distance_m": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "walkback_distance_m": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "walkback_within_limit": {
+      "title": "Walkback Within Limit",
+      "type": "boolean"
+    },
+    "max_slope_1m_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "max_slope_64m_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "max_scale_divergence_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "estimated_duration_h": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "estimated_radiation_msv": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "verdict": {
+      "enum": [
+        "GO",
+        "CAUTION",
+        "NO_GO"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "traversed_cell_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Traversed Cell Ids",
+      "type": "array"
+    },
+    "metabolic_rate_w": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "walkback_return_h": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "walkback_o2_margin_min": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "rf_diffraction_loss_db": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "rf_comms_verdict": {
+      "anyOf": [
+        {
+          "enum": [
+            "GO",
+            "CAUTION",
+            "NO_GO"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rf Comms Verdict"
+    }
+  },
+  "required": [
+    "site_id",
+    "point_count",
+    "total_distance_m",
+    "walkback_distance_m",
+    "walkback_within_limit",
+    "max_slope_1m_deg",
+    "max_slope_64m_deg",
+    "max_scale_divergence_deg",
+    "estimated_duration_h",
+    "estimated_radiation_msv",
+    "verdict",
+    "reasons",
+    "traversed_cell_ids"
+  ],
+  "title": "RouteEvaluationResult",
+  "type": "object"
+}

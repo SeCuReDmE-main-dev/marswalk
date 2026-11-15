@@ -37,9 +37,22 @@ export function cellAt(grid: HazardGrid, point: LonLat) {
 }
 export function routeParts(data: MarswalkData) {
   return {
-    candidate: data.route.features.find(
+    simulated: data.route.features.find(
       (f) => f.properties.segment_type === "SIMULATED_ASTRONAUT_EVA",
     ),
+    obstacleAware: data.route.features.find(
+      (f) => f.properties.segment_type === "DERIVED_OBSTACLE_AWARE_EVA",
+    ),
+    benchmarks: data.route.features.filter(
+      (f) => f.properties.segment_type === "BENCHMARK",
+    ),
+    candidate:
+      data.route.features.find(
+        (f) => f.properties.segment_type === "DERIVED_OBSTACLE_AWARE_EVA",
+      ) ||
+      data.route.features.find(
+        (f) => f.properties.segment_type === "SIMULATED_ASTRONAUT_EVA",
+      ),
     traverse: data.route.features.filter(
       (f) => f.properties.segment_type === "MEASURED_ROVER_TRAVERSE",
     ),
@@ -72,7 +85,8 @@ export function safeUrl(value?: string | null) {
   }
 }
 export function exportSummary(data: MarswalkData) {
-  const { candidate, stops } = routeParts(data);
+  const { candidate, stops, simulated, obstacleAware, benchmarks } =
+    routeParts(data);
   return {
     name: "Marswalk planning prototype",
     site: data.manifest.site_id,
@@ -80,9 +94,12 @@ export function exportSummary(data: MarswalkData) {
     contract_version: data.manifest.contract_version,
     route: candidate,
     science_stops: stops,
+    simulated_route: simulated,
+    obstacle_aware_route: obstacleAware,
+    validation_benchmarks: benchmarks,
     constraints: data.constraints,
     sources: data.manifest.sources,
     limitation:
-      "Simulated astronaut route. Assessments are model outputs, not operational safety certification.",
+      "Astronaut routes are simulated or derived plans. Assessments are model outputs, not operational safety certification.",
   };
 }

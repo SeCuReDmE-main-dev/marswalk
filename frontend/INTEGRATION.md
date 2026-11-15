@@ -46,7 +46,7 @@ VITE_PACK_URL=https://example.org/public_packs/jezero/v1
 VITE_SITE_ID=jezero
 ```
 
-The static host must allow browser fetches/CORS and supply consistent bytes matching `manifest.files`. Static mode checks the four consumed JSON/GeoJSON payload digests and byte counts. It does not claim a cryptographic signature, scientific validation, or verification of unconsumed pack files.
+The static host must allow browser fetches/CORS and supply consistent bytes matching `manifest.files`. Static mode checks the consumed JSON/GeoJSON payload digests and byte counts, including obstacles when present. It does not claim a cryptographic signature, scientific validation, or verification of unconsumed pack files.
 
 ## Change points
 
@@ -57,6 +57,7 @@ The static host must allow browser fetches/CORS and supply consistent bytes matc
 - `src/domain.ts`: UI geometry, coverage containment, safe links, route-feature filtering and export helpers.
 - `src/MapView.tsx`: geographic map presentation and callbacks; it does not fetch middleware data or evaluate routes.
 - `src/App.tsx`: guide, selected entities, evidence panels and source dialogs.
+- `src/RoverImage.tsx` and `src/data/images.ts`: canonical stop images prefer the bundled JPEG after checking its manifest byte count and SHA-256. If the local copy cannot be loaded, the component tries the supplied NASA URL. Other rover observations use their supplied image URL. Frames are labeled Navcam images, not 360-degree panoramas.
 
 The data source accepts an `AbortSignal` for cancellation. Requests fail visibly; the app does not silently switch API failures to an old static pack. The Reload data control fetches again.
 
@@ -67,18 +68,38 @@ The data source accepts an `AbortSignal` for cancellation. Requests fail visibly
 - Assessment rectangles derive from grid bbox, row and col. Outside that coverage returns Not assessed, not a nearest-cell verdict.
 - Null matched tilt/rock fields remain Unavailable. Rover records are independently browsable; no per-cell ground-truth match is fabricated.
 - Route features tagged BENCHMARK are excluded from the astronaut candidate/science-stop UI.
+- Measured hazard benchmarks have a separate selector under **Check the evidence** and optional B1/B2 map markers. Their reference verdict and measured tilt remain distinct from the containing cell's orbital slope; outside-grid references never borrow a nearest-cell terrain verdict. **Layers** can compare the original simulated walk with the supplied obstacle-aware walk. Both routes and the benchmark references are preserved separately in exported summaries.
 - Max distance from start is frontend-derived spherical distance over the supplied candidate vertices. It is not a traversable return-path distance. Original route notes and reference constraints remain visible separately.
 - Quantities retain value, unit, tag, source_id and note. Source buttons resolve through the manifest. Radiation proxy notes are displayed.
 - External tile geometry uses Leaflet EPSG:4326 with the geographic 2:1 WMTS grid; the map's distance function uses the Mars sphere, not Earth's radius.
+- A global Viking color mosaic sits beneath the local HiRISE grayscale footprint. It is display context only, never additional assessed terrain. NASA's [tile catalog](https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars) and [Viking WMTS capabilities](https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/WMTSCapabilities.xml) specify JPEG tiles, a geographic 2:1 grid and native matrices 0–7; higher display zoom overzooms that coarse context. Network errors remain visible. No red tint is applied to the imagery.
+- The map labels Jezero, Mars, outlines the assessed window with its dimensions derived on the Mars sphere, and states that outside terrain is not assessed. **Jezero context** fits the manifest's wider regional extent; the hazard legend hides at regional zoom where the cells are too small to interpret. **Assessed area** and **Fit route** restore the close view.
 - The local fallback backdrop is a coarse raster made from the actual grid elevations and labeled DERIVED. It is not high-resolution imagery. NASA tiles are a separate attributed layer.
 
-## Deferred until middleware agreement
+## Connected engine features
 
-Arbitrary route drawing, route evaluation and automatic rerouting are intentionally not wired to `/cell` or `/evaluate-route`. Phase 3 middleware now includes segment traversal, outside-coverage handling and NO_GO propagation; the earlier frontend-branch concerns about those behaviors predate that update. Connecting editable routes still requires agreement on the current request parameters, response fields and user-facing scenario controls. The initial frontend inspects the supplied candidate. This keeps UI integration independent from the scientific engine work.
+The supplied `DERIVED_OBSTACLE_AWARE_EVA` is preferred over the original simulated route. The map can toggle the pack's `obstacles.geojson` (82 DERIVED outlines in the current pack). Static loading verifies the obstacle file's digest and size along with the four original payloads. The planner's encoded 10 m PNG remains an engine input; it is not misrepresented as a photograph or a terrain verdict layer.
 
-Contract 1.1.0 also supplies optional shadow, geology, area-of-applicability, calibrated opinion, sky-view and RF assessment fields. Their generated types are available for follow-up screens; the initial UI continues to display the original confidence vector and does not silently replace it with calibrated opinion or claim those additional panels are implemented.
+Use **Plan walk** in the header to add ordered science stops or pick points on the map. **Plan around obstacles** calls `POST /v1/sites/{site}/plan-route` (2–32 points); **Assess drawn path** calls `/evaluate-route` (2–500 points). The scenario controls send dust optical depth, additional payload, radio link margin and solar-particle-event status. No scientific calculations are duplicated in React. Results retain the supplied provenance, reasons, effort, oxygen return margin, radio status and planner details. Editing points or scenarios aborts outstanding requests and clears the previous result. Live assessments can be exported separately from the supplied pack summary.
+
+The live service address is `VITE_API_BASE_URL` in both static and API modes. Static browsing does not require a server: connect explicitly in the planner. API mode checks health automatically. Health is polled every 10 seconds and checked before and after route requests. Operator stop or connection failure clears live results and disables planning; a banner explains the state. A matching manifest (file digests/sizes and Mars CRS) is required before live planning. Restart/rebuild Vite when changing API configuration. On a deployed site, configure an HTTPS middleware URL; localhost is only for local development.
+
+**Inspect the terrain** exposes optional environment, geology, applicability, calibrated confidence, refuge, effort and radio fields in a collapsed section, preserving unavailable values and scientific caveats. **Nearby rover evidence** uses `/cell` and labels the nearest observation as context. **Check the evidence → Rover camera frames** uses `/waypoints/{sol}/cameras`, with pagination and an optional azimuth filter. Requests always send `allow_network=false`; live NASA fetching remains an operator decision. Empty caches have a visible unavailable state.
+
+`src/data/engine.ts` centralizes all live requests, cancellation/timeouts, response-schema validation, site identity and provenance checks. Refresh the frontend-owned API schema snapshots from the backend models, then regenerate types:
+
+```powershell
+# Run with the repository's Python environment from the repo root:
+python frontend/scripts/export-api-contracts.py
+cd frontend
+npm run types:generate
+```
+
+These commands edit only frontend snapshots/types. They do not change the shared contracts, backend, or pack.
 
 The app is a planning/hackathon prototype, not astronaut navigation or NASA safety certification. No simulated live GPS, oxygen, weather or battery telemetry is shown.
+
+After pulling main through `3509d93`, the three science-stop photos use the five-image bundle introduced by `ffde828`. All three replacement remote URLs returned HTTP 200 JPEGs in a direct check; all three science-stop images also decoded at 800 px width in the browser from verified pack copies. Canonical local copies are matched by exact source URL, not just by sol, to avoid substituting an unrelated observation. Images at stops 1, 2 and 3 no longer depend on remote NASA access in static pack mode.
 
 ## Build and validate
 
@@ -90,4 +111,6 @@ npm run preview
 
 `dist/` is a static deployable frontend, including the copied pack. For subpath hosting, set `VITE_BASE_PATH=/your-path/` at build time; default pack/brand URLs follow that base. API config is compiled into the build, so rebuild after changing production URLs. No hosting account or deployment was created as part of this branch.
 
-Automated tests exercise the real pack, tamper rejection, API endpoint mapping, malformed responses, source/scope safety, Mars distances, feature filtering and coverage. API adapter tests use a fetch mock returning the real contract payloads; they do not claim a running middleware integration test.
+Automated frontend tests exercise the real pack, tamper rejection, API mapping, malformed responses, source/scope safety, Mars distances, route preference, input validation, pack mismatch and read-only camera requests. For a running middleware integration check, start the server and run `node --import tsx scripts/smoke-engine.ts` from `frontend/`. Override `MARSWALK_API_URL` if needed; `EXPECT_SAFE_MODE=1` checks a server deliberately started in operator stop mode.
+
+Validation on 2026-11-15: frontend tests and production build pass; live API smoke passes (1,600 cells, 82 obstacles, planning, assessment, SPE NO_GO, outside-coverage FAIL_SAFE, camera cache unavailable). Desktop and 390 px mobile browser checks covered point picking, scenario invalidation, collapse with tips off, layer toggles, camera empty state, nearest rover lookup, safe mode and server outage. The committed pack verifies all 12 files. Full Python regressions exposed two existing/environment-sensitive failures: missing local `datalake/SIM3464_metadata.xml`, and a fresh `hazard_overlay.png` whose byte hash differs from the committed image. No backend or frozen pack was edited to hide these failures.

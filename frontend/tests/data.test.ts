@@ -16,6 +16,7 @@ const map: Record<string, string> = {
   route: "route.geojson",
   hazards: "hazard_grid.json",
   constraints: "eva_constraints.json",
+  obstacles: "obstacles.geojson",
 };
 function fetchMock(
   options: {

@@ -18,6 +18,182 @@
 * {
   box-sizing: border-box;
 }
+[hidden] {
+  display: none !important;
+}
+.normal-guide {
+  display: contents;
+}
+.engine-guide {
+  flex-shrink: 0;
+  padding-bottom: 10px;
+}
+.engine-guide > .text-button {
+  margin-left: 20px;
+  color: #f4c6a6;
+}
+.engine-tools {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 18px 20px 28px;
+  background: var(--paper);
+  color: var(--ink);
+  flex: 1;
+}
+.engine-tools .intro {
+  font-size: 14px;
+}
+.engine-tools .secondary-button {
+  color: var(--ink);
+  background: #e7edf0;
+  border-color: #a8b6bf;
+}
+.engine-tools .secondary-button:disabled {
+  opacity: 0.65;
+}
+.engine-tools .field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12px;
+  margin: 12px 0;
+}
+.engine-tools .field-label select,
+.engine-tools .field-label input {
+  min-width: 0;
+  width: 100%;
+  border: 1px solid #b3bec3;
+  border-radius: 5px;
+  padding: 9px;
+  color: var(--ink);
+  background: white;
+}
+.engine-tools .readout {
+  gap: 15px;
+}
+.engine-tools .quantity strong {
+  font-size: 16px;
+}
+.engine-tools .quantity-note {
+  max-width: 180px;
+}
+.engine-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.engine-actions > button {
+  flex: 1;
+  padding: 9px;
+  font-size: 12px;
+}
+.planner-points {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  max-height: 170px;
+  overflow-y: auto;
+}
+.planner-points li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 11px;
+  border-bottom: 1px solid var(--line);
+}
+.planner-points button {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.scenario-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.scenario-check input {
+  width: 18px;
+}
+.engine-status {
+  flex-shrink: 0;
+  padding: 7px 20px;
+  background: #183c49;
+  font-size: 12px;
+}
+.engine-status.operator-stop {
+  background: #812c26;
+  color: white;
+}
+.engine-error {
+  color: #8b2920;
+  border-left: 3px solid #b64e26;
+  padding-left: 10px;
+  overflow-wrap: anywhere;
+}
+.engine-reasons {
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.planner-marker span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #b64e26;
+  color: white;
+  font-weight: bold;
+}
+.benchmark-marker span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #ffd5bd;
+  border-radius: 5px;
+  background: #862f28;
+  color: white;
+  font-weight: 700;
+  font-size: 11px;
+  box-shadow: 0 1px 7px #0008;
+}
+.benchmark-panel {
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.benchmark-panel .intro {
+  font-size: 12px;
+}
+.camera-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.camera-grid figure {
+  margin: 0;
+  min-width: 0;
+}
+.camera-grid img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  background: #20333f;
+}
+.camera-grid figcaption {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.camera-grid details {
+  font-size: 10px;
+}
+.camera-grid p {
+  overflow-wrap: anywhere;
+}
 body {
   margin: 0;
 }
@@ -361,13 +537,13 @@ a {
   background: #142b3ddd !important;
   color: #b7c7d2 !important;
   padding: 3px 6px !important;
-  max-width: 70%;
+  max-width: 38%;
 }
 .leaflet-control-attribution a {
   color: #c2d2dc !important;
 }
 .leaflet-control-scale {
-  margin: 0 0 65px 19px !important;
+  margin: 0 0 98px 19px !important;
 }
 .leaflet-control-scale-line {
   background: #142b3ddd;
@@ -405,6 +581,42 @@ a {
   top: 18px;
   left: 18px;
   z-index: 450;
+}
+.map-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-bottom: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  background: #102331e8;
+  color: #fff2e4;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px #0003;
+}
+.mars-location-dot {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #c36a44;
+  border: 1px solid #e6a787;
+}
+.leaflet-tooltip.assessed-area-label {
+  background: #102331ef;
+  color: #fff3df;
+  border: 1px solid #fff3df;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font:
+    600 11px "Segoe UI",
+    sans-serif;
+  box-shadow: 0 2px 8px #0005;
+}
+.leaflet-tooltip.assessed-area-label::before {
+  border-top-color: #fff3df;
 }
 .map-button {
   background: #152b40f0;
@@ -514,7 +726,7 @@ a {
 }
 .fit-actions {
   position: absolute;
-  bottom: 22px;
+  bottom: 52px;
   left: 18px;
   display: flex;
   gap: 6px;
@@ -598,6 +810,20 @@ a {
   z-index: 410;
   font-size: 9px;
   pointer-events: none;
+  padding: 4px 6px;
+  background: #102331d9;
+  border-radius: 4px;
+  max-width: min(70%, 520px);
+}
+.imagery-context {
+  display: block;
+  color: #f1e6da;
+  font-size: 10px;
+}
+.imagery-availability {
+  display: block;
+  font-size: 8px;
+  margin-top: 2px;
 }
 .imagery-note button {
   pointer-events: auto;
@@ -1566,7 +1792,7 @@ dialog::backdrop {
     font-size: 9px;
     padding: 8px;
     right: 12px;
-    bottom: 115px;
+    bottom: 140px;
     max-width: 170px;
   }
   .map-legend > b {
@@ -1583,10 +1809,10 @@ dialog::backdrop {
   }
   .map-zoom {
     right: 13px;
-    bottom: 30px;
+    bottom: 45px;
   }
   .fit-actions {
-    bottom: 20px;
+    bottom: 65px;
     left: 12px;
   }
   .fit-actions .map-button {
@@ -1612,10 +1838,24 @@ dialog::backdrop {
     font-size: 7px;
     left: 12px;
     bottom: 5px;
-    max-width: 78%;
+    max-width: 56%;
+  }
+  .imagery-context {
+    font-size: 8px;
+  }
+  .imagery-availability {
+    font-size: 7px;
+  }
+  .map-location {
+    font-size: 10px;
+    padding: 6px 8px;
+  }
+  .leaflet-control-attribution {
+    max-width: 34%;
+    font-size: 6px !important;
   }
   .leaflet-control-scale {
-    margin: 0 0 62px 13px !important;
+    margin: 0 0 106px 13px !important;
   }
   .map-top-controls {
     left: 12px;
@@ -1675,5 +1915,14 @@ dialog::backdrop {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 480px) {
+  .app-header .site-title,
+  .app-header .header-divider {
+    display: none;
+  }
+  .app-header .brand img {
+    width: 132px;
   }
 }

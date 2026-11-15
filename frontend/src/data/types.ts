@@ -11,12 +11,14 @@ import type { HazardGrid } from "./generated/HazardGrid";
 import type { EvaRoute } from "./generated/EvaRoute";
 import type { WaypointFeatureCollection } from "./generated/WaypointFeatureCollection";
 import type { EvaConstraints } from "./generated/EvaConstraints";
+import type { ObstacleFeatureCollection } from "./generated/ObstacleFeatureCollection";
 export interface MarswalkData {
   manifest: SiteManifest;
   hazards: HazardGrid;
   route: EvaRoute;
   waypoints: WaypointFeatureCollection;
   constraints: EvaConstraints;
+  obstacles?: ObstacleFeatureCollection;
   integrity: "sha256-verified" | "schema-validated";
   mode: "static" | "api";
 }

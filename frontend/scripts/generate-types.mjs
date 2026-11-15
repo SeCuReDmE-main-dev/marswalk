@@ -24,3 +24,26 @@ for (const name of names) {
   );
   console.log("Generated", name);
 }
+for (const name of [
+  "ObstacleFeatureCollection",
+  "CellLookupResult",
+  "PlanRouteRequest",
+  "PlanRouteResult",
+  "RouteEvaluationRequest",
+  "RouteEvaluationResult",
+  "RoverCamerasResponse",
+]) {
+  const schema = new URL(
+    `../src/data/api-schemas/${name}.json`,
+    import.meta.url,
+  );
+  const content = await compileFromFile(fileURLToPath(schema), {
+    bannerComment:
+      "/* Generated from middleware Pydantic models via scripts/export-api-contracts.py. */",
+  });
+  await writeFile(
+    new URL(`../src/data/generated/${name}.ts`, import.meta.url),
+    await format(content, { parser: "typescript" }),
+  );
+  console.log("Generated", name);
+}

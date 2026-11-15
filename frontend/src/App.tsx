@@ -18,6 +18,15 @@ import {
   X,
 } from "lucide-react";
 import MapView, { type LayerState } from "./MapView";
+import RoverImage from "./RoverImage";
+import BenchmarkPanel from "./BenchmarkPanel";
+import {
+  EngineTools,
+  CameraPanel,
+  type EngineStatus,
+  type RouteOverlay,
+} from "./EngineTools";
+import { TerrainExtras, CellEvidence } from "./TerrainExtras";
 import { createDataSource } from "./data/source";
 import { getConfig } from "./data/config";
 import type {
@@ -33,6 +42,7 @@ import {
   routeParts,
   safeUrl,
   stopLabel,
+  type LonLat,
 } from "./domain";
 
 const steps = [
@@ -46,6 +56,10 @@ const defaultLayers: LayerState = {
   hazards: true,
   rover: false,
   stops: true,
+  obstacles: true,
+  suppliedRoute: true,
+  simulated: false,
+  benchmarks: false,
   opacity: 0.22,
 };
 function Badge({ value }: { value: string }) {
@@ -93,35 +107,6 @@ function Dialog({
     </dialog>
   );
 }
-function Panorama({ url }: { url?: string | null }) {
-  const [failed, setFailed] = useState(false);
-  const link = safeUrl(url);
-  useEffect(() => setFailed(false), [url]);
-  return (
-    <div className="panorama">
-      {link && !failed ? (
-        <img
-          src={link}
-          alt="Perseverance panorama from the selected rover stop"
-          loading="lazy"
-          onError={() => setFailed(true)}
-        />
-      ) : (
-        <div className="image-fallback">
-          <MapPinned size={24} />
-          <span>
-            {link ? "Panorama could not be loaded" : "No panorama available"}
-          </span>
-        </div>
-      )}
-      {link && (
-        <a href={link} target="_blank" rel="noreferrer">
-          Open original panorama <ExternalLink size={12} />
-        </a>
-      )}
-    </div>
-  );
-}
 function Workspace({
   data,
   onRetry,
@@ -130,6 +115,17 @@ function Workspace({
   onRetry: () => void;
 }) {
   const { candidate, stops } = routeParts(data);
+  const [plannerOpen, setPlannerOpen] = useState(false),
+    [picking, setPicking] = useState(false);
+  const [planningPoints, setPlanningPoints] = useState<LonLat[]>([]);
+  const [plannedRoute, setPlannedRoute] = useState<RouteOverlay>();
+  const [engineStatus, setEngineStatus] = useState<EngineStatus>({
+    connected: false,
+    safe: false,
+    message: "",
+  });
+  const [lookupPoint, setLookupPoint] = useState<LonLat>();
+  const [selectedBenchmark, setSelectedBenchmark] = useState<EvaRouteFeature>();
   const [step, setStep] = useState(0),
     [expanded, setExpanded] = useState(true),
     [collapsed, setCollapsed] = useState(false),
@@ -142,14 +138,14 @@ function Workspace({
     [outside, setOutside] = useState(false),
     [baseline, setBaseline] = useState("16");
   const [layers, setLayers] = useState<LayerState>(defaultLayers),
-    [fit, setFit] = useState<"route" | "coverage">("route"),
+    [fit, setFit] = useState<"route" | "coverage" | "region">("route"),
     [fitTick, setFitTick] = useState(0),
     [dialog, setDialog] = useState<"sources" | "help" | null>(null),
     [sourceId, setSourceId] = useState<string>(),
     [solSearch, setSolSearch] = useState("");
 
   const q = (value: Quantity | null | undefined, digits = 1) =>
-    value ? (
+    value && value.tag !== "UNAVAILABLE" ? (
       <span className="quantity">
         <strong>
           {value.value.toLocaleString("en-US", {
@@ -173,6 +169,9 @@ function Workspace({
       <span className="unavailable">Unavailable</span>
     );
   function navigate(index: number) {
+    if (index !== 2) setSelectedBenchmark(undefined);
+    setPlannerOpen(false);
+    setPicking(false);
     setStep(index);
     setExpanded(true);
     if (index === 1 && !cell && !outside)
@@ -193,6 +192,8 @@ function Workspace({
     }
   }
   function chooseStop(stop: EvaRouteFeature) {
+    setSelectedBenchmark(undefined);
+    setPlannerOpen(false);
     setSelectedStop(stop);
     setWaypoint(undefined);
     setStep(0);
@@ -200,6 +201,8 @@ function Workspace({
     setLayers((l) => ({ ...l, stops: true }));
   }
   function chooseCell(value?: HazardCell) {
+    setSelectedBenchmark(undefined);
+    setPlannerOpen(false);
     setCell(value);
     setWaypoint(undefined);
     setOutside(!value);
@@ -208,17 +211,33 @@ function Workspace({
     setExpanded(true);
   }
   function chooseWaypoint(value: Waypoint) {
+    setSelectedBenchmark(undefined);
+    setPlannerOpen(false);
     setWaypoint(value);
     setSelectedStop(undefined);
     setStep(2);
     setExpanded(true);
     setLayers((l) => ({ ...l, rover: true }));
   }
-  function fitMap(mode: "route" | "coverage") {
+  function chooseBenchmark(value?: EvaRouteFeature) {
+    setPlannerOpen(false);
+    setSelectedBenchmark(value);
+    setSelectedStop(undefined);
+    setWaypoint(undefined);
+    setStep(2);
+    setExpanded(true);
+    if (value) setLayers((l) => ({ ...l, benchmarks: true }));
+  }
+  function fitMap(mode: "route" | "coverage" | "region") {
     setFit(mode);
     setFitTick((t) => t + 1);
   }
   function reset() {
+    setSelectedBenchmark(undefined);
+    setPlannerOpen(false);
+    setPicking(false);
+    setPlanningPoints([]);
+    setPlannedRoute(undefined);
     setStep(0);
     setExpanded(true);
     setCollapsed(false);
@@ -271,6 +290,16 @@ function Workspace({
         <span className="prototype">Planning prototype</span>
         <nav aria-label="Application">
           <button
+            onClick={() => {
+              setPlannerOpen(true);
+              setCollapsed(false);
+            }}
+            aria-label="Plan a walk"
+          >
+            <MapPinned size={17} />
+            <span>Plan walk</span>
+          </button>
+          <button
             aria-label={collapsed ? "Show mission guide" : "Hide mission guide"}
             aria-expanded={!collapsed}
             aria-controls="guide"
@@ -299,12 +328,27 @@ function Workspace({
           </button>
         </nav>
       </header>
+      {engineStatus.message && (
+        <div
+          className={`engine-status ${engineStatus.safe ? "operator-stop" : ""}`}
+          role="status"
+        >
+          {engineStatus.message}
+        </div>
+      )}
       <main className={`workspace ${collapsed ? "guide-collapsed" : ""}`}>
         <div className="map-column">
           <div className="mission-strip">
             <div className="mission-label">
-              <span className="eyebrow">CANDIDATE WALK</span>
-              <b>{title} candidate EVA</b>
+              <span className="eyebrow">
+                SUPPLIED WALK · {candidate?.properties.tag}
+              </span>
+              <b>
+                {title}{" "}
+                {candidate?.properties.tag === "DERIVED"
+                  ? "obstacle-aware EVA"
+                  : "candidate EVA"}
+              </b>
             </div>
             {candidate ? (
               <>
@@ -328,13 +372,24 @@ function Workspace({
               cell={cell}
               stop={selectedStop}
               waypoint={waypoint}
+              benchmark={selectedBenchmark}
               layers={layers}
               onLayers={setLayers}
               onCell={chooseCell}
               onStop={chooseStop}
               onWaypoint={chooseWaypoint}
+              onBenchmark={chooseBenchmark}
               fit={fit}
               fitTick={fitTick}
+              picking={picking}
+              planningPoints={planningPoints}
+              plannedRoute={plannedRoute}
+              onLocation={setLookupPoint}
+              onPick={(point) =>
+                setPlanningPoints((points) =>
+                  points.length < 32 ? [...points, point] : points,
+                )
+              }
             />
             <div className="fit-actions">
               <button className="map-button" onClick={() => fitMap("route")}>
@@ -342,6 +397,9 @@ function Workspace({
               </button>
               <button className="map-button" onClick={() => fitMap("coverage")}>
                 Assessed area
+              </button>
+              <button className="map-button" onClick={() => fitMap("region")}>
+                Jezero context
               </button>
             </div>
           </div>
@@ -366,6 +424,41 @@ function Workspace({
           id="guide"
           aria-label="Marswalk step-by-step guide"
         >
+          <div className="engine-guide" hidden={!plannerOpen || collapsed}>
+            <div className="guide-heading">
+              <div>
+                <span className="eyebrow">LIVE PLANNER</span>
+                <h1>Plan a Marswalk</h1>
+              </div>
+              <button
+                className="icon-button"
+                aria-label="Collapse mission guide"
+                onClick={() => setCollapsed(true)}
+              >
+                <PanelRightClose size={19} />
+              </button>
+            </div>
+            <button
+              className="text-button"
+              onClick={() => {
+                setPlannerOpen(false);
+                setPicking(false);
+              }}
+            >
+              Back to mission guide
+            </button>
+          </div>
+          <EngineTools
+            data={data}
+            open={plannerOpen && !collapsed}
+            points={planningPoints}
+            setPoints={setPlanningPoints}
+            picking={picking}
+            setPicking={setPicking}
+            onRoute={setPlannedRoute}
+            onStatus={setEngineStatus}
+            q={q}
+          />
           {collapsed ? (
             <button
               className="reopen-guide"
@@ -376,7 +469,7 @@ function Workspace({
               <span>Mission guide</span>
             </button>
           ) : (
-            <>
+            <div className="normal-guide" hidden={plannerOpen}>
               <div className="guide-heading">
                 <div>
                   <span className="eyebrow">MISSION GUIDE</span>
@@ -439,7 +532,7 @@ function Workspace({
                                 <HelpCircle size={15} />
                                 <span>
                                   Select a stop to locate it on the map. The
-                                  astronaut walk is simulated; rover
+                                  astronaut walk is a modelled plan; rover
                                   observations are measured.
                                 </span>
                               </div>
@@ -485,7 +578,8 @@ function Workspace({
                                   <span>Rover tilt at this stop</span>
                                   {q(selectedStop.properties.rover_tilt_deg, 2)}
                                 </div>
-                                <Panorama
+                                <RoverImage
+                                  data={data}
                                   url={selectedStop.properties.panorama_url}
                                 />
                                 <details>
@@ -638,8 +732,14 @@ function Workspace({
                                   </div>
                                   <p className="footnote">
                                     1 m is diagnostic only and excluded from the
-                                    current decision logic.
+                                    current decision logic.{" "}
+                                    {cell.slope_deg_by_baseline["1"]?.note}
                                   </p>
+                                  <TerrainExtras
+                                    data={data}
+                                    cell={cell}
+                                    q={q}
+                                  />
                                   <details>
                                     <summary>Confidence and evidence</summary>
                                     <Confidence cell={cell} />
@@ -663,10 +763,27 @@ function Workspace({
                                 </>
                               )
                             )}
+                            <CellEvidence
+                              data={data}
+                              point={
+                                outside
+                                  ? lookupPoint
+                                  : cell
+                                    ? [cell.lon, cell.lat]
+                                    : undefined
+                              }
+                              q={q}
+                            />
                           </>
                         )}
                         {i === 2 && (
                           <>
+                            <BenchmarkPanel
+                              data={data}
+                              selected={selectedBenchmark}
+                              onSelect={chooseBenchmark}
+                              q={q}
+                            />
                             <p className="intro">
                               Browse Perseverance’s measured observations. A
                               rover stop may not coincide with an assessed cell.
@@ -736,8 +853,13 @@ function Workspace({
                                   <span>Roll</span>
                                   {q(waypoint.properties.rover_roll_deg, 2)}
                                 </div>
-                                <Panorama
+                                <RoverImage
+                                  data={data}
                                   url={waypoint.properties.panorama_url}
+                                />
+                                <CameraPanel
+                                  data={data}
+                                  sol={waypoint.properties.sol}
                                 />
                                 <p className="footnote">
                                   {waypoint.properties.lat.toFixed(5)}° N,{" "}
@@ -887,7 +1009,7 @@ function Workspace({
                   </button>
                 )}
               </div>
-            </>
+            </div>
           )}
         </aside>
       </main>
@@ -955,7 +1077,7 @@ function Workspace({
                     [
                       "Choose a science stop and see where it sits along the candidate route.",
                       "Select a cell. Compare slopes at different spatial baselines without changing its supplied verdict.",
-                      "Browse measured Perseverance observations and inspect their source panoramas.",
+                      "Browse measured Perseverance observations and inspect their source camera images.",
                       "Review the simulated walk’s estimates, constraints and limitations.",
                     ][i]
                   }

@@ -1,0 +1,203 @@
+{
+  "$defs": {
+    "GeoJsonPolygonGeometry": {
+      "additionalProperties": false,
+      "description": "GeoJSON Polygon geometry for mapped obstacle clusters (`obstacles.geojson`).",
+      "properties": {
+        "type": {
+          "const": "Polygon",
+          "default": "Polygon",
+          "title": "Type",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "items": {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Coordinates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "coordinates"
+      ],
+      "title": "GeoJsonPolygonGeometry",
+      "type": "object"
+    },
+    "ObstaclePolygonFeature": {
+      "additionalProperties": false,
+      "description": "Single GeoJSON Feature in `obstacles.geojson`.",
+      "properties": {
+        "type": {
+          "const": "Feature",
+          "default": "Feature",
+          "title": "Type",
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/$defs/GeoJsonPolygonGeometry"
+        },
+        "properties": {
+          "$ref": "#/$defs/ObstaclePolygonProperties"
+        }
+      },
+      "required": [
+        "geometry",
+        "properties"
+      ],
+      "title": "ObstaclePolygonFeature",
+      "type": "object"
+    },
+    "ObstaclePolygonProperties": {
+      "additionalProperties": false,
+      "description": "Metadata and DERIVED provenance for an obstacle polygon (`M1`).",
+      "properties": {
+        "obstacle_id": {
+          "minLength": 3,
+          "title": "Obstacle Id",
+          "type": "string"
+        },
+        "obstacle_type": {
+          "enum": [
+            "scarp",
+            "large_rock_formation"
+          ],
+          "title": "Obstacle Type",
+          "type": "string"
+        },
+        "tag": {
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED",
+            "UNAVAILABLE"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "footprint_area_m2": {
+          "minimum": 0.0,
+          "title": "Footprint Area M2",
+          "type": "number"
+        },
+        "internal_relief_m": {
+          "minimum": 0.0,
+          "title": "Internal Relief M",
+          "type": "number"
+        },
+        "physical_clearance_m": {
+          "minimum": 0.0,
+          "title": "Physical Clearance M",
+          "type": "number"
+        },
+        "resolution_note": {
+          "minLength": 10,
+          "title": "Resolution Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "obstacle_id",
+        "obstacle_type",
+        "tag",
+        "source_id",
+        "footprint_area_m2",
+        "internal_relief_m",
+        "physical_clearance_m",
+        "resolution_note"
+      ],
+      "title": "ObstaclePolygonProperties",
+      "type": "object"
+    },
+    "OnoRoverCfaReference": {
+      "additionalProperties": false,
+      "description": "Ono et al. (2016) rover CFA reference metadata stored alongside `obstacles.geojson`.",
+      "properties": {
+        "ok_pct": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Ok Pct",
+          "type": "number"
+        },
+        "caution_pct": {
+          "maximum": 100.0,
+          "minimum": 0.0,
+          "title": "Caution Pct",
+          "type": "number"
+        },
+        "golombek_1p5m_at_15pct": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Golombek 1P5M At 15Pct",
+          "type": "number"
+        }
+      },
+      "required": [
+        "ok_pct",
+        "caution_pct",
+        "golombek_1p5m_at_15pct"
+      ],
+      "title": "OnoRoverCfaReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "GeoJSON FeatureCollection of DTM-derived scarps & >= 4 m formations (`obstacles.geojson`).",
+  "properties": {
+    "type": {
+      "const": "FeatureCollection",
+      "default": "FeatureCollection",
+      "title": "Type",
+      "type": "string"
+    },
+    "contract_version": {
+      "default": "1.1.0",
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ],
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "site_id": {
+      "minLength": 2,
+      "title": "Site Id",
+      "type": "string"
+    },
+    "ono_rover_cfa_reference_pct": {
+      "$ref": "#/$defs/OnoRoverCfaReference"
+    },
+    "features": {
+      "items": {
+        "$ref": "#/$defs/ObstaclePolygonFeature"
+      },
+      "title": "Features",
+      "type": "array"
+    }
+  },
+  "required": [
+    "site_id",
+    "ono_rover_cfa_reference_pct"
+  ],
+  "title": "ObstacleFeatureCollection",
+  "type": "object"
+}

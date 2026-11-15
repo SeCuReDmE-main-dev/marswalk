@@ -20,6 +20,8 @@ export type CellSizeM = number;
  */
 export type BaselinesM = [unknown, unknown, unknown, unknown];
 export type OverlayFile = string;
+export type PlannerGridFile = string | null;
+export type ObstaclesFile = string | null;
 export type ExternalLayersStatus = {
   [k: string]: {
     [k: string]: string | number | boolean;
@@ -80,6 +82,7 @@ export type SpectralSmectiteCaution = boolean | null;
 export type GeologicUnit = string | null;
 export type AoaInside = boolean | null;
 export type RfCommsVerdict = ("GO" | "CAUTION" | "NO_GO") | null;
+export type PartialTopographicRefuge = boolean | null;
 
 /**
  * Complete multi-scale hazard grid (`hazard_grid.json`) for a site pack.
@@ -94,6 +97,8 @@ export interface HazardGrid {
   cell_size_m: CellSizeM;
   baselines_m?: BaselinesM;
   overlay_file?: OverlayFile;
+  planner_grid_file?: PlannerGridFile;
+  obstacles_file?: ObstaclesFile;
   external_layers_status?: ExternalLayersStatus;
   cells: Cells;
 }
@@ -139,6 +144,9 @@ export interface HazardCell {
   rf_bullington_nu?: Quantity | null;
   rf_diffraction_loss_db?: Quantity | null;
   rf_comms_verdict?: RfCommsVerdict;
+  partial_topographic_refuge?: PartialTopographicRefuge;
+  partial_refuge_gcr_reduction_pct?: Quantity | null;
+  obstacle_mask_fraction?: Quantity | null;
 }
 /**
  * Physical scalar quantity with mandatory unit, provenance tag, and source ID.

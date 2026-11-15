@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "PlanRouteStringPullSummary": {
+      "additionalProperties": false,
+      "description": "Measured string-pulling audit counters returned by `/plan-route` (`H2`).",
+      "properties": {
+        "candidates_tested": {
+          "title": "Candidates Tested",
+          "type": "integer"
+        },
+        "accepted_count": {
+          "title": "Accepted Count",
+          "type": "integer"
+        },
+        "rejected_by_obstacle_count": {
+          "title": "Rejected By Obstacle Count",
+          "type": "integer"
+        },
+        "rejected_by_cost_guard_count": {
+          "title": "Rejected By Cost Guard Count",
+          "type": "integer"
+        },
+        "raw_cost_s": {
+          "title": "Raw Cost S",
+          "type": "number"
+        },
+        "smoothed_cost_s": {
+          "title": "Smoothed Cost S",
+          "type": "number"
+        }
+      },
+      "required": [
+        "candidates_tested",
+        "accepted_count",
+        "rejected_by_obstacle_count",
+        "rejected_by_cost_guard_count",
+        "raw_cost_s",
+        "smoothed_cost_s"
+      ],
+      "title": "PlanRouteStringPullSummary",
+      "type": "object"
+    },
+    "Quantity": {
+      "additionalProperties": false,
+      "description": "Physical scalar quantity with mandatory unit, provenance tag, and source ID.",
+      "properties": {
+        "value": {
+          "description": "Numeric scalar value (finite float).",
+          "title": "Value",
+          "type": "number"
+        },
+        "unit": {
+          "description": "Physical unit (e.g. 'm', 'deg', 'mSv/day').",
+          "minLength": 1,
+          "title": "Unit",
+          "type": "string"
+        },
+        "tag": {
+          "description": "Data provenance: MEASURED, DERIVED, or SIMULATED.",
+          "enum": [
+            "MEASURED",
+            "DERIVED",
+            "SIMULATED",
+            "UNAVAILABLE"
+          ],
+          "title": "Tag",
+          "type": "string"
+        },
+        "source_id": {
+          "description": "Identifier matching an entry in SiteManifest.sources.",
+          "minLength": 3,
+          "title": "Source Id",
+          "type": "string"
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional provenance or proxy clarification note.",
+          "title": "Note"
+        }
+      },
+      "required": [
+        "value",
+        "unit",
+        "tag",
+        "source_id"
+      ],
+      "title": "Quantity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Response payload for `POST /v1/sites/{site_id}/plan-route` (zero camera fields).",
+  "properties": {
+    "site_id": {
+      "title": "Site Id",
+      "type": "string"
+    },
+    "reachable": {
+      "title": "Reachable",
+      "type": "boolean"
+    },
+    "coordinates": {
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Coordinates",
+      "type": "array"
+    },
+    "total_distance_m": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "walkback_distance_m": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "walkback_within_limit": {
+      "title": "Walkback Within Limit",
+      "type": "boolean"
+    },
+    "pure_walking_time_s": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "max_longitudinal_slope_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "max_cross_slope_deg": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "cells_expanded": {
+      "title": "Cells Expanded",
+      "type": "integer"
+    },
+    "optimality_guarantee": {
+      "title": "Optimality Guarantee",
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "GO",
+        "CAUTION",
+        "NO_GO"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "string_pull_audit": {
+      "$ref": "#/$defs/PlanRouteStringPullSummary"
+    },
+    "metabolic_rate_w": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "walkback_o2_margin_min": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rf_bullington_nu": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rf_min_clearance_over_f1": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rf_diffraction_loss_db": {
+      "$ref": "#/$defs/Quantity"
+    },
+    "rf_comms_verdict": {
+      "enum": [
+        "GO",
+        "CAUTION",
+        "NO_GO"
+      ],
+      "title": "Rf Comms Verdict",
+      "type": "string"
+    }
+  },
+  "required": [
+    "site_id",
+    "reachable",
+    "coordinates",
+    "total_distance_m",
+    "walkback_distance_m",
+    "walkback_within_limit",
+    "pure_walking_time_s",
+    "max_longitudinal_slope_deg",
+    "max_cross_slope_deg",
+    "cells_expanded",
+    "optimality_guarantee",
+    "verdict",
+    "reasons",
+    "string_pull_audit",
+    "metabolic_rate_w",
+    "walkback_o2_margin_min",
+    "rf_bullington_nu",
+    "rf_min_clearance_over_f1",
+    "rf_diffraction_loss_db",
+    "rf_comms_verdict"
+  ],
+  "title": "PlanRouteResult",
+  "type": "object"
+}
