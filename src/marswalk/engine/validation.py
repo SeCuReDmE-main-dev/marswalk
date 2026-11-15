@@ -79,10 +79,47 @@ class ValidationReport(FrozenContractModel):
     steep_threshold_deg: float = Field(default=8.0)
     steep_waypoint_count: int
     metrics_by_baseline: dict[BaselineKey, BaselineValidationMetrics]
+    split_rule: str = Field(default="odd_sols_tune_even_sols_test")
+    tune_odd_waypoint_count: int = Field(default=0)
+    test_even_waypoint_count: int = Field(default=0)
+    tune_odd_metrics_by_baseline: dict[BaselineKey, BaselineValidationMetrics] = Field(
+        default_factory=dict
+    )
+    test_even_metrics_by_baseline: dict[BaselineKey, BaselineValidationMetrics] = Field(
+        default_factory=dict
+    )
     best_overall_baseline_m: int
     worst_steep_baseline_m: int
     orbital_scale_gap_summary: str
     samples: list[WaypointValidationSample]
+
+
+def _compute_subset_metrics(
+    subset: list[WaypointValidationSample],
+    steep_threshold_deg: float,
+) -> dict[BaselineKey, BaselineValidationMetrics]:
+    """Compute per-baseline MAE/RMSE/bias on a disjoint waypoint subset."""
+    steep_sub = [s for s in subset if s.measured_rover_tilt_deg >= steep_threshold_deg]
+    n_sub = max(1, len(subset))
+    n_steep = max(1, len(steep_sub))
+    out: dict[BaselineKey, BaselineValidationMetrics] = {}
+    for b_key, b_int in (("1", 1), ("4", 4), ("16", 16), ("64", 64)):
+        signed_all = [s.signed_error_deg_by_baseline[b_key] for s in subset]
+        abs_all = [abs(e) for e in signed_all]
+        sq_all = [e * e for e in signed_all]
+        signed_steep = [s.signed_error_deg_by_baseline[b_key] for s in steep_sub]
+        abs_steep = [abs(e) for e in signed_steep]
+        out[b_key] = BaselineValidationMetrics(
+            baseline_m=b_int,
+            sample_count=len(subset),
+            mae_deg=round(sum(abs_all) / n_sub, 3),
+            rmse_deg=round(math.sqrt(sum(sq_all) / n_sub), 3),
+            bias_deg=round(sum(signed_all) / n_sub, 3),
+            steep_sample_count=len(steep_sub),
+            steep_mae_deg=round(sum(abs_steep) / n_steep, 3),
+            steep_bias_deg=round(sum(signed_steep) / n_steep, 3),
+        )
+    return out
 
 
 def build_validation_report(
@@ -130,50 +167,33 @@ def build_validation_report(
             )
         )
 
-    metrics_by_baseline: dict[BaselineKey, BaselineValidationMetrics] = {}
+    metrics_by_baseline = _compute_subset_metrics(samples, steep_threshold_deg)
+    tune_odd_samples = [s for s in samples if s.sol % 2 == 1]
+    test_even_samples = [s for s in samples if s.sol % 2 == 0]
+    tune_odd_metrics = _compute_subset_metrics(tune_odd_samples, steep_threshold_deg)
+    test_even_metrics = _compute_subset_metrics(test_even_samples, steep_threshold_deg)
     steep_samples = [s for s in samples if s.measured_rover_tilt_deg >= steep_threshold_deg]
-    n_all = max(1, len(samples))
-    n_steep = max(1, len(steep_samples))
-
-    for b_key, b_int in (("1", 1), ("4", 4), ("16", 16), ("64", 64)):
-        signed_all = [s.signed_error_deg_by_baseline[b_key] for s in samples]
-        abs_all = [abs(e) for e in signed_all]
-        sq_all = [e * e for e in signed_all]
-
-        signed_steep = [s.signed_error_deg_by_baseline[b_key] for s in steep_samples]
-        abs_steep = [abs(e) for e in signed_steep]
-
-        metrics_by_baseline[b_key] = BaselineValidationMetrics(
-            baseline_m=b_int,
-            sample_count=len(samples),
-            mae_deg=round(sum(abs_all) / n_all, 3),
-            rmse_deg=round(math.sqrt(sum(sq_all) / n_all), 3),
-            bias_deg=round(sum(signed_all) / n_all, 3),
-            steep_sample_count=len(steep_samples),
-            steep_mae_deg=round(sum(abs_steep) / n_steep, 3),
-            steep_bias_deg=round(sum(signed_steep) / n_steep, 3),
-        )
 
     best_b = min(
-        metrics_by_baseline.values(),
+        test_even_metrics.values(),
         key=lambda m: m.mae_deg,
     ).baseline_m
     worst_steep_b = max(
-        metrics_by_baseline.values(),
+        test_even_metrics.values(),
         key=lambda m: m.steep_mae_deg,
     ).baseline_m
 
-    m4 = metrics_by_baseline["4"]
-    m16 = metrics_by_baseline["16"]
-    m64 = metrics_by_baseline["64"]
+    m4 = test_even_metrics["4"]
+    m16 = test_even_metrics["16"]
+    m64 = test_even_metrics["64"]
     summary = (
-        f"Across {len(samples)} ground-truth Perseverance stops in the 2x2 km Western Delta Front "
-        f"window ({len(steep_samples)} steep stops >= {steep_threshold_deg:.0f} deg), "
-        f"intermediate baselines (4m MAE={m4.mae_deg:.2f} deg, 16m MAE={m16.mae_deg:.2f} deg) "
-        f"closely track rover chassis tilt, whereas the 64m coarse orbital baseline systematically "
-        f"underestimates steep delta scarps (steep bias={m64.steep_bias_deg:+.2f} deg, "
-        f"steep MAE={m64.steep_mae_deg:.2f} deg; e.g. Sol 700 measured 20.33 deg "
-        f"vs 64m DTM 12.65 deg)."
+        f"Disjoint split across {len(samples)} Perseverance stops in the 2x2 km Western "
+        f"Delta Front window ({len(tune_odd_samples)} odd-sol tune stops, "
+        f"{len(test_even_samples)} even-sol test stops). "
+        f"On held-out even test sols: 4m MAE={m4.mae_deg:.2f} deg, "
+        f"16m MAE={m16.mae_deg:.2f} deg, 64m MAE={m64.mae_deg:.2f} deg "
+        f"(64m steep bias={m64.steep_bias_deg:+.2f} deg, "
+        f"steep MAE={m64.steep_mae_deg:.2f} deg)."
     )
 
     return ValidationReport(
@@ -182,6 +202,11 @@ def build_validation_report(
         steep_threshold_deg=steep_threshold_deg,
         steep_waypoint_count=len(steep_samples),
         metrics_by_baseline=metrics_by_baseline,
+        split_rule="odd_sols_tune_even_sols_test",
+        tune_odd_waypoint_count=len(tune_odd_samples),
+        test_even_waypoint_count=len(test_even_samples),
+        tune_odd_metrics_by_baseline=tune_odd_metrics,
+        test_even_metrics_by_baseline=test_even_metrics,
         best_overall_baseline_m=best_b,
         worst_steep_baseline_m=worst_steep_b,
         orbital_scale_gap_summary=summary,
