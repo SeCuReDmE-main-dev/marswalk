@@ -11,10 +11,11 @@ I (Jean-Sébastien Beaulieu) build this repository with several AI coding assist
 | 1 | Data contract `v1.0.0`, signed static pack, FastAPI middleware | Done, on `main` |
 | 2 | Multi-scale terrain engine (funnel, gates, A*), real HiRISE 1 m DTM | Done, on `main` |
 | 3 | Contract `v1.1.0`, 40 × 40 engine grid (1,600 cells of ~48 m), `cos φ` ground metres, RF / radiation / metabolic / AOA layers, spatial-block CV | Done, audit `VERIFIED`, merged on `main` (`79064e3`) |
-| 5 | Fail-safe route and cell lookup, operator safe mode, repo hygiene, `demo-stable` tag | Done, audit `VERIFIED`, on `feat/phase3` |
-| 4 | Obstacle-aware route planner: `POST /plan-route`, `obstacles.geojson`, `planner_grid_10m.png`, camera endpoint, modules M1–M6 | Done, audit `VERIFIED`, on `feat/phase3` (not merged to `main` yet) |
+| 5 | Fail-safe route and cell lookup, operator safe mode, repo hygiene, `demo-stable` tag | Done, audit `VERIFIED`, merged on `main` (`8e757d8`) |
+| 4 | Obstacle-aware route planner: `POST /plan-route`, `obstacles.geojson`, `planner_grid_10m.png`, camera endpoint, modules M1–M6 | Done, audit `VERIFIED`, merged on `main` (`8e757d8`) |
+| 6 | Vectorized 8-directional M2 A* edge tables (~4.2× speedup), path-traversal / LRU-cache / coordinate / camera hardening, shared EVA safety gates | Done, audit `VERIFIED`, merged on `main` |
 
-Open limits (documented, not hidden): `geologic_unit` is an elevation/position approximation of SIM 3464, not the map polygons; M1 has no independent recall reference yet; `/plan-route` takes ~1.3–1.7 s on the 10 m grid (A* expands ~90 % of cells).
+Open limits (documented, not hidden): `geologic_unit` is an elevation/position approximation of SIM 3464, not the map polygons; M1 has no independent recall reference yet; `/plan-route` takes ~280–375 ms on the 10 m grid worst-case diagonal detour (~90 % cell expansion; < 50 ms on typical EVA legs).
 
 Phase 5 was run before Phase 4 on purpose: the safety guards had to exist before a planner could build on them.
 
