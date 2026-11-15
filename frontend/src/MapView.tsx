@@ -18,6 +18,7 @@ import {
   type LonLat,
 } from "./domain";
 import type { RouteOverlay } from "./EngineTools";
+import type { PreviewPosition } from "./routePreview";
 
 export interface LayerState {
   imagery: boolean;
@@ -49,6 +50,7 @@ interface Props {
   onLocation: (point: LonLat) => void;
   plannedRoute?: RouteOverlay;
   planningPoints: LonLat[];
+  previewPosition?: PreviewPosition;
 }
 const colors = { GO: "#67ad99", CAUTION: "#edaa4d", NO_GO: "#df6658" };
 const latLngBounds = (b: Bbox): L.LatLngBoundsExpression => [
@@ -96,6 +98,7 @@ export default function MapView(props: Props) {
     | undefined
   >(undefined);
   const cells = useRef(new Map<string, L.Rectangle>());
+  const previewMarker = useRef<L.CircleMarker | undefined>(undefined);
   const [layerPanel, setLayerPanel] = useState(false),
     [globalTileState, setGlobalTileState] = useState<
       "loading" | "loaded" | "error"
@@ -447,6 +450,7 @@ export default function MapView(props: Props) {
       map.current = undefined;
       groups.current = undefined;
       cells.current.clear();
+      previewMarker.current = undefined;
     };
   }, [props.data]);
   useEffect(() => {
@@ -485,6 +489,33 @@ export default function MapView(props: Props) {
       }),
     );
   }, [props.layers, props.cell, props.data]);
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    if (!props.previewPosition) {
+      previewMarker.current?.remove();
+      previewMarker.current = undefined;
+      return;
+    }
+    const [lon, lat] = props.previewPosition.point;
+    if (!previewMarker.current) {
+      previewMarker.current = L.circleMarker([lat, lon], {
+        radius: 9,
+        color: "#fff",
+        weight: 3,
+        fillColor: "#cf602f",
+        fillOpacity: 1,
+        interactive: false,
+        className: "walk-preview-marker",
+      })
+        .bindTooltip("Preview position · not live tracking", {
+          direction: "top",
+          offset: [0, -10],
+        })
+        .addTo(m);
+    } else previewMarker.current.setLatLng([lat, lon]);
+    previewMarker.current.bringToFront();
+  }, [props.previewPosition, props.data]);
   useEffect(() => {
     const g = groups.current;
     if (!g) return;

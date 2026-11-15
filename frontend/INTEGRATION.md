@@ -119,6 +119,16 @@ Bundled assets do not make the hosted app an offline installation: there is no s
 
 The image, route, benchmark and engine integration work is on `feat/frontend-engine-integration`; this does not mean it has been merged into `main`. The four independent Antigravity audits requested in `HO-002` are a separate outstanding handoff. Frontend checks here do not substitute for those audits or claim NASA certification.
 
+## Interactive walk preview
+
+Open **Walk preview** below the map. Play/pause a visual rehearsal of the supplied candidate route, scrub the distance slider or elevation chart, restart, or jump to the nearest route position for a science stop. An orange position marker follows the same coordinates in the map and optional 3D view. **Inspect cell** opens the existing terrain evidence in the guide; elevation and route source buttons open the manifest records. The panel starts collapsed, keeps manual scrubbing available under OS reduced motion, and stops playback on close, backgrounding, source inspection or cell inspection.
+
+This previews the supplied pack route, not a new live planner result. Distance along the path is computed on the shared Mars sphere from its vertices; rounding may differ from the pack's stored summary. The 45-second playback is a presentation speed, not an astronaut travel-time model or live tracking. `routePreview.ts` preserves the containing cell's original elevation Quantity, provenance, verdict and confidence; it does not calculate a safety decision. The profile samples at bounded display intervals (at most 241 points), repeats coarse cell elevations and leaves gaps outside coverage or where elevation is unavailable. It is not a high-resolution terrain cross-section or a segment-by-segment safety proof. Geological and safety limitations elsewhere still apply.
+
+Checks: 25 frontend tests pass, including the actual supplied path, Mars distances, exact endpoints, duplicate vertices, stop projection, unavailable elevation and outside-grid gaps. Browser checks at desktop and 390 px mobile covered play/pause and replay, keyboard End, chart scrubbing, stop jumps, map/3D synchronization, cell/source inspection and marker removal on close. No JavaScript errors or horizontal overflow were observed. Screenshots are in `frontend/screenshots/walk-preview-desktop.png` and `walk-preview-mobile.png`.
+
+Repository gate on this change: Ruff and verification of all 17 pack files pass. The Python suite needs local socket permissions for Windows asyncio/TestClient; after rerunning outside the sandbox, `pytest -x` reaches `test_async_pipeline_determinism_and_astar_envelope` and fails because the local ignored `datalake/SIM3464_metadata.xml` is absent. The full gate is not green. No backend tests, thresholds or data-pack files were changed to mask it.
+
 ## Build and validate
 
 ```powershell

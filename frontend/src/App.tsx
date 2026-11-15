@@ -30,6 +30,8 @@ import MapView, { type LayerState } from "./MapView";
 import RoverImage from "./RoverImage";
 import BenchmarkPanel from "./BenchmarkPanel";
 import DataAvailability from "./DataAvailability";
+import WalkPreview from "./WalkPreview";
+import type { PreviewPosition } from "./routePreview";
 const Terrain3D = lazy(() => import("./Terrain3D"));
 import {
   EngineTools,
@@ -138,6 +140,7 @@ function Workspace({
   const [lookupPoint, setLookupPoint] = useState<LonLat>();
   const [selectedBenchmark, setSelectedBenchmark] = useState<EvaRouteFeature>();
   const [viewMode, setViewMode] = useState<"map" | "3d">("map");
+  const [previewPosition, setPreviewPosition] = useState<PreviewPosition>();
   const [step, setStep] = useState(0),
     [expanded, setExpanded] = useState(true),
     [collapsed, setCollapsed] = useState(false),
@@ -408,6 +411,7 @@ function Workspace({
                   cell={cell}
                   onCell={chooseCell}
                   plannedRoute={plannedRoute}
+                  previewPosition={previewPosition}
                   picking={picking}
                   onPick={(point) =>
                     setPlanningPoints((points) =>
@@ -434,6 +438,7 @@ function Workspace({
                 picking={picking}
                 planningPoints={planningPoints}
                 plannedRoute={plannedRoute}
+                previewPosition={previewPosition}
                 onLocation={setLookupPoint}
                 onPick={(point) =>
                   setPlanningPoints((points) =>
@@ -454,6 +459,18 @@ function Workspace({
               </button>
             </div>
           </div>
+          <WalkPreview
+            data={data}
+            onPosition={setPreviewPosition}
+            onInspect={(value) => {
+              chooseCell(value);
+              setCollapsed(false);
+            }}
+            onSource={(id) => {
+              setSourceId(id);
+              setDialog("sources");
+            }}
+          />
           <footer className="map-footer">
             <span
               className={`status-dot ${data.hazards.grid_status === "PLACEHOLDER" ? "preview" : ""}`}

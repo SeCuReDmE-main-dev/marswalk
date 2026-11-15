@@ -12,6 +12,7 @@ import type { MarswalkData, HazardCell } from "./data/types";
 import type { RouteOverlay } from "./EngineTools";
 import { linePoints, routeParts, type LonLat } from "./domain";
 import { createTerrainGeometry, geographicTilePixel } from "./terrainGeometry";
+import type { PreviewPosition } from "./routePreview";
 
 type Mode = "relief" | "hazards" | "satellite";
 const verdictColors = { GO: "#67ad99", CAUTION: "#edaa4d", NO_GO: "#df6658" };
@@ -23,6 +24,7 @@ export default function Terrain3D({
   plannedRoute,
   picking,
   onPick,
+  previewPosition,
 }: {
   data: MarswalkData;
   cell?: HazardCell;
@@ -30,6 +32,7 @@ export default function Terrain3D({
   plannedRoute?: RouteOverlay;
   picking: boolean;
   onPick: (p: LonLat) => void;
+  previewPosition?: PreviewPosition;
 }) {
   const model = useMemo(() => createTerrainGeometry(data.hazards), [data]);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -344,6 +347,27 @@ export default function Terrain3D({
       ctx.fillStyle = "white";
       ctx.fillText(String(i + 1), s.x, s.y);
     });
+    if (previewPosition) {
+      const v = model.locate(previewPosition.point);
+      if (v) {
+        const s = project(v, 0.04);
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 15, 0, 2 * Math.PI);
+        ctx.fillStyle = "#e9763d40";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 7, 0, 2 * Math.PI);
+        ctx.fillStyle = "#cf602f";
+        ctx.fill();
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        ctx.font = "bold 10px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#fff";
+        ctx.fillText("PREVIEW", s.x, s.y - 24);
+      }
+    }
     if (cell) {
       const v = model.locate([cell.lon, cell.lat]);
       if (v) {
@@ -387,6 +411,7 @@ export default function Terrain3D({
     candidate,
     stops,
     plannedRoute,
+    previewPosition,
   ]);
 
   function changeZoom(delta: number) {
