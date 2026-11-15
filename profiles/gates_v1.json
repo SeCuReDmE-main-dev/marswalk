@@ -1,6 +1,7 @@
 {
   "profile_id": "gates_v1",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "proposition_note": "je propose: pipeline stage thresholds governing PASS/HOLD/BLOCK transitions only; gate verdicts never emit or modify cell terrain confidence.",
   "max_hold_retries": 2,
   "gates": {
     "G0_INGEST": {
@@ -11,11 +12,18 @@
       "max_nodata_fraction": 0.05
     },
     "G1_CLASSIFY": {
-      "description": "Evaluates multi-scale slope coherence and ground-truth rover tilt validation residual across window stops.",
+      "description": "je propose: discrete stage gate checking grid step <= 8m, mean_cell_i < 0.35, and even-sol TEST validation MAE <= 4.5 deg without fabricating terrain T/I/F.",
       "tau_t": 0.60,
       "tau_i": 0.35,
       "tau_f": 0.25,
-      "max_validation_mae_deg": 6.0
+      "max_cell_step_m": 8.0,
+      "max_mean_cell_i": 0.35,
+      "max_validation_mae_deg": 4.5,
+      "stage_states": {
+        "pass": [0.85, 0.10, 0.05],
+        "hold": [0.45, 0.45, 0.10],
+        "block": [0.05, 0.10, 0.85]
+      }
     },
     "G2_SEARCH": {
       "description": "Evaluates scout rover & astronaut A* path existence, safety margins (<20 deg, <=2 km), and +/-10% cost sensitivity.",

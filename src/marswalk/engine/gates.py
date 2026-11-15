@@ -115,40 +115,47 @@ async def gate_g1_classify(
     gate_cfg: dict[str, Any],
     attempt: int = 1,
 ) -> GateVerdict:
-    """G1 (CLASSIFY -> SEARCH): Evaluate scale coherence and rover tilt validation residual."""
+    """G1 (CLASSIFY -> SEARCH): Stage gate on grid step, mean cell I, and even-sol test MAE.
+
+    NOTE (M3): G1 produces a discrete pipeline stage decision (`PASS`, `HOLD`, `BLOCK`)
+    using thresholds declared in `profiles/gates_v1.json` ("je propose"). It NEVER
+    fabricates or alters cell terrain `ConfidenceVector(t, i, f)`.
+    """
     tau_t = float(gate_cfg.get("tau_t", 0.60))
     tau_i = float(gate_cfg.get("tau_i", 0.35))
     tau_f = float(gate_cfg.get("tau_f", 0.25))
-    max_mae = float(gate_cfg.get("max_validation_mae_deg", 6.0))
+    max_mae = float(gate_cfg.get("max_validation_mae_deg", 4.5))
+    max_step_m = float(gate_cfg.get("max_cell_step_m", 8.0))
+    max_mean_i = float(gate_cfg.get("max_mean_cell_i", tau_i))
+
+    states = gate_cfg.get("stage_states") or {
+        "pass": [0.85, 0.10, 0.05],
+        "hold": [0.45, 0.45, 0.10],
+        "block": [0.05, 0.10, 0.85],
+    }
 
     mean_cell_i = float(ctx.get("mean_cell_i", 0.15))
-    validation_mae_4m = float(ctx.get("validation_mae_4m_deg", 1.5))
+    val_test_mae = float(ctx.get("validation_test_mae_deg", ctx.get("validation_mae_4m_deg", 1.5)))
     cell_step_m = float(ctx.get("cell_step_m", 8.0))
 
     reasons: list[str] = []
-    if validation_mae_4m > max_mae:
-        f = round(min(0.95, 0.30 + (validation_mae_4m - max_mae) / 10.0), 4)
-        i = round(min(0.30, mean_cell_i), 4)
-        t = round(max(0.05, 1.0 - f - i), 4)
+    if val_test_mae > max_mae:
+        t, i, f = (float(x) for x in states["block"])
         reasons.append(
-            f"G1 BLOCK: Validation MAE at 4m ({validation_mae_4m:.2f} deg) "
-            f"exceeds {max_mae:.1f} deg."
+            f"G1 BLOCK: Validation test MAE ({val_test_mae:.2f} deg) "
+            f"exceeds {max_mae:.1f} deg ceiling."
         )
-    elif cell_step_m > 8.0 or mean_cell_i >= tau_i:
-        f = round(min(tau_f * 0.6, validation_mae_4m / (max_mae * 2.5)), 4)
-        i = round(max(tau_i + 0.03, mean_cell_i), 4)
-        t = round(max(0.10, 1.0 - i - f), 4)
+    elif cell_step_m > max_step_m or mean_cell_i >= max_mean_i:
+        t, i, f = (float(x) for x in states["hold"])
         reasons.append(
             f"G1 HOLD: Cell step ({cell_step_m:.1f} m) or mean indeterminacy ({mean_cell_i:.3f}) "
             "requires finer grid resolution."
         )
     else:
-        f = round(min(tau_f * 0.6, validation_mae_4m / (max_mae * 2.0)), 4)
-        i = round(min(tau_i * 0.75, mean_cell_i), 4)
-        t = round(max(tau_t, 1.0 - i - f), 4)
+        t, i, f = (float(x) for x in states["pass"])
         reasons.append(
-            f"G1 PASS: Multi-scale classification coherent at {cell_step_m:.1f}m step; "
-            f"rover validation MAE(4m)={validation_mae_4m:.2f} deg."
+            f"G1 PASS: Stage readiness verified at {cell_step_m:.1f}m step; "
+            f"validation test MAE={val_test_mae:.2f} deg."
         )
 
     decision = _decide_from_tif(t, i, f, tau_t, tau_i, tau_f)
@@ -163,7 +170,7 @@ async def gate_g1_classify(
         metrics={
             "cell_step_m": cell_step_m,
             "mean_cell_i": round(mean_cell_i, 4),
-            "validation_mae_4m_deg": round(validation_mae_4m, 4),
+            "validation_test_mae_deg": round(val_test_mae, 4),
         },
     )
 
