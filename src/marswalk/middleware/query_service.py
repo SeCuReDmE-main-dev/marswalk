@@ -21,7 +21,7 @@ import os
 import re
 from typing import Literal
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, field_validator
 
 from marswalk.contracts.models import (
     FrozenContractModel,
@@ -53,6 +53,25 @@ _REQUIRED_SLOPE_BASELINES: tuple[str, ...] = ("1", "4", "16", "64")
 def is_safe_mode_enabled() -> bool:
     """Read `MARSWALK_SAFE_MODE` dynamically on every request (never cached at import time)."""
     return os.environ.get("MARSWALK_SAFE_MODE") == "1"
+
+
+def is_camera_fetch_allowed() -> bool:
+    """Read `MARSWALK_ALLOW_CAMERA_FETCH` dynamically on every request (defense-in-depth)."""
+    return os.environ.get("MARSWALK_ALLOW_CAMERA_FETCH", "").strip() == "1"
+
+
+def _validate_mars_coord_sequence(
+    coords: list[tuple[float, float]],
+) -> list[tuple[float, float]]:
+    """Reject NaN/Inf or out-of-planet [lon, lat] coordinates at the Pydantic boundary."""
+    for idx, (lon, lat) in enumerate(coords):
+        if not (math.isfinite(lon) and math.isfinite(lat)):
+            raise ValueError(f"Coordinate [{idx}] must be finite (got lon={lon}, lat={lat})")
+        if not (-180.0 <= lon <= 360.0 and -90.0 <= lat <= 90.0):
+            raise ValueError(
+                f"Coordinate [{idx}] ({lon}, {lat}) outside Mars [-180..360, -90..90] bounds"
+            )
+    return coords
 
 
 def _is_finite_quantity(q: Quantity | None) -> bool:
@@ -170,6 +189,13 @@ class RouteEvaluationRequest(FrozenContractModel):
         description="UHF 414.2 MHz link margin (dB) between suit (1.8 m) and rover mast (3.0 m).",
     )
 
+    @field_validator("points")
+    @classmethod
+    def _check_points_finite_and_bounded(
+        cls, v: list[tuple[float, float]]
+    ) -> list[tuple[float, float]]:
+        return _validate_mars_coord_sequence(v)
+
 
 class RouteEvaluationResult(FrozenContractModel):
     """Response payload for `POST /v1/sites/{site_id}/evaluate-route`."""
@@ -216,6 +242,13 @@ class PlanRouteRequest(FrozenContractModel):
     dust_tau_880nm: float = Field(default=0.45, ge=0.0, le=10.0)
     payload_kg: float = Field(default=0.0, ge=0.0, le=120.0)
     rf_link_margin_db: float = Field(default=6.0, ge=0.0, le=40.0)
+
+    @field_validator("waypoints")
+    @classmethod
+    def _check_waypoints_finite_and_bounded(
+        cls, v: list[tuple[float, float]]
+    ) -> list[tuple[float, float]]:
+        return _validate_mars_coord_sequence(v)
 
 
 class PlanRouteStringPullSummary(FrozenContractModel):
@@ -702,18 +735,11 @@ class PackQueryService:
 
         reasons: list[str] = []
         verdict: VerdictLiteral = "GO"
-
         if req.spe_alert:
             verdict = "NO_GO"
             reasons.append(
                 "Solar Particle Event (SPE) alert active: immediate abort and return "
                 "to rover/habitat shelter required."
-            )
-        if dust_v == "NO_GO":
-            verdict = "NO_GO"
-            reasons.append(
-                f"Atmospheric dust optical depth (tau_880nm={req.dust_tau_880nm:.2f} > 1.00) "
-                "exceeds MEDA EVA visibility and thermal safety threshold."
             )
         if out_of_bbox_pts:
             bad_lon, bad_lat = out_of_bbox_pts[0]
@@ -722,42 +748,35 @@ class PackQueryService:
                 f"Route point ({bad_lon:.6f}, {bad_lat:.6f}) is out of bbox "
                 f"{list(self.pack.hazards.bbox)}."
             )
-        if not walkback_ok or wb_ret_h > 1.0:
-            verdict = "NO_GO"
-            reasons.append(
-                f"Walkback distance ({max_walkback_m:.0f} m, return walk {wb_ret_h:.2f} h) "
-                "exceeds NASA xEVA 2,000 m / 1.0 h contingency return limit."
-            )
-        if wb_o2_min < 0.0:
-            verdict = "NO_GO"
-            reasons.append(
-                f"Primary O2 reserve exhausted ({wb_o2_min:.1f} min margin after walkback "
-                "+ 30 min dust decontamination ingress)."
-            )
-        if rf_v == "NO_GO":
-            verdict = "NO_GO"
-            reasons.append(
-                f"UHF 414.2 MHz diffraction loss ({rf_loss_db:.2f} dB) exceeds "
-                f"link margin ({req.rf_link_margin_db:.1f} dB)."
-            )
+
+        extra_nogo: list[str] = []
         if max_retained >= self.pack.constraints.suit_max_slope_deg.value:
-            verdict = "NO_GO"
-            reasons.append(
+            extra_nogo.append(
                 f"Maximum retained funnel slope ({max_retained:.1f} deg) exceeds "
                 f"NASA xEVA 20.0 deg suit limit."
             )
         nogo_cells = [c.cell_id for c in traversed_cells if c.verdict == "NO_GO"]
         if nogo_cells:
-            verdict = "NO_GO"
-            reasons.append(
+            extra_nogo.append(
                 f"Route segment crosses {len(nogo_cells)} NO_GO hazard cell(s) "
                 f"({', '.join(nogo_cells[:3])})."
             )
-        if duration_h > self.pack.constraints.eva_duration_max_h.value:
-            verdict = "NO_GO"
-            reasons.append(
-                f"Estimated EVA duration ({duration_h:.2f} h) exceeds 8.0 h xEVA ceiling."
-            )
+
+        verdict = self._apply_common_eva_safety_nogo_gates(
+            verdict=verdict,
+            reasons=reasons,
+            dust_v=dust_v,
+            dust_tau_880nm=req.dust_tau_880nm,
+            walkback_ok=walkback_ok,
+            max_walkback_m=max_walkback_m,
+            wb_ret_h=wb_ret_h,
+            wb_o2_min=wb_o2_min,
+            rf_v=rf_v,
+            rf_loss_db=rf_loss_db,
+            rf_link_margin_db=req.rf_link_margin_db,
+            duration_h=duration_h,
+            extra_nogo_reasons=extra_nogo,
+        )
 
         if verdict != "NO_GO":
             if (
@@ -827,9 +846,76 @@ class PackQueryService:
             rf_comms_verdict=rf_v,
         )
 
-    def _build_failsafe_plan_result(self, reason: str) -> PlanRouteResult:
-        """Build a valid HTTP 200 NO_GO `/plan-route` response on safe mode or engine error."""
-        reasons = [reason, *self._unavailable_layer_reasons()]
+    def _apply_common_eva_safety_nogo_gates(
+        self,
+        *,
+        verdict: VerdictLiteral,
+        reasons: list[str],
+        dust_v: VerdictLiteral,
+        dust_tau_880nm: float,
+        walkback_ok: bool,
+        max_walkback_m: float,
+        wb_ret_h: float,
+        wb_o2_min: float,
+        rf_v: VerdictLiteral,
+        rf_loss_db: float,
+        rf_link_margin_db: float,
+        duration_h: float,
+        extra_nogo_reasons: list[str] | None = None,
+    ) -> VerdictLiteral:
+        """Apply shared NASA xEVA / MEDA / UHF NO_GO gates to `evaluate_route` and `plan_route`."""
+        out = verdict
+        if dust_v == "NO_GO":
+            out = "NO_GO"
+            reasons.append(
+                f"Atmospheric dust optical depth (tau_880nm={dust_tau_880nm:.2f} > 1.00) "
+                "exceeds MEDA EVA visibility and thermal safety threshold."
+            )
+        if not walkback_ok or wb_ret_h > 1.0:
+            out = "NO_GO"
+            reasons.append(
+                f"Walkback distance ({max_walkback_m:.0f} m, return walk {wb_ret_h:.2f} h) "
+                "exceeds NASA xEVA 2,000 m / 1.0 h contingency return limit."
+            )
+        if wb_o2_min < 0.0:
+            out = "NO_GO"
+            reasons.append(
+                f"Primary O2 reserve exhausted ({wb_o2_min:.1f} min margin after walkback "
+                "+ 30 min dust decontamination ingress)."
+            )
+        if rf_v == "NO_GO":
+            out = "NO_GO"
+            reasons.append(
+                f"UHF 414.2 MHz diffraction loss ({rf_loss_db:.2f} dB) exceeds "
+                f"link margin ({rf_link_margin_db:.1f} dB)."
+            )
+        if extra_nogo_reasons:
+            out = "NO_GO"
+            reasons.extend(extra_nogo_reasons)
+        if duration_h > self.pack.constraints.eva_duration_max_h.value:
+            out = "NO_GO"
+            reasons.append(
+                f"Estimated EVA duration ({duration_h:.2f} h) exceeds 8.0 h xEVA ceiling."
+            )
+        return out
+
+    def _build_unreached_plan_result(
+        self,
+        *,
+        reasons: list[str],
+        cells_expanded: int = 0,
+        optimality_guarantee: str = "failsafe",
+        string_pull_audit: PlanRouteStringPullSummary | None = None,
+    ) -> PlanRouteResult:
+        """Build a valid HTTP 200 NO_GO `/plan-route` payload when unreachable or fail-safe."""
+        audit = string_pull_audit or PlanRouteStringPullSummary(
+            candidates_tested=0,
+            accepted_count=0,
+            rejected_by_obstacle_count=0,
+            rejected_by_cost_guard_count=0,
+            raw_cost_s=0.0,
+            smoothed_cost_s=0.0,
+        )
         return PlanRouteResult(
             site_id=self.pack.site_id,
             reachable=False,
@@ -850,18 +936,11 @@ class PackQueryService:
             max_cross_slope_deg=Quantity(
                 value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
             ),
-            cells_expanded=0,
-            optimality_guarantee="failsafe",
+            cells_expanded=cells_expanded,
+            optimality_guarantee=optimality_guarantee,
             verdict="NO_GO",
-            reasons=reasons,
-            string_pull_audit=PlanRouteStringPullSummary(
-                candidates_tested=0,
-                accepted_count=0,
-                rejected_by_obstacle_count=0,
-                rejected_by_cost_guard_count=0,
-                raw_cost_s=0.0,
-                smoothed_cost_s=0.0,
-            ),
+            reasons=[*reasons, *self._unavailable_layer_reasons()],
+            string_pull_audit=audit,
             metabolic_rate_w=Quantity(
                 value=0.0, unit="W", tag="DERIVED", source_id="SRC-NASA-XEVA"
             ),
@@ -879,6 +958,10 @@ class PackQueryService:
             ),
             rf_comms_verdict="NO_GO",
         )
+
+    def _build_failsafe_plan_result(self, reason: str) -> PlanRouteResult:
+        """Build a valid HTTP 200 NO_GO `/plan-route` response on safe mode or engine error."""
+        return self._build_unreached_plan_result(reasons=[reason])
 
     def plan_route(self, req: PlanRouteRequest) -> PlanRouteResult:
         """Plan an obstacle-avoiding route on `planner_grid_10m` with NO_GO fail-safe envelope."""
@@ -917,48 +1000,11 @@ class PackQueryService:
         )
 
         if not planned.reachable or len(planned.coordinates) < 2:
-            reasons = [*planned.reasons, *self._unavailable_layer_reasons()]
-            return PlanRouteResult(
-                site_id=self.pack.site_id,
-                reachable=False,
-                coordinates=[],
-                total_distance_m=Quantity(
-                    value=0.0, unit="m", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
-                ),
-                walkback_distance_m=Quantity(
-                    value=0.0, unit="m", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
-                ),
-                walkback_within_limit=False,
-                pure_walking_time_s=Quantity(
-                    value=0.0, unit="s", tag="DERIVED", source_id="SRC-NASA-XEVA"
-                ),
-                max_longitudinal_slope_deg=Quantity(
-                    value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
-                ),
-                max_cross_slope_deg=Quantity(
-                    value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
-                ),
+            return self._build_unreached_plan_result(
+                reasons=list(planned.reasons),
                 cells_expanded=planned.cells_expanded,
                 optimality_guarantee=planned.optimality_guarantee,
-                verdict="NO_GO",
-                reasons=reasons,
                 string_pull_audit=audit_summary,
-                metabolic_rate_w=Quantity(
-                    value=0.0, unit="W", tag="DERIVED", source_id="SRC-NASA-XEVA"
-                ),
-                walkback_o2_margin_min=Quantity(
-                    value=0.0, unit="min", tag="DERIVED", source_id="SRC-NASA-XEVA"
-                ),
-                rf_bullington_nu=Quantity(
-                    value=0.0, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
-                ),
-                rf_min_clearance_over_f1=Quantity(
-                    value=0.0, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
-                ),
-                rf_diffraction_loss_db=Quantity(
-                    value=0.0, unit="dB", tag="DERIVED", source_id="SRC-NASA-XEVA"
-                ),
-                rf_comms_verdict="NO_GO",
             )
 
         origin_lon, origin_lat = req.waypoints[0]
@@ -1015,36 +1061,20 @@ class PackQueryService:
 
         verdict: VerdictLiteral = planned.verdict
         reasons: list[str] = list(planned.reasons)
-
-        if dust_v == "NO_GO":
-            verdict = "NO_GO"
-            reasons.append(
-                f"Atmospheric dust optical depth (tau_880nm={req.dust_tau_880nm:.2f} > 1.00) "
-                "exceeds MEDA EVA visibility and thermal safety threshold."
-            )
-        if not walkback_ok or wb_ret_h > 1.0:
-            verdict = "NO_GO"
-            reasons.append(
-                f"Walkback distance ({max_walkback_m:.0f} m, return walk {wb_ret_h:.2f} h) "
-                "exceeds NASA xEVA 2,000 m / 1.0 h contingency return limit."
-            )
-        if wb_o2_min < 0.0:
-            verdict = "NO_GO"
-            reasons.append(
-                f"Primary O2 reserve exhausted ({wb_o2_min:.1f} min margin after walkback "
-                "+ 30 min dust decontamination ingress)."
-            )
-        if rf_v == "NO_GO":
-            verdict = "NO_GO"
-            reasons.append(
-                f"UHF 414.2 MHz diffraction loss ({rf_loss_db:.2f} dB) exceeds "
-                f"link margin ({req.rf_link_margin_db:.1f} dB)."
-            )
-        if duration_h > self.pack.constraints.eva_duration_max_h.value:
-            verdict = "NO_GO"
-            reasons.append(
-                f"Estimated EVA duration ({duration_h:.2f} h) exceeds 8.0 h xEVA ceiling."
-            )
+        verdict = self._apply_common_eva_safety_nogo_gates(
+            verdict=verdict,
+            reasons=reasons,
+            dust_v=dust_v,
+            dust_tau_880nm=req.dust_tau_880nm,
+            walkback_ok=walkback_ok,
+            max_walkback_m=max_walkback_m,
+            wb_ret_h=wb_ret_h,
+            wb_o2_min=wb_o2_min,
+            rf_v=rf_v,
+            rf_loss_db=rf_loss_db,
+            rf_link_margin_db=req.rf_link_margin_db,
+            duration_h=duration_h,
+        )
 
         if verdict != "NO_GO" and (dust_v == "CAUTION" or rf_v == "CAUTION" or met_w >= 550.0):
             verdict = "CAUTION"
@@ -1125,6 +1155,7 @@ class PackQueryService:
     ) -> RoverCamerasResponse:
         """Query Mars 2020 `raw_images` frames for `sol` via dedicated `M5` connector."""
         datalake_dir = self.pack.pack_dir.parents[2] / "datalake"
+        effective_network = bool(allow_network) and is_camera_fetch_allowed()
         res = fetch_or_load_m20_sol_cameras(
             datalake_dir=datalake_dir,
             sol=sol,
@@ -1132,7 +1163,7 @@ class PackQueryService:
             max_azimuth_delta_deg=max_azimuth_delta_deg,
             page=page,
             page_size=page_size,
-            allow_network=allow_network,
+            allow_network=effective_network,
         )
         return RoverCamerasResponse(
             site_id=self.pack.site_id,

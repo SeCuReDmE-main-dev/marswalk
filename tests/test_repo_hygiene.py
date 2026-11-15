@@ -118,9 +118,10 @@ def test_no_secret_patterns_in_tracked_files() -> None:
         if not rel_str:
             continue
         path = (REPO_ROOT / rel_str).resolve()
-        assert path.name != ".env" and not path.name.startswith(".env."), (
-            f"Tracked .env file is forbidden: {rel_str}"
+        is_forbidden_env = path.name == ".env" or (
+            path.name.startswith(".env.") and path.name != ".env.example"
         )
+        assert not is_forbidden_env, f"Tracked .env file is forbidden: {rel_str}"
         if path == this_file or not path.is_file():
             continue
         if path.suffix.lower() in binary_suffixes:

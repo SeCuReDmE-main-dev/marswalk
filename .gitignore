@@ -30,7 +30,8 @@ datalake/*
 Thumbs.db
 *.swp
 
-# Local secrets and private keys (never tracked)
+# Local secrets and private keys (never tracked; .env.example templates allowed)
 .env
 .env.*
+!.env.example
 *.pem

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,6 +27,7 @@ M20_RAW_IMAGES_FEED_TEMPLATE: str = (
     "https://mars.nasa.gov/rss/api/"
     "?feed=raw_images&category=mars2020,ingenuity&feedtype=json&sol={sol}"
 )
+MAX_RAW_IMAGES_PAYLOAD_BYTES: int = 8 * 1024 * 1024  # 8 MiB response ceiling
 
 NAVIGATION_AND_MAST_CAMERAS: frozenset[str] = frozenset(
     {
@@ -212,42 +214,56 @@ def fetch_or_load_m20_sol_cameras(
     cache_file = cache_dir / f"sol_{sol_int:04d}.json"
 
     if cache_file.exists():
-        raw_bytes = cache_file.read_bytes()
-        digest = hashlib.sha256(raw_bytes).hexdigest()
-        payload = json.loads(raw_bytes.decode("utf-8"))
-        return parse_m20_raw_images_payload(
-            payload,
-            target_azimuth_deg=target_azimuth_deg,
-            max_azimuth_delta_deg=max_azimuth_delta_deg,
-            page=page,
-            page_size=page_size,
-            source_status="cached",
-            cache_sha256=digest,
-            fallback_sol=sol_int,
-        )
+        try:
+            raw_bytes = cache_file.read_bytes()
+            if len(raw_bytes) <= MAX_RAW_IMAGES_PAYLOAD_BYTES:
+                digest = hashlib.sha256(raw_bytes).hexdigest()
+                payload = json.loads(raw_bytes.decode("utf-8"))
+                if isinstance(payload, dict):
+                    return parse_m20_raw_images_payload(
+                        payload,
+                        target_azimuth_deg=target_azimuth_deg,
+                        max_azimuth_delta_deg=max_azimuth_delta_deg,
+                        page=page,
+                        page_size=page_size,
+                        source_status="cached",
+                        cache_sha256=digest,
+                        fallback_sol=sol_int,
+                    )
+        except (OSError, ValueError, UnicodeDecodeError):
+            pass
 
     if allow_network:
         url = M20_RAW_IMAGES_FEED_TEMPLATE.format(sol=sol_int)
-        req = urllib.request.Request(url, headers={"User-Agent": "MarsWalk-SpaceApps2026/1.1"})
-        try:
-            with urllib.request.urlopen(req, timeout=float(timeout_s)) as resp:  # noqa: S310
-                raw_bytes = resp.read()
-            payload = json.loads(raw_bytes.decode("utf-8"))
-            cache_dir.mkdir(parents=True, exist_ok=True)
-            cache_file.write_bytes(raw_bytes)
-            digest = hashlib.sha256(raw_bytes).hexdigest()
-            return parse_m20_raw_images_payload(
-                payload,
-                target_azimuth_deg=target_azimuth_deg,
-                max_azimuth_delta_deg=max_azimuth_delta_deg,
-                page=page,
-                page_size=page_size,
-                source_status="live",
-                cache_sha256=digest,
-                fallback_sol=sol_int,
-            )
-        except Exception:
-            pass
+        if url.startswith("https://mars.nasa.gov/"):
+            req = urllib.request.Request(url, headers={"User-Agent": "MarsWalk-SpaceApps2026/1.1"})
+            tmp_file = cache_dir / f".sol_{sol_int:04d}.{os.getpid()}.tmp"
+            try:
+                with urllib.request.urlopen(req, timeout=float(timeout_s)) as resp:  # noqa: S310
+                    raw_bytes = resp.read(MAX_RAW_IMAGES_PAYLOAD_BYTES + 1)
+                if len(raw_bytes) <= MAX_RAW_IMAGES_PAYLOAD_BYTES:
+                    payload = json.loads(raw_bytes.decode("utf-8"))
+                    if isinstance(payload, dict):
+                        cache_dir.mkdir(parents=True, exist_ok=True)
+                        tmp_file.write_bytes(raw_bytes)
+                        os.replace(tmp_file, cache_file)
+                        digest = hashlib.sha256(raw_bytes).hexdigest()
+                        return parse_m20_raw_images_payload(
+                            payload,
+                            target_azimuth_deg=target_azimuth_deg,
+                            max_azimuth_delta_deg=max_azimuth_delta_deg,
+                            page=page,
+                            page_size=page_size,
+                            source_status="live",
+                            cache_sha256=digest,
+                            fallback_sol=sol_int,
+                        )
+            except Exception:
+                try:
+                    if tmp_file.exists():
+                        tmp_file.unlink()
+                except OSError:
+                    pass
 
     return PaginatedCameraResult(
         sol=sol_int,
