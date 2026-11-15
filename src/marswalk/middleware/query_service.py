@@ -15,6 +15,7 @@ downloads data or changes the pack.
 
 from __future__ import annotations
 
+import logging
 import math
 import re
 
@@ -39,7 +40,66 @@ from marswalk.engine.meda_envelope import evaluate_dust_tau_verdict
 from marswalk.middleware.build_pack import spherical_distance_m
 from marswalk.middleware.pack_loader import LoadedSitePack
 
+logger = logging.getLogger(__name__)
 _RETAINED_SLOPE_RE = re.compile(r"Retained\s+(?:4|16|64)m\s+slope\s+([0-9]+(?:\.[0-9]+)?)\s+deg")
+_REQUIRED_SLOPE_BASELINES: tuple[str, ...] = ("1", "4", "16", "64")
+
+
+def _is_finite_quantity(q: Quantity | None) -> bool:
+    if q is None or q.value is None:
+        return False
+    try:
+        return math.isfinite(float(q.value))
+    except (TypeError, ValueError):
+        return False
+
+
+def _validate_cell_required_quantities(cell: HazardCell) -> str | None:
+    """Return the name of the first missing/NaN/infinite required quantity on `cell`, or None."""
+    if not _is_finite_quantity(getattr(cell, "elev_m", None)):
+        return "elev_m"
+    slopes = getattr(cell, "slope_deg_by_baseline", None)
+    if not isinstance(slopes, dict):
+        return "slope_deg_by_baseline"
+    for b_key in _REQUIRED_SLOPE_BASELINES:
+        if not _is_finite_quantity(slopes.get(b_key)):  # type: ignore[arg-type]
+            return f"slope_deg_by_baseline[{b_key}]"
+    if not _is_finite_quantity(getattr(cell, "scale_divergence", None)):
+        return "scale_divergence"
+    if getattr(cell, "verdict", None) not in ("GO", "CAUTION", "NO_GO"):
+        return "verdict"
+    return None
+
+
+def _safe_quantity(q: Quantity | None, default_unit: str, default_source_id: str) -> Quantity:
+    """Return `q` if finite, else a JSON-safe 0.0 Quantity so FastAPI never emits 500 on NaN."""
+    if _is_finite_quantity(q) and q is not None:
+        return q
+    tag = q.tag if q is not None and getattr(q, "tag", None) else "DERIVED"
+    src = q.source_id if q is not None and getattr(q, "source_id", None) else default_source_id
+    unit = q.unit if q is not None and getattr(q, "unit", None) else default_unit
+    return Quantity(value=0.0, unit=unit, tag=tag, source_id=src)
+
+
+def _sanitize_cell_for_failsafe(cell: HazardCell, missing_field: str) -> HazardCell:
+    """Return a JSON-serializable NO_GO copy of `cell` with explicit FAIL_SAFE reason."""
+    default_src = "SRC-USGS-HIRISE-DTM-1M"
+    raw_slopes = cell.slope_deg_by_baseline if isinstance(cell.slope_deg_by_baseline, dict) else {}
+    safe_slopes = {
+        b_key: _safe_quantity(raw_slopes.get(b_key), "deg", default_src)  # type: ignore[arg-type]
+        for b_key in _REQUIRED_SLOPE_BASELINES
+    }
+    return cell.model_copy(
+        update={
+            "elev_m": _safe_quantity(getattr(cell, "elev_m", None), "m", default_src),
+            "slope_deg_by_baseline": safe_slopes,
+            "scale_divergence": _safe_quantity(
+                getattr(cell, "scale_divergence", None), "deg", default_src
+            ),
+            "verdict": "NO_GO",
+            "reason": f"FAIL_SAFE: missing {missing_field} in {cell.cell_id}",
+        }
+    )
 
 
 def _cell_retained_slope_deg(cell: HazardCell) -> float:
@@ -312,13 +372,85 @@ class PackQueryService:
         _push(r_end, c_end)
         return visited
 
+    def _unavailable_layer_reasons(self) -> list[str]:
+        """Return `layer <x> unavailable` notes for any absent optional telemetry layer."""
+        ext = self.pack.hazards.external_layers_status
+        if not isinstance(ext, dict):
+            return []
+        notes: list[str] = []
+        for layer_key, meta in ext.items():
+            if isinstance(meta, dict) and meta.get("available") is False:
+                notes.append(f"layer {layer_key} unavailable")
+        return notes
+
+    def _build_failsafe_route_result(
+        self,
+        point_count: int,
+        reason: str,
+        traversed_cell_ids: list[str] | None = None,
+    ) -> RouteEvaluationResult:
+        """Build a valid HTTP 200 NO_GO response on missing data, engine error, or safe mode."""
+        reasons = [reason, *self._unavailable_layer_reasons()]
+        return RouteEvaluationResult(
+            site_id=self.pack.site_id,
+            point_count=max(2, int(point_count)),
+            total_distance_m=Quantity(
+                value=0.0, unit="m", tag="SIMULATED", source_id="SRC-NASA-XEVA"
+            ),
+            walkback_distance_m=Quantity(
+                value=0.0, unit="m", tag="SIMULATED", source_id="SRC-NASA-XEVA"
+            ),
+            walkback_within_limit=False,
+            max_slope_1m_deg=Quantity(
+                value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            max_slope_64m_deg=Quantity(
+                value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            max_scale_divergence_deg=Quantity(
+                value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            estimated_duration_h=Quantity(
+                value=0.0, unit="h", tag="SIMULATED", source_id="SRC-NASA-XEVA"
+            ),
+            estimated_radiation_msv=Quantity(
+                value=0.0,
+                unit="mSv",
+                tag="SIMULATED",
+                source_id="SRC-RAD-GALE",
+                note="proxy Curiosity RAD, Gale",
+            ),
+            verdict="NO_GO",
+            reasons=reasons,
+            traversed_cell_ids=list(traversed_cell_ids or []),
+            metabolic_rate_w=Quantity(
+                value=0.0, unit="W", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            walkback_return_h=Quantity(
+                value=0.0, unit="h", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            walkback_o2_margin_min=Quantity(
+                value=0.0, unit="min", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_diffraction_loss_db=Quantity(
+                value=0.0, unit="dB", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_comms_verdict="NO_GO",
+        )
+
     def lookup_cell(self, lon: float, lat: float) -> CellLookupResult:
         """Return the nearest HazardCell and nearest Perseverance Waypoint to (lon, lat)."""
         _, _, best_cell = min(
             self._cell_coords,
             key=lambda item: (item[0] - lon) ** 2 + (item[1] - lat) ** 2,
         )
-        dist_cell = round(spherical_distance_m(lon, lat, best_cell.lon, best_cell.lat), 2)
+        missing_field = _validate_cell_required_quantities(best_cell)
+        safe_cell = (
+            _sanitize_cell_for_failsafe(best_cell, missing_field)
+            if missing_field is not None
+            else best_cell
+        )
+        dist_cell = round(spherical_distance_m(lon, lat, safe_cell.lon, safe_cell.lat), 2)
 
         _, _, best_wp = min(
             self._wp_coords,
@@ -332,13 +464,24 @@ class PackQueryService:
             query_lon=lon,
             query_lat=lat,
             distance_to_cell_center_m=dist_cell,
-            cell=best_cell,
+            cell=safe_cell,
             nearest_waypoint=best_wp,
             distance_to_waypoint_m=dist_wp,
         )
 
     def evaluate_route(self, req: RouteEvaluationRequest) -> RouteEvaluationResult:
-        """Evaluate a candidate [lon, lat] polyline against multi-scale hazards & xEVA limits."""
+        """Evaluate a candidate [lon, lat] polyline with strict NO_GO fail-safe protection."""
+        try:
+            return self._evaluate_route_impl(req)
+        except Exception:
+            logger.exception("FAIL_SAFE caught unexpected error during evaluate_route")
+            return self._build_failsafe_route_result(
+                point_count=len(req.points),
+                reason="FAIL_SAFE: engine error",
+            )
+
+    def _evaluate_route_impl(self, req: RouteEvaluationRequest) -> RouteEvaluationResult:
+        """Internal route evaluator called inside `evaluate_route` fail-safe envelope."""
         pts = req.points
         total_dist_m = 0.0
         max_walkback_m = 0.0
@@ -384,6 +527,15 @@ class PackQueryService:
             wb = spherical_distance_m(origin_lon, origin_lat, lon, lat)
             if wb > max_walkback_m:
                 max_walkback_m = wb
+
+        for cell in traversed_cells:
+            missing_field = _validate_cell_required_quantities(cell)
+            if missing_field is not None:
+                return self._build_failsafe_route_result(
+                    point_count=len(pts),
+                    reason=f"FAIL_SAFE: missing {missing_field} in {cell.cell_id}",
+                    traversed_cell_ids=[c.cell_id for c in traversed_cells],
+                )
 
         total_dist_m = round(total_dist_m, 2)
         max_walkback_m = round(max_walkback_m, 2)
@@ -509,6 +661,8 @@ class PackQueryService:
                     "All traversed cells and walkback distance satisfy "
                     "NASA xEVA & JPL safety limits."
                 )
+
+        reasons.extend(self._unavailable_layer_reasons())
 
         return RouteEvaluationResult(
             site_id=self.pack.site_id,
