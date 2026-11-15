@@ -22,11 +22,11 @@ What it promises
 
 from __future__ import annotations
 
-import os
 from functools import lru_cache
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi import Path as PathParam
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -39,7 +39,12 @@ from marswalk.contracts.models import (
     SiteManifest,
     WaypointFeatureCollection,
 )
-from marswalk.middleware.pack_loader import PackIntegrityError, load_and_verify_pack
+from marswalk.middleware.pack_loader import (
+    PackIntegrityError,
+    load_and_verify_pack,
+    resolve_pack_relative_path,
+    validate_safe_site_id,
+)
 from marswalk.middleware.query_service import (
     CellLookupResult,
     PackQueryService,
@@ -48,6 +53,7 @@ from marswalk.middleware.query_service import (
     RouteEvaluationRequest,
     RouteEvaluationResult,
     RoverCamerasResponse,
+    is_camera_fetch_allowed,
     is_safe_mode_enabled,
 )
 
@@ -57,13 +63,21 @@ def _default_repo_root() -> Path:
 
 
 @lru_cache(maxsize=4)
+def _load_cached_query_service(safe_site_id: str) -> PackQueryService:
+    pack = load_and_verify_pack(_default_repo_root(), site_id=safe_site_id)
+    return PackQueryService(pack)
+
+
 def get_query_service(site_id: str = "jezero") -> PackQueryService:
-    """Load and cache the SHA-256 verified site pack query service."""
+    """Validate `site_id` prior to LRU lookup so bogus IDs never poison the cache."""
     try:
-        pack = load_and_verify_pack(_default_repo_root(), site_id=site_id)
+        safe_site = validate_safe_site_id(site_id)
+        return _load_cached_query_service(safe_site)
     except PackIntegrityError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-    return PackQueryService(pack)
+
+
+get_query_service.cache_clear = _load_cached_query_service.cache_clear  # type: ignore[attr-defined]
 
 
 app = FastAPI(
@@ -128,7 +142,12 @@ def get_hazards(site_id: str) -> HazardGrid:
 def get_hazard_overlay_png(site_id: str) -> FileResponse:
     """Return the transparent RGBA `hazard_overlay.png` heatmap."""
     svc = get_query_service(site_id)
-    png_path = svc.pack.pack_dir / svc.pack.hazards.overlay_file
+    try:
+        png_path = resolve_pack_relative_path(svc.pack.pack_dir, svc.pack.hazards.overlay_file)
+    except PackIntegrityError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if not png_path.exists():
+        raise HTTPException(status_code=404, detail="hazard_overlay.png not present in site pack")
     return FileResponse(png_path, media_type="image/png")
 
 
@@ -174,7 +193,10 @@ def get_planner_grid_10m_png(site_id: str) -> FileResponse:
     """Return the lossless 8-bit RGBA `planner_grid_10m.png` (`M1`/`M2`)."""
     svc = get_query_service(site_id)
     fname = svc.pack.hazards.planner_grid_file or "planner_grid_10m.png"
-    png_path = svc.pack.pack_dir / fname
+    try:
+        png_path = resolve_pack_relative_path(svc.pack.pack_dir, fname)
+    except PackIntegrityError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     if not png_path.exists():
         raise HTTPException(status_code=404, detail="planner_grid_10m.png not present in site pack")
     return FileResponse(png_path, media_type="image/png")
@@ -183,7 +205,7 @@ def get_planner_grid_10m_png(site_id: str) -> FileResponse:
 @app.get("/v1/sites/{site_id}/waypoints/{sol}/cameras", response_model=RoverCamerasResponse)
 def get_waypoint_cameras(
     site_id: str,
-    sol: int,
+    sol: int = PathParam(..., ge=0, le=1_000_000, description="Mars 2020 mission sol (>= 0)"),
     azimuth_deg: float | None = Query(default=None, ge=0.0, le=360.0),
     max_azimuth_delta_deg: float = Query(default=90.0, ge=5.0, le=180.0),
     page: int = Query(default=1, ge=1, le=200),
@@ -195,12 +217,11 @@ def get_waypoint_cameras(
     A live fetch (outbound call + cache write in `datalake/`) needs BOTH the client flag and the
     operator switch `MARSWALK_ALLOW_CAMERA_FETCH=1`. Without it the endpoint is read-only.
     """
-    operator_allows_fetch = os.environ.get("MARSWALK_ALLOW_CAMERA_FETCH", "").strip() == "1"
     return get_query_service(site_id).get_waypoint_cameras(
         sol=sol,
         azimuth_deg=azimuth_deg,
         max_azimuth_delta_deg=max_azimuth_delta_deg,
         page=page,
         page_size=page_size,
-        allow_network=allow_network and operator_allows_fetch,
+        allow_network=allow_network and is_camera_fetch_allowed(),
     )

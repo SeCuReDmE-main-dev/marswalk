@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,9 +19,36 @@ from marswalk.contracts.models import (
 )
 from marswalk.engine.obstacles_m1 import PlannerGrid10m, load_planner_grid_10m_png
 
+_SAFE_SITE_ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,31}$")
+
 
 class PackIntegrityError(RuntimeError):
     """Raised when a static pack fails SHA-256, byte-size, or DERIVED provenance validation."""
+
+
+def validate_safe_site_id(site_id: str) -> str:
+    """Reject empty, overlong, or path-traversing `site_id` strings before disk/cache lookup."""
+    if not isinstance(site_id, str) or not _SAFE_SITE_ID_RE.fullmatch(site_id):
+        raise PackIntegrityError(f"Invalid site_id '{site_id}'")
+    return site_id
+
+
+def resolve_pack_relative_path(pack_dir: Path, rel_path: str) -> Path:
+    """Resolve `rel_path` strictly inside `pack_dir` (rejects `..`, `:`, `\\`, absolute paths)."""
+    if (
+        not isinstance(rel_path, str)
+        or not rel_path
+        or "\\" in rel_path
+        or ":" in rel_path
+        or rel_path.startswith("/")
+        or ".." in rel_path.split("/")
+    ):
+        raise PackIntegrityError(f"Unsafe pack-relative path '{rel_path}'")
+    base_resolved = pack_dir.resolve()
+    candidate = (base_resolved / rel_path).resolve()
+    if candidate == base_resolved or not candidate.is_relative_to(base_resolved):
+        raise PackIntegrityError(f"Pack file escapes pack directory: '{rel_path}'")
+    return candidate
 
 
 @dataclass(frozen=True)
@@ -77,19 +105,23 @@ def _verify_quantities_sources(
 
 def load_and_verify_pack(repo_root: Path, site_id: str = "jezero") -> LoadedSitePack:
     """Load `public_packs/<site_id>/v1/` and verify SHA-256 digests and provenance."""
-    pack_dir = repo_root / "public_packs" / site_id / "v1"
+    safe_site = validate_safe_site_id(site_id)
+    packs_root = (repo_root / "public_packs").resolve()
+    pack_dir = (packs_root / safe_site / "v1").resolve()
+    if not pack_dir.is_relative_to(packs_root):
+        raise PackIntegrityError(f"Pack directory escapes public_packs: {safe_site}")
     manifest_path = pack_dir / "manifest.json"
     if not manifest_path.exists():
         raise PackIntegrityError(f"Missing manifest.json at {manifest_path}")
 
     manifest = SiteManifest.model_validate(json.loads(manifest_path.read_text(encoding="utf-8")))
-    if manifest.site_id != site_id:
+    if manifest.site_id != safe_site:
         raise PackIntegrityError(
-            f"Manifest site_id '{manifest.site_id}' does not match '{site_id}'"
+            f"Manifest site_id '{manifest.site_id}' does not match '{safe_site}'"
         )
 
     for file_entry in manifest.files:
-        target = pack_dir / file_entry.path
+        target = resolve_pack_relative_path(pack_dir, file_entry.path)
         if not target.exists():
             raise PackIntegrityError(f"Missing pack file: {target}")
         raw = target.read_bytes()

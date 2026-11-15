@@ -24,9 +24,13 @@ Enforces CTO rules (`F1`, `H1`, `H2`, `H3`, `C4`, `C5`, `C6a` & Missing Angles):
 
 from __future__ import annotations
 
+import hashlib
 import heapq
 import math
 from dataclasses import dataclass
+from functools import lru_cache
+
+import numpy as np
 
 from marswalk.contracts.models import VerdictLiteral
 from marswalk.engine.eva_human_rf import tobler_xeva_kmh
@@ -36,6 +40,8 @@ INTERNAL_CROSS_SLOPE_CAUTION_DEG: float = 15.0
 # Exact global supremum of `tobler_xeva_kmh(grade, sand_penalty=1.0)` at `grade = -0.05` (`C4`)
 V_MAX_XEVA_KMH: float = tobler_xeva_kmh(-0.05, sand_penalty=1.0)  # 2.4000 km/h
 V_MAX_XEVA_M_S: float = V_MAX_XEVA_KMH / 3.6  # 0.6666666666666666 m/s
+_TAN_MAX_SLOPE_20: float = math.tan(math.radians(EVA_SUIT_MAX_SLOPE_DEG))
+_TAN_CROSS_CAUTION_15: float = math.tan(math.radians(INTERNAL_CROSS_SLOPE_CAUTION_DEG))
 
 _NEIGHBORS_8: tuple[tuple[int, int], ...] = (
     (-1, 0),
@@ -139,9 +145,12 @@ def supercover_grid_cells(
     Returns `(all_in_bounds, cells)`. If either endpoint or any corner touch falls outside
     `[0, rows) x [0, cols)` (or hits `blocked_flat`), returns `(False, ...)` immediately.
     """
-    if not (in_grid_bounds(r0, c0, rows, cols) and in_grid_bounds(r1, c1, rows, cols)):
+    if not (0 <= r0 < rows and 0 <= c0 < cols and 0 <= r1 < rows and 0 <= c1 < cols):
         return (False, [])
-    if blocked_flat is not None and (blocked_flat[r0 * cols + c0] or blocked_flat[r1 * cols + c1]):
+    has_blocked = blocked_flat is not None
+    if has_blocked and (
+        blocked_flat[r0 * cols + c0] or blocked_flat[r1 * cols + c1]  # type: ignore[index]
+    ):
         return (False, [])
 
     visited: list[tuple[int, int]] = [(r0, c0)]
@@ -163,46 +172,78 @@ def supercover_grid_cells(
     t_max_c = (0.5 / abs(du)) if step_c != 0 else float("inf")
     t_max_r = (0.5 / abs(dv)) if step_r != 0 else float("inf")
 
-    def _append_checked(rr: int, cc: int) -> bool:
-        if not in_grid_bounds(rr, cc, rows, cols):
-            return False
-        if blocked_flat is not None and blocked_flat[rr * cols + cc]:
-            return False
-        if visited[-1] != (rr, cc):
-            visited.append((rr, cc))
-        return True
-
+    last_r = r0
+    last_c = c0
+    append = visited.append
     max_iters = 2 * (abs(r1 - r0) + abs(c1 - c0)) + 4
     corner_eps = 1e-9
+
     for _ in range(max_iters):
         if r == r1 and c == c1:
             break
         if abs(t_max_c - t_max_r) <= corner_eps:
             # Corner crossing: include both orthogonal cells with explicit bounds check (`H3`)
-            if not _append_checked(r, c + step_c):
+            nc1 = c + step_c
+            if not (0 <= r < rows and 0 <= nc1 < cols):
                 return (False, visited)
-            if not _append_checked(r + step_r, c):
+            if has_blocked and blocked_flat[r * cols + nc1]:  # type: ignore[index]
                 return (False, visited)
-            c += step_c
-            r += step_r
+            if r != last_r or nc1 != last_c:
+                append((r, nc1))
+                last_r = r
+                last_c = nc1
+
+            nr2 = r + step_r
+            if not (0 <= nr2 < rows and 0 <= c < cols):
+                return (False, visited)
+            if has_blocked and blocked_flat[nr2 * cols + c]:  # type: ignore[index]
+                return (False, visited)
+            if nr2 != last_r or c != last_c:
+                append((nr2, c))
+                last_r = nr2
+                last_c = c
+
+            c = nc1
+            r = nr2
             t_max_c += t_delta_c
             t_max_r += t_delta_r
-            if not _append_checked(r, c):
+            if not (0 <= r < rows and 0 <= c < cols):
                 return (False, visited)
+            if has_blocked and blocked_flat[r * cols + c]:  # type: ignore[index]
+                return (False, visited)
+            if r != last_r or c != last_c:
+                append((r, c))
+                last_r = r
+                last_c = c
         elif t_max_c < t_max_r:
             c += step_c
             t_max_c += t_delta_c
-            if not _append_checked(r, c):
+            if not (0 <= r < rows and 0 <= c < cols):
                 return (False, visited)
+            if has_blocked and blocked_flat[r * cols + c]:  # type: ignore[index]
+                return (False, visited)
+            if r != last_r or c != last_c:
+                append((r, c))
+                last_r = r
+                last_c = c
         else:
             r += step_r
             t_max_r += t_delta_r
-            if not _append_checked(r, c):
+            if not (0 <= r < rows and 0 <= c < cols):
                 return (False, visited)
+            if has_blocked and blocked_flat[r * cols + c]:  # type: ignore[index]
+                return (False, visited)
+            if r != last_r or c != last_c:
+                append((r, c))
+                last_r = r
+                last_c = c
 
-    if visited[-1] != (r1, c1):
-        if not _append_checked(r1, c1):
+    if last_r != r1 or last_c != c1:
+        if not (0 <= r1 < rows and 0 <= c1 < cols):
             return (False, visited)
+        if has_blocked and blocked_flat[r1 * cols + c1]:  # type: ignore[index]
+            return (False, visited)
+        append((r1, c1))
     return (True, visited)
 
 
@@ -285,11 +326,7 @@ def evaluate_shortcut_segment_cost_s(
     if _flat is not None:
         blocked_f, caution_f, gx_f, gy_f, risk_f = _flat
     else:
-        blocked_f = grid.blocked_mask.ravel().tolist()
-        caution_f = grid.caution_mask.ravel().tolist()
-        gx_f = grid.grad_x.ravel().tolist()
-        gy_f = grid.grad_y.ravel().tolist()
-        risk_f = grid.risk_penalty_01.ravel().tolist()
+        blocked_f, caution_f, gx_f, gy_f, risk_f = _get_flat_grid_lists(grid)
 
     ok_bounds, cells = supercover_grid_cells(
         grid.rows, cols, r0, c0, r1, c1, blocked_flat=blocked_f
@@ -312,16 +349,35 @@ def evaluate_shortcut_segment_cost_s(
     max_cross = 0.0
     caution_cnt = 0
 
+    _atan = math.atan
+    _degrees = math.degrees
+    _exp = math.exp
+    _isfinite = math.isfinite
+    max_slope_deg = EVA_SUIT_MAX_SLOPE_DEG
+    cross_caution_deg = INTERNAL_CROSS_SLOPE_CAUTION_DEG
+    vmax = V_MAX_XEVA_M_S
+    tan20 = _TAN_MAX_SLOPE_20
+    tan15 = _TAN_CROSS_CAUTION_15
+
     for rr, cc in cells:
         idx = rr * cols + cc
         gx = gx_f[idx]
         gy = gy_f[idx]
+        if not (_isfinite(gx) and _isfinite(gy)):
+            return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
         g_par = gx * ux + gy * uy
+        abs_g_par = abs(g_par)
         g_cross = abs(gx * uy - gy * ux)
-        theta_par = math.degrees(math.atan(abs(g_par)))
-        theta_cross = math.degrees(math.atan(g_cross))
+        if abs_g_par > tan20 or g_cross > tan20:
+            theta_par_bad = _degrees(_atan(abs_g_par))
+            theta_cross_bad = _degrees(_atan(g_cross))
+            if max(theta_par_bad, theta_cross_bad) > max_slope_deg:
+                return (False, float("inf"), float("inf"), theta_par_bad, theta_cross_bad, 0)
+
+        theta_par = _degrees(_atan(abs_g_par))
+        theta_cross = _degrees(_atan(g_cross))
         theta_max = theta_par if theta_par >= theta_cross else theta_cross
-        if theta_max > EVA_SUIT_MAX_SLOPE_DEG:
+        if theta_max > max_slope_deg:
             return (False, float("inf"), float("inf"), theta_par, theta_cross, 0)
 
         if theta_par > max_par:
@@ -329,20 +385,30 @@ def evaluate_shortcut_segment_cost_s(
         if theta_cross > max_cross:
             max_cross = theta_cross
         is_caut = caution_f[idx]
-        if is_caut or theta_cross > INTERNAL_CROSS_SLOPE_CAUTION_DEG:
+        if is_caut or g_cross > tan15:
             caution_cnt += 1
 
-        v_ms = anisotropic_walking_speed_m_s(g_par, g_cross)
+        base_kmh = 2.4 * _exp(-3.5 * abs(g_par + 0.05))
+        if base_kmh < 0.15:
+            base_kmh = 0.15
+        v_ms = (base_kmh / 3.6) / (1.0 + 0.60 * (g_cross * g_cross))
+        if v_ms < 0.04:
+            v_ms = 0.04
+        elif v_ms > vmax:
+            v_ms = vmax
+
         dt_s = ds_m / v_ms
         total_dt_s += dt_s
         if pure_time_only:
             total_weighted_s += dt_s
         else:
-            norm_slope = theta_max / EVA_SUIT_MAX_SLOPE_DEG
+            norm_slope = theta_max / max_slope_deg
             risk_v = risk_f[idx]
+            if not _isfinite(risk_v):
+                return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
             cross_caution = (
-                0.45 * ((theta_cross - INTERNAL_CROSS_SLOPE_CAUTION_DEG) / 5.0)
-                if theta_cross > INTERNAL_CROSS_SLOPE_CAUTION_DEG
+                0.45 * ((theta_cross - cross_caution_deg) / 5.0)
+                if theta_cross > cross_caution_deg
                 else 0.0
             )
             caution_pen = 0.20 if is_caut else 0.0
@@ -352,6 +418,157 @@ def evaluate_shortcut_segment_cost_s(
             total_weighted_s += dt_s * mult
 
     return (True, total_weighted_s, total_dt_s, max_par, max_cross, caution_cnt)
+
+
+def _grid_content_digest(grid: PlannerGrid10m) -> bytes:
+    """Compute a fast 16-byte BLAKE2b fingerprint of all grid arrays for edge-table caching."""
+    h = hashlib.blake2b(digest_size=16)
+    h.update(np.ascontiguousarray(grid.blocked_mask, dtype=np.uint8).tobytes())
+    h.update(np.ascontiguousarray(grid.caution_mask, dtype=np.uint8).tobytes())
+    h.update(np.ascontiguousarray(grid.grad_x, dtype=np.float64).tobytes())
+    h.update(np.ascontiguousarray(grid.grad_y, dtype=np.float64).tobytes())
+    h.update(np.ascontiguousarray(grid.risk_penalty_01, dtype=np.float64).tobytes())
+    return h.digest()
+
+
+# Maps a content digest to the most recent grid arrays without holding unbounded references
+_GRID_ARRAYS_BY_DIGEST: dict[
+    bytes, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
+] = {}
+
+
+@lru_cache(maxsize=12)
+def _cached_directional_edge_tables(
+    rows: int,
+    cols: int,
+    step_x: float,
+    step_y: float,
+    alpha_slope: float,
+    gamma_risk: float,
+    pure_time_only: bool,
+    digest: bytes,
+) -> tuple[tuple[int, list[float]], ...]:
+    """Vectorize exact 8-connected anisotropic edge costs (`inf` when blocked or > 20 deg)."""
+    blocked, caution, grad_x, grad_y, risk_01 = _GRID_ARRAYS_BY_DIGEST[digest]
+    inf = float("inf")
+    tables: list[tuple[int, list[float]]] = []
+
+    for dr, dc in _NEIGHBORS_8:
+        dx_m = dc * step_x
+        dy_m = -dr * step_y
+        dist_m = math.hypot(dx_m, dy_m)
+        ux = dx_m / dist_m
+        uy = dy_m / dist_m
+        is_diag = dr != 0 and dc != 0
+
+        r0 = max(0, -dr)
+        r1 = rows - max(0, dr)
+        c0 = max(0, -dc)
+        c1 = cols - max(0, dc)
+        s_src = (slice(r0, r1), slice(c0, c1))
+        s_dst = (slice(r0 + dr, r1 + dr), slice(c0 + dc, c1 + dc))
+
+        edge_mat = np.full((rows, cols), inf, dtype=np.float64)
+        valid = (~blocked[s_src]) & (~blocked[s_dst])
+        if is_diag:
+            s_orth1 = (slice(r0, r1), slice(c0 + dc, c1 + dc))
+            s_orth2 = (slice(r0 + dr, r1 + dr), slice(c0, c1))
+            valid &= (~blocked[s_orth1]) & (~blocked[s_orth2])
+
+        gx = 0.5 * (grad_x[s_src] + grad_x[s_dst])
+        gy = 0.5 * (grad_y[s_src] + grad_y[s_dst])
+        risk_mid = 0.5 * (risk_01[s_src] + risk_01[s_dst])
+        valid &= np.isfinite(gx) & np.isfinite(gy) & np.isfinite(risk_mid)
+
+        g_par = gx * ux + gy * uy
+        g_cross = np.abs(gx * uy - gy * ux)
+        theta_par = np.degrees(np.arctan(np.abs(g_par)))
+        theta_cross = np.degrees(np.arctan(g_cross))
+        theta_max = np.maximum(theta_par, theta_cross)
+        valid &= theta_max <= EVA_SUIT_MAX_SLOPE_DEG
+
+        v_kmh = np.maximum(0.15, 2.4 * np.exp(-3.5 * np.abs(g_par + 0.05)))
+        v_ms = np.clip((v_kmh / 3.6) / (1.0 + 0.60 * (g_cross * g_cross)), 0.04, V_MAX_XEVA_M_S)
+        dt_s = dist_m / v_ms
+
+        if pure_time_only:
+            cost_sub = dt_s
+        else:
+            norm_slope = theta_max / EVA_SUIT_MAX_SLOPE_DEG
+            cross_caution = np.where(
+                theta_cross > INTERNAL_CROSS_SLOPE_CAUTION_DEG,
+                0.45 * ((theta_cross - INTERNAL_CROSS_SLOPE_CAUTION_DEG) / 5.0),
+                0.0,
+            )
+            caution_pen = np.where(caution[s_src] | caution[s_dst], 0.20, 0.0)
+            cost_sub = dt_s * (
+                1.0 + alpha_slope * norm_slope + gamma_risk * risk_mid + cross_caution + caution_pen
+            )
+
+        sub_out = edge_mat[s_src]
+        sub_out[valid] = cost_sub[valid]
+        tables.append((dr * cols + dc, edge_mat.ravel().tolist()))
+
+    return tuple(tables)
+
+
+def _register_grid_digest(grid: PlannerGrid10m) -> bytes:
+    """Register `grid` arrays in the bounded ring buffer (`<= 12`) and return its digest."""
+    digest = _grid_content_digest(grid)
+    if digest not in _GRID_ARRAYS_BY_DIGEST:
+        if len(_GRID_ARRAYS_BY_DIGEST) >= 12:
+            _GRID_ARRAYS_BY_DIGEST.pop(next(iter(_GRID_ARRAYS_BY_DIGEST)))
+        _GRID_ARRAYS_BY_DIGEST[digest] = (
+            grid.blocked_mask,
+            grid.caution_mask,
+            grid.grad_x,
+            grid.grad_y,
+            grid.risk_penalty_01,
+        )
+    return digest
+
+
+@lru_cache(maxsize=12)
+def _cached_flat_grid_lists(
+    digest: bytes,
+) -> tuple[list[bool], list[bool], list[float], list[float], list[float]]:
+    """Cache flat Python lists of `grid` arrays for fast scalar supercover / shortcut sweeps."""
+    blocked, caution, grad_x, grad_y, risk_01 = _GRID_ARRAYS_BY_DIGEST[digest]
+    return (
+        blocked.ravel().tolist(),
+        caution.ravel().tolist(),
+        grad_x.ravel().tolist(),
+        grad_y.ravel().tolist(),
+        risk_01.ravel().tolist(),
+    )
+
+
+def _get_flat_grid_lists(
+    grid: PlannerGrid10m,
+) -> tuple[list[bool], list[bool], list[float], list[float], list[float]]:
+    """Return cached flat Python lists for `grid` (bounded LRU <= 12)."""
+    return _cached_flat_grid_lists(_register_grid_digest(grid))
+
+
+def _get_directional_edge_tables(
+    grid: PlannerGrid10m,
+    *,
+    alpha_slope: float,
+    gamma_risk: float,
+    pure_time_only: bool,
+) -> tuple[tuple[int, list[float]], ...]:
+    """Return cached 8-directional edge-cost tables for `grid` (bounded ring buffer <= 12)."""
+    digest = _register_grid_digest(grid)
+    return _cached_directional_edge_tables(
+        grid.rows,
+        grid.cols,
+        float(grid.step_x_ground_m),
+        float(grid.step_y_ground_m),
+        float(alpha_slope),
+        float(gamma_risk),
+        bool(pure_time_only),
+        digest,
+    )
 
 
 def _astar_single_leg(
@@ -372,29 +589,31 @@ def _astar_single_leg(
     if not (in_grid_bounds(sr, sc, rows, cols) and in_grid_bounds(gr, gc, rows, cols)):
         return (False, [], [], 0)
 
-    blocked_f: list[bool] = grid.blocked_mask.ravel().tolist()
-    s_idx = sr * cols + sc
-    g_idx = gr * cols + gc
-    if blocked_f[s_idx] or blocked_f[g_idx]:
+    if bool(grid.blocked_mask[sr, sc]) or bool(grid.blocked_mask[gr, gc]):
         return (False, [], [], 0)
 
-    caution_f: list[bool] = grid.caution_mask.ravel().tolist()
-    gx_f: list[float] = grid.grad_x.ravel().tolist()
-    gy_f: list[float] = grid.grad_y.ravel().tolist()
-    risk_f: list[float] = grid.risk_penalty_01.ravel().tolist()
+    s_idx = sr * cols + sc
+    g_idx = gr * cols + gc
+    if s_idx == g_idx:
+        return (True, [(sr, sc)], [0.0], 1)
+
+    dir_tables = _get_directional_edge_tables(
+        grid,
+        alpha_slope=alpha_slope,
+        gamma_risk=gamma_risk,
+        pure_time_only=pure_time_only,
+    )
 
     step_x = grid.step_x_ground_m
     step_y = grid.step_y_ground_m
     w_h = max(0.0, float(heuristic_weight))
-    inv_vmax = 1.0 / V_MAX_XEVA_M_S
-
-    # Precompute heading vectors and step lengths for the 8 neighbors
-    neighbor_specs: list[tuple[int, int, float, float, float, bool]] = []
-    for dr, dc in _NEIGHBORS_8:
-        dx_m = dc * step_x
-        dy_m = -dr * step_y
-        dist_m = math.hypot(dx_m, dy_m)
-        neighbor_specs.append((dr, dc, dist_m, dx_m / dist_m, dy_m / dist_m, dr != 0 and dc != 0))
+    if w_h == 0.0:
+        h_table = [0.0] * (rows * cols)
+    else:
+        scale_h = w_h / V_MAX_XEVA_M_S
+        dy_vec = (gr - np.arange(rows, dtype=np.float64)) * step_y
+        dx_vec = (gc - np.arange(cols, dtype=np.float64)) * step_x
+        h_table = (np.hypot(dy_vec[:, None], dx_vec[None, :]) * scale_h).ravel().tolist()
 
     inf = float("inf")
     n_total = rows * cols
@@ -403,13 +622,14 @@ def _astar_single_leg(
     closed = [False] * n_total
 
     g_score[s_idx] = 0.0
-    h0 = w_h * math.hypot((gc - sc) * step_x, (gr - sr) * step_y) * inv_vmax
-    heap: list[tuple[float, int, int]] = [(h0, 0, s_idx)]
+    heap: list[tuple[float, int, int]] = [(h_table[s_idx], 0, s_idx)]
     tie = 0
     expanded = 0
+    heappop = heapq.heappop
+    heappush = heapq.heappush
 
     while heap:
-        _, _, cur_idx = heapq.heappop(heap)
+        _, _, cur_idx = heappop(heap)
         if closed[cur_idx]:
             continue
         closed[cur_idx] = True
@@ -426,63 +646,20 @@ def _astar_single_leg(
             cum_g = [g_score[idx] for idx in rev_indices]
             return (True, path, cum_g, expanded)
 
-        cr = cur_idx // cols
-        cc = cur_idx % cols
         cur_g = g_score[cur_idx]
-        gx_a = gx_f[cur_idx]
-        gy_a = gy_f[cur_idx]
-        risk_a = risk_f[cur_idx]
-        caut_a = caution_f[cur_idx]
-
-        for dr, dc, dist_m, ux, uy, is_diag in neighbor_specs:
-            nr = cr + dr
-            nc = cc + dc
-            if nr < 0 or nr >= rows or nc < 0 or nc >= cols:
+        for delta_idx, edge_costs_k in dir_tables:
+            edge_s = edge_costs_k[cur_idx]
+            if edge_s == inf:
                 continue
-            n_idx = nr * cols + nc
-            if closed[n_idx] or blocked_f[n_idx]:
+            n_idx = cur_idx + delta_idx
+            if closed[n_idx]:
                 continue
-            if is_diag and (blocked_f[cr * cols + nc] or blocked_f[nr * cols + cc]):
-                continue
-
-            gx = 0.5 * (gx_a + gx_f[n_idx])
-            gy = 0.5 * (gy_a + gy_f[n_idx])
-            g_par = gx * ux + gy * uy
-            g_cross = abs(gx * uy - gy * ux)
-            theta_par = math.degrees(math.atan(abs(g_par)))
-            theta_cross = math.degrees(math.atan(g_cross))
-            theta_max = theta_par if theta_par >= theta_cross else theta_cross
-            if theta_max > EVA_SUIT_MAX_SLOPE_DEG:
-                continue
-
-            v_ms = anisotropic_walking_speed_m_s(g_par, g_cross)
-            dt_s = dist_m / v_ms
-            if pure_time_only:
-                edge_s = dt_s
-            else:
-                norm_slope = theta_max / EVA_SUIT_MAX_SLOPE_DEG
-                risk_mid = 0.5 * (risk_a + risk_f[n_idx])
-                cross_caution = (
-                    0.45 * ((theta_cross - INTERNAL_CROSS_SLOPE_CAUTION_DEG) / 5.0)
-                    if theta_cross > INTERNAL_CROSS_SLOPE_CAUTION_DEG
-                    else 0.0
-                )
-                caution_pen = 0.20 if (caut_a or caution_f[n_idx]) else 0.0
-                edge_s = dt_s * (
-                    1.0
-                    + alpha_slope * norm_slope
-                    + gamma_risk * risk_mid
-                    + cross_caution
-                    + caution_pen
-                )
-
             cand_g = cur_g + edge_s
             if cand_g < g_score[n_idx] - 1e-12:
                 g_score[n_idx] = cand_g
                 came_from[n_idx] = cur_idx
                 tie += 1
-                h_n = w_h * math.hypot((gc - nc) * step_x, (gr - nr) * step_y) * inv_vmax
-                heapq.heappush(heap, (cand_g + h_n, tie, n_idx))
+                heappush(heap, (cand_g + h_table[n_idx], tie, n_idx))
 
     return (False, [], [], expanded)
 
@@ -513,13 +690,7 @@ def string_pull_with_cost_guard(
             ),
         )
 
-    flat_cache = (
-        grid.blocked_mask.ravel().tolist(),
-        grid.caution_mask.ravel().tolist(),
-        grid.grad_x.ravel().tolist(),
-        grid.grad_y.ravel().tolist(),
-        grid.risk_penalty_01.ravel().tolist(),
-    )
+    flat_cache = _get_flat_grid_lists(grid)
 
     smoothed: list[tuple[int, int]] = [raw_path[0]]
     candidates_tested = 0
@@ -780,6 +951,7 @@ def plan_obstacle_aware_route(
     max_par_deg = 0.0
     max_cross_deg = 0.0
     caution_cells = 0
+    flat_cache = _get_flat_grid_lists(grid)
 
     for idx in range(len(full_smoothed) - 1):
         r0, c0 = full_smoothed[idx]
@@ -788,7 +960,7 @@ def plan_obstacle_aware_route(
         dy_m = -(r1 - r0) * grid.step_y_ground_m
         total_dist_m += math.hypot(dx_m, dy_m)
         _, _, seg_dt_s, seg_par, seg_cross, seg_caut = evaluate_shortcut_segment_cost_s(
-            grid, r0, c0, r1, c1, pure_time_only=pure_time
+            grid, r0, c0, r1, c1, pure_time_only=pure_time, _flat=flat_cache
         )
         total_dt_s += seg_dt_s
         max_par_deg = max(max_par_deg, seg_par)
