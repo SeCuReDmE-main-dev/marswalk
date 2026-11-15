@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from marswalk.middleware.build_pack import build_jezero_pack, export_contract_schemas
+from marswalk.middleware.map_card import generate_survival_map_svg
 from marswalk.middleware.pack_loader import load_and_verify_pack
 
 
@@ -30,6 +31,17 @@ def main(argv: list[str] | None = None) -> int:
 
     p_verify = sub.add_parser("verify-pack", help="Verify SHA-256 digests and contract schemas")
     p_verify.add_argument("--site", default="jezero", choices=["jezero"])
+
+    p_card = sub.add_parser(
+        "generate-map-card",
+        help="Generate a standalone SVG EVA survival map card from the verified site pack",
+    )
+    p_card.add_argument("--site", default="jezero", choices=["jezero"])
+    p_card.add_argument(
+        "--output",
+        default=None,
+        help="Optional output SVG path (defaults to docs/assets/<site>_eva_survival_map.svg)",
+    )
 
     args = parser.parse_args(argv)
     root = _repo_root()
@@ -58,6 +70,12 @@ def main(argv: list[str] | None = None) -> int:
             f"cells={len(loaded.hazards.cells)} "
             f"files={len(loaded.manifest.files)}"
         )
+        return 0
+
+    if args.command == "generate-map-card":
+        out_override = Path(args.output) if args.output is not None else None
+        written_svg = generate_survival_map_svg(root, site_id=args.site, output_path=out_override)
+        print(f"[MAP CARD] site={args.site} path={written_svg} bytes={written_svg.stat().st_size}")
         return 0
 
     return 1
