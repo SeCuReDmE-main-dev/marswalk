@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import logging
 import math
+import os
 import re
 
 from pydantic import ConfigDict, Field
@@ -43,6 +44,11 @@ from marswalk.middleware.pack_loader import LoadedSitePack
 logger = logging.getLogger(__name__)
 _RETAINED_SLOPE_RE = re.compile(r"Retained\s+(?:4|16|64)m\s+slope\s+([0-9]+(?:\.[0-9]+)?)\s+deg")
 _REQUIRED_SLOPE_BASELINES: tuple[str, ...] = ("1", "4", "16", "64")
+
+
+def is_safe_mode_enabled() -> bool:
+    """Read `MARSWALK_SAFE_MODE` dynamically on every request (never cached at import time)."""
+    return os.environ.get("MARSWALK_SAFE_MODE") == "1"
 
 
 def _is_finite_quantity(q: Quantity | None) -> bool:
@@ -471,6 +477,11 @@ class PackQueryService:
 
     def evaluate_route(self, req: RouteEvaluationRequest) -> RouteEvaluationResult:
         """Evaluate a candidate [lon, lat] polyline with strict NO_GO fail-safe protection."""
+        if is_safe_mode_enabled():
+            return self._build_failsafe_route_result(
+                point_count=len(req.points),
+                reason="SAFE_MODE: route planning disabled by operator",
+            )
         try:
             return self._evaluate_route_impl(req)
         except Exception:

@@ -43,6 +43,7 @@ from marswalk.middleware.query_service import (
     PackQueryService,
     RouteEvaluationRequest,
     RouteEvaluationResult,
+    is_safe_mode_enabled,
 )
 
 
@@ -79,9 +80,13 @@ app.add_middleware(
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    """Return service health and frozen contract version."""
-    return {"status": "ok", "contract_version": CONTRACT_VERSION}
+def health() -> dict[str, str | bool]:
+    """Return service health, frozen contract version, and live safe-mode flag."""
+    return {
+        "status": "ok",
+        "contract_version": CONTRACT_VERSION,
+        "safe_mode": is_safe_mode_enabled(),
+    }
 
 
 @app.get("/v1/sites")

@@ -131,3 +131,60 @@ def test_optional_layer_absent_never_improves_verdict() -> None:
     res_present_caut = svc_present.evaluate_route(RouteEvaluationRequest(points=pts_caution))
     res_absent_caut = svc_absent.evaluate_route(RouteEvaluationRequest(points=pts_caution))
     assert rank[res_absent_caut.verdict] >= rank[res_present_caut.verdict]
+
+
+def test_safe_mode_forces_no_go_on_a_go_route(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A verified GO route returns NO_GO when MARSWALK_SAFE_MODE=1, while GET endpoints stay up."""
+    go_points = [[77.404132, 18.476054], [77.404232, 18.476054]]
+    monkeypatch.delenv("MARSWALK_SAFE_MODE", raising=False)
+    r_normal = client.post("/v1/sites/jezero/evaluate-route", json={"points": go_points})
+    assert r_normal.status_code == 200
+    assert r_normal.json()["verdict"] == "GO"
+
+    monkeypatch.setenv("MARSWALK_SAFE_MODE", "1")
+    r_safe = client.post("/v1/sites/jezero/evaluate-route", json={"points": go_points})
+    assert r_safe.status_code == 200
+    body = r_safe.json()
+    assert body["verdict"] == "NO_GO"
+    assert "SAFE_MODE: route planning disabled by operator" in body["reasons"]
+
+    # Static pack GET endpoints remain live so the map stays visible
+    assert client.get("/v1/sites/jezero/manifest").status_code == 200
+    assert client.get("/v1/sites/jezero/hazards").status_code == 200
+    assert client.get("/v1/sites/jezero/hazard-overlay.png").status_code == 200
+
+
+def test_safe_mode_is_read_per_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Toggling MARSWALK_SAFE_MODE takes effect immediately per request without restart."""
+    go_points = [[77.404132, 18.476054], [77.404232, 18.476054]]
+
+    monkeypatch.setenv("MARSWALK_SAFE_MODE", "0")
+    assert (
+        client.post("/v1/sites/jezero/evaluate-route", json={"points": go_points}).json()["verdict"]
+        == "GO"
+    )
+
+    monkeypatch.setenv("MARSWALK_SAFE_MODE", "1")
+    assert (
+        client.post("/v1/sites/jezero/evaluate-route", json={"points": go_points}).json()["verdict"]
+        == "NO_GO"
+    )
+
+    monkeypatch.delenv("MARSWALK_SAFE_MODE", raising=False)
+    assert (
+        client.post("/v1/sites/jezero/evaluate-route", json={"points": go_points}).json()["verdict"]
+        == "GO"
+    )
+
+
+def test_health_reports_safe_mode(monkeypatch: pytest.MonkeyPatch) -> None:
+    """GET /health dynamically reports `"safe_mode": true|false`."""
+    monkeypatch.delenv("MARSWALK_SAFE_MODE", raising=False)
+    r_off = client.get("/health")
+    assert r_off.status_code == 200
+    assert r_off.json() == {"status": "ok", "contract_version": "1.1.0", "safe_mode": False}
+
+    monkeypatch.setenv("MARSWALK_SAFE_MODE", "1")
+    r_on = client.get("/health")
+    assert r_on.status_code == 200
+    assert r_on.json() == {"status": "ok", "contract_version": "1.1.0", "safe_mode": True}
