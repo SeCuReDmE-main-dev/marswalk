@@ -1,6 +1,6 @@
 {
   "contract_version": "1.0.0",
-  "pack_version": "1.0.1",
+  "pack_version": "1.1.0",
   "site_id": "jezero",
   "site_name": "Jezero Crater & Western Fan (Mars 2020 Perseverance Traverse)",
   "crs": {
@@ -127,6 +127,18 @@
       "path_or_url": "datalake/M20_traverse.json",
       "sha256": "6ddd0ece913d75b45d105946082f95ed84e68f4718b68d32a4421dc30877e7e6",
       "bytes_read": 1723218
+    },
+    {
+      "source_id": "SRC-USGS-HIRISE-DTM-1M",
+      "path_or_url": "datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif",
+      "sha256": "2ab1a8451ee910012f53e7be9264e3639b07bf8fea75456edbbbfc7fb0771bb1",
+      "bytes_read": 11578260
+    },
+    {
+      "source_id": "SRC-USGS-SIM3464",
+      "path_or_url": "datalake/SIM3464_metadata.xml",
+      "sha256": "5f686fbcf1d0d90e0d106bfafea28f950095b7564e580a85119d46b29842f078",
+      "bytes_read": 20351
     }
   ],
   "files": [
@@ -137,24 +149,44 @@
     },
     {
       "path": "route.geojson",
-      "sha256": "2f1292fb8dd49f1c9f46a46465fcde19d6fd220a776858caf8cd743e57f1b0de",
-      "bytes": 26836
+      "sha256": "af7821bf884e2e3986ba0d7a422dd1cb0c19252172ab1079be6650747ed45873",
+      "bytes": 28161
     },
     {
       "path": "hazard_grid.json",
-      "sha256": "ac9b4c42ece0690022d8b460bd9257d4176b1590c2430d60b702c977ee617719",
-      "bytes": 591945
+      "sha256": "8aba19a5e49ae63b2f59c8e04ee53ddef85694b1811877fe6845dd83ec68b4af",
+      "bytes": 648885
     },
     {
       "path": "hazard_overlay.png",
-      "sha256": "ed6ffdee01f012bfc790b677672d8c9ab3ef177f48dbdf46b7482b18e63a1dda",
-      "bytes": 1017
+      "sha256": "98bf03bbe3a2993391f659c4f3cb78e3869a64e018b48929fc38243f5290f120",
+      "bytes": 766
     },
     {
       "path": "eva_constraints.json",
       "sha256": "afcb7eeca0608f2e4742af59a304886324303e687b5767d60f43e01017c1b161",
       "bytes": 2114
+    },
+    {
+      "path": "validation_report.json",
+      "sha256": "e7e3c70fb910d0c9c9a4dc48e259c31e6c93fd9f26e3fcadc9ba426625c39f04",
+      "bytes": 68382
+    },
+    {
+      "path": "gate_log.jsonl",
+      "sha256": "2a3060ba4b1b0d7a01ba5661f46ba3c1d73464461ad3cb4eb689e7577e836798",
+      "bytes": 1265
+    },
+    {
+      "path": "profiles/gates_v1.json",
+      "sha256": "7203a1ccf0fd6de1503eecdfd25e2d9c3b62bcf99277372dd3a3910dc3d8c710",
+      "bytes": 1192
+    },
+    {
+      "path": "profiles/plithogenic_eva_v1.json",
+      "sha256": "5cea35910f9dce0b664a5dbe1d800a5ca1bb9cf61cec249c688f12d56521d853",
+      "bytes": 3202
     }
   ],
-  "generated_at": "2026-11-14T20:25:00-05:00"
+  "generated_at": "2026-11-14T21:00:00-05:00"
 }

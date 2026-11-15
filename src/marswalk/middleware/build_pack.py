@@ -787,8 +787,38 @@ def export_contract_schemas(schemas_dir: Path) -> list[Path]:
 def build_jezero_pack(
     repo_root: Path,
     generated_at: str = DETERMINISTIC_GENERATED_AT,
+    mode: str = "engine",
 ) -> SiteManifest:
-    """Build and sign the complete `public_packs/jezero/v1/` static pack."""
+    """Build and sign the complete `public_packs/jezero/v1/` static pack.
+
+    When `mode == "engine"` (default in Phase 2b), executes the asynchronous 4-stage
+    Neutrosophic-gated Plithogenic + A* engine pipeline against the real 1 m/px USGS
+    HiRISE DTM (`pack_version="1.1.0"`, `grid_status="ENGINE"`).
+    When `mode == "placeholder"`, builds the synthetic Pass 1 placeholder (`1.0.1`).
+    """
+    if mode == "engine":
+        import asyncio
+        import shutil
+
+        from marswalk.engine.pipeline import ENGINE_GENERATED_AT, run_engine_pipeline_async
+
+        canonical_root = Path(__file__).resolve().parents[3]
+        datalake_dir = repo_root / "datalake"
+        datalake_dir.mkdir(parents=True, exist_ok=True)
+        for fname in ("JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif", "SIM3464_metadata.xml"):
+            src_f = canonical_root / "datalake" / fname
+            dst_f = datalake_dir / fname
+            if src_f.exists() and not dst_f.exists():
+                shutil.copyfile(src_f, dst_f)
+
+        profiles_dir = repo_root / "profiles"
+        if not profiles_dir.exists() and (canonical_root / "profiles").exists():
+            shutil.copytree(canonical_root / "profiles", profiles_dir)
+
+        ts = ENGINE_GENERATED_AT if generated_at == DETERMINISTIC_GENERATED_AT else generated_at
+        res = asyncio.run(run_engine_pipeline_async(repo_root, generated_at=ts))
+        return res.manifest
+
     datalake_dir = repo_root / "datalake"
     pack_dir = repo_root / "public_packs" / "jezero" / "v1"
     pack_dir.mkdir(parents=True, exist_ok=True)

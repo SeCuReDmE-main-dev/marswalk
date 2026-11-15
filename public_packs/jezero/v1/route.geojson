@@ -1058,57 +1058,125 @@
         "type": "LineString",
         "coordinates": [
           [
-            77.45088572,
-            18.44462715
+            77.40900942,
+            18.45420266
           ],
           [
-            77.4475,
-            18.4552
+            77.406949,
+            18.455185
           ],
           [
-            77.44250357,
-            18.46558393
+            77.405532,
+            18.455185
           ],
           [
-            77.4305,
-            18.4602
+            77.404132,
+            18.455185
           ],
           [
-            77.41858362,
-            18.4553951
+            77.402732,
+            18.453059
+          ],
+          [
+            77.401314,
+            18.453059
+          ],
+          [
+            77.399914,
+            18.453059
+          ],
+          [
+            77.39915371,
+            18.45364399
+          ],
+          [
+            77.397097,
+            18.453059
+          ],
+          [
+            77.395697,
+            18.453059
+          ],
+          [
+            77.394296,
+            18.453059
+          ],
+          [
+            77.392879,
+            18.453059
+          ],
+          [
+            77.391479,
+            18.453059
+          ],
+          [
+            77.390079,
+            18.455185
+          ],
+          [
+            77.388661,
+            18.457277
+          ],
+          [
+            77.387261,
+            18.459403
+          ],
+          [
+            77.385861,
+            18.461494
+          ],
+          [
+            77.384444,
+            18.46362
+          ],
+          [
+            77.383044,
+            18.465712
+          ],
+          [
+            77.381643,
+            18.467838
+          ],
+          [
+            77.380226,
+            18.46993
+          ],
+          [
+            77.37931207,
+            18.47038842
           ]
         ]
       },
       "properties": {
         "feature_id": "ROUTE-XEVA-SIMULATED-FAN-CORRIDOR",
         "segment_type": "SIMULATED_ASTRONAUT_EVA",
-        "title": "Simulated Astronaut EVA Safe Walkback Corridor (<= 2.0 km from Sol 13 Origin)",
+        "title": "2-Agent A* Plithogenic EVA Corridor Across Western Delta Front (<= 2.0 km)",
         "tag": "SIMULATED",
         "source_id": "SRC-NASA-XEVA",
-        "verdict": "GO",
+        "verdict": "CAUTION",
         "distance_m": {
-          "value": 2806.1,
+          "value": 2328.2,
           "unit": "m",
           "tag": "SIMULATED",
           "source_id": "SRC-NASA-XEVA",
           "note": null
         },
         "max_slope_deg": {
-          "value": 9.4,
+          "value": 17.75,
           "unit": "deg",
-          "tag": "SIMULATED",
-          "source_id": "synthetic-v1",
+          "tag": "DERIVED",
+          "source_id": "SRC-USGS-HIRISE-DTM-1M",
           "note": null
         },
         "estimated_duration_h": {
-          "value": 4.5,
+          "value": 4.41,
           "unit": "h",
           "tag": "SIMULATED",
           "source_id": "SRC-NASA-XEVA",
           "note": null
         },
         "estimated_radiation_msv": {
-          "value": 0.1256,
+          "value": 0.1231,
           "unit": "mSv",
           "tag": "SIMULATED",
           "source_id": "SRC-RAD-GALE",
@@ -1116,9 +1184,9 @@
         },
         "sol": null,
         "rover_tilt_deg": null,
-        "geologic_unit": "Crater floor fractured rough unit (Cf-fr) to Three Forks Delta Apron",
+        "geologic_unit": "Nle Delta Margin Contact -> NHjf1/NHjf2 Western Delta Fan (SIM 3464)",
         "panorama_url": null,
-        "notes": "Candidate crewed EVA sortie connecting Stop 1 (Sol 13), Stop 2 (Sol 398), and Stop 3 (Sol 407), staying strictly within the 2.0 km NASA xEVA walkback radius."
+        "notes": "2-Agent A* EVA corridor (Scout Rover -> Astronaut) across the 2x2 km HiRISE 1m DTM window: one-way path=2328.2 m, max walkback=1925.7 m <= 2,000 m, max 1m DTM slope=17.75 deg <= 20.0 deg, sensitivity Jaccard=1.00."
       }
     },
     {
@@ -1126,14 +1194,14 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          77.45088572,
-          18.44462715
+          77.40900942,
+          18.45420266
         ]
       },
       "properties": {
-        "feature_id": "STOP-01-SOL13-LANDING-BASE",
+        "feature_id": "STOP-01-SOL413-DELTA-BASE",
         "segment_type": "SCIENCE_STOP",
-        "title": "Science Stop 1 — Octavia E. Butler Landing & EVA Origin (Sol 13, 0.0 km)",
+        "title": "Science Stop 1 — Three Forks Delta Front Base & EVA Origin (Sol 413)",
         "tag": "MEASURED",
         "source_id": "SRC-M20-WAYPOINTS",
         "verdict": "GO",
@@ -1141,17 +1209,17 @@
         "max_slope_deg": null,
         "estimated_duration_h": null,
         "estimated_radiation_msv": null,
-        "sol": 13,
+        "sol": 413,
         "rover_tilt_deg": {
-          "value": 1.182,
+          "value": 0.6307,
           "unit": "deg",
           "tag": "MEASURED",
           "source_id": "SRC-M20-WAYPOINTS",
           "note": null
         },
-        "geologic_unit": "Crater floor fractured rough (Cf-fr, USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0012XRAS_0030000_CYL_S_AUTOGENJ01.jpg",
-        "notes": "EVA departure & walkback origin (walkback distance 0.0 m <= 2,000 m; measured rover tilt 1.18 deg -> GO)."
+        "geologic_unit": "Nle (Lower etched delta margin contact, USGS SIM 3464)",
+        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0413_RAS_0220412_CYL_S_AUTOGENJ01.jpg",
+        "notes": "Arrival T+0.0h | Walkback distance=0.0 m (remaining walkback budget=2000.0 m) | Cumulative dose=0.0000 mSv (proxy Curiosity RAD, Gale) | Measured rover tilt=0.63 deg."
       }
     },
     {
@@ -1159,14 +1227,14 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          77.44250357,
-          18.46558393
+          77.39915371,
+          18.45364399
         ]
       },
       "properties": {
-        "feature_id": "STOP-02-SOL398-RAPID-TRAVERSE",
+        "feature_id": "STOP-02-SOL609-DELTA-BENCH",
         "segment_type": "SCIENCE_STOP",
-        "title": "Science Stop 2 — Crater Floor Northwest Traverse Contact (Sol 398, 1.33 km)",
+        "title": "Science Stop 2 — Western Delta Sedimentary Bench (Sol 609)",
         "tag": "MEASURED",
         "source_id": "SRC-M20-WAYPOINTS",
         "verdict": "GO",
@@ -1174,17 +1242,17 @@
         "max_slope_deg": null,
         "estimated_duration_h": null,
         "estimated_radiation_msv": null,
-        "sol": 398,
+        "sol": 609,
         "rover_tilt_deg": {
-          "value": 1.2433,
+          "value": 5.3727,
           "unit": "deg",
           "tag": "MEASURED",
           "source_id": "SRC-M20-WAYPOINTS",
           "note": null
         },
-        "geologic_unit": "Crater floor fractured rough margin (Cf-fr, USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0398_RAS_0181622_CYL_S_AUTOGENJ01.jpg",
-        "notes": "Mid-corridor geological sampling stop on the astronaut EVA path (walkback distance 1,328.6 m <= 2,000 m; measured rover tilt 1.24 deg -> GO)."
+        "geologic_unit": "NHjf1 (Jezero fan 1 layered sedimentary unit, USGS SIM 3464)",
+        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0609_RZS_0301172_CYL_L_AUTOGENJ01.jpg",
+        "notes": "Arrival T+1.2h | Walkback distance=555.1 m (remaining walkback budget=1444.9 m) | Cumulative dose=0.0335 mSv (proxy Curiosity RAD, Gale) | Measured rover tilt=5.37 deg."
       }
     },
     {
@@ -1192,14 +1260,14 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          77.41858362,
-          18.4553951
+          77.37931207,
+          18.47038842
         ]
       },
       "properties": {
-        "feature_id": "STOP-03-SOL407-DELTA-APRON",
+        "feature_id": "STOP-03-SOL753-UPPER-FAN",
         "segment_type": "SCIENCE_STOP",
-        "title": "Science Stop 3 — Three Forks Delta Apron Turnaround (Sol 407, 1.93 km)",
+        "title": "Science Stop 3 — Upper Delta Fan Topset Turnaround (Sol 753)",
         "tag": "MEASURED",
         "source_id": "SRC-M20-WAYPOINTS",
         "verdict": "GO",
@@ -1207,17 +1275,17 @@
         "max_slope_deg": null,
         "estimated_duration_h": null,
         "estimated_radiation_msv": null,
-        "sol": 407,
+        "sol": 753,
         "rover_tilt_deg": {
-          "value": 0.777,
+          "value": 7.4932,
           "unit": "deg",
           "tag": "MEASURED",
           "source_id": "SRC-M20-WAYPOINTS",
           "note": null
         },
-        "geologic_unit": "Delta apron / distal sedimentary contact (USGS SIM 3464)",
-        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0407_RAS_0211126_CYL_S_MANUGENJ01.jpg",
-        "notes": "Terminal science sampling stop at the 2.0 km NASA xEVA walkback boundary (walkback distance 1,925.2 m <= 2,000 m; measured rover tilt 0.78 deg -> GO)."
+        "geologic_unit": "NHjf2 (Jezero fan 2 upper topset unit, USGS SIM 3464)",
+        "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0753_RZS_0371798_CYL_L_AUTOGENJ04.jpg",
+        "notes": "Arrival T+2.6h | Walkback distance=1925.7 m (remaining walkback budget=74.3 m) | Cumulative dose=0.0726 mSv (proxy Curiosity RAD, Gale) | Measured rover tilt=7.49 deg."
       }
     },
     {
@@ -1248,9 +1316,9 @@
           "source_id": "SRC-M20-WAYPOINTS",
           "note": null
         },
-        "geologic_unit": "Delta layered rough / steep scarp contact (D-lr, USGS SIM 3464)",
+        "geologic_unit": "NHjf1 steep scarp contact (USGS SIM 3464)",
         "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_0700_RZS_0330366_CYL_L_AUTOGENJ05.jpg",
-        "notes": "Out-of-walkback rover validation benchmark (2.5 km from Sol 13): Perseverance measured 20.33 deg ground tilt, exceeding the 20.0 deg NASA xEVA suit limit."
+        "notes": "In-window scale-gap benchmark: Perseverance measured 20.33 deg ground tilt and 1m HiRISE DTM peaks at 23.13 deg (> 20 deg NASA xEVA limit -> NO_GO), whereas the 64m coarse baseline reports only 12.65 deg."
       }
     },
     {
@@ -1281,9 +1349,9 @@
           "source_id": "SRC-M20-WAYPOINTS",
           "note": null
         },
-        "geologic_unit": "Noachian crater rim megabreccia unit (Nr, USGS SIM 3464)",
+        "geologic_unit": "Crater rim unit (cr, USGS SIM 3464)",
         "panorama_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/mosaics/N_LRGB_1578_RZS_0774816_CYL_L_AUTOGENJ01.jpg",
-        "notes": "Out-of-walkback rover validation benchmark (10.9 km from Sol 13): highest ground tilt recorded across all 708 Perseverance stops (20.68 deg -> NO_GO)."
+        "notes": "Out-of-walkback rover validation benchmark: highest ground tilt recorded across all 708 Perseverance stops (20.68 deg -> NO_GO)."
       }
     }
   ]

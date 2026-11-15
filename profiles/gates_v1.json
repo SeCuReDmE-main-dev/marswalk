@@ -1,0 +1,37 @@
+{
+  "profile_id": "gates_v1",
+  "version": "1.0.0",
+  "max_hold_retries": 2,
+  "gates": {
+    "G0_INGEST": {
+      "description": "Evaluates raw DTM & telemetry input provenance, Mars sphere R=3,396,190m CRS, and nodata fraction.",
+      "tau_t": 0.70,
+      "tau_i": 0.25,
+      "tau_f": 0.15,
+      "max_nodata_fraction": 0.05
+    },
+    "G1_CLASSIFY": {
+      "description": "Evaluates multi-scale slope coherence and ground-truth rover tilt validation residual across window stops.",
+      "tau_t": 0.60,
+      "tau_i": 0.35,
+      "tau_f": 0.25,
+      "max_validation_mae_deg": 6.0
+    },
+    "G2_SEARCH": {
+      "description": "Evaluates scout rover & astronaut A* path existence, safety margins (<20 deg, <=2 km), and +/-10% cost sensitivity.",
+      "tau_t": 0.60,
+      "tau_i": 0.35,
+      "tau_f": 0.20,
+      "sensitivity_perturbation_pct": 10.0
+    },
+    "G3_PLAN": {
+      "description": "Evaluates final crewed EVA sortie plan: walkback <= 2000m, duration <= 8h, radiation budget, and all stops <= 2000m.",
+      "tau_t": 0.70,
+      "tau_i": 0.25,
+      "tau_f": 0.10,
+      "max_walkback_m": 2000.0,
+      "max_duration_h": 8.0,
+      "max_radiation_msv": 0.30
+    }
+  }
+}

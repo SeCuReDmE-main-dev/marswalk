@@ -26,7 +26,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
     r_manifest = client.get("/v1/sites/jezero/manifest")
     assert r_manifest.status_code == 200
     assert r_manifest.json()["site_id"] == "jezero"
-    assert r_manifest.json()["pack_version"] == "1.0.1"
+    assert r_manifest.json()["pack_version"] == "1.1.0"
 
     r_wp = client.get("/v1/sites/jezero/waypoints")
     assert r_wp.status_code == 200
@@ -38,7 +38,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
 
     r_haz = client.get("/v1/sites/jezero/hazards")
     assert r_haz.status_code == 200
-    assert r_haz.json()["grid_status"] == "PLACEHOLDER"
+    assert r_haz.json()["grid_status"] == "ENGINE"
     assert len(r_haz.json()["cells"]) == 384
 
     r_png = client.get("/v1/sites/jezero/hazard-overlay.png")

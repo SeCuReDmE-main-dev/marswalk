@@ -1,0 +1,97 @@
+{
+  "profile_id": "plithogenic_eva_v1",
+  "version": "1.0.0",
+  "description": "Pre-registered 6-attribute plithogenic EVA terrain evaluation & A* routing profile for Jezero Crater.",
+  "lexicographic_safety_veto": {
+    "suit_max_slope_1m_deg": 20.0,
+    "walkback_max_m": 2000.0,
+    "rover_bedrock_max_slope_deg": 20.0,
+    "rover_sand_max_slope_deg": 10.0,
+    "rule": "Lexicographic non-compensatory safety veto: if 1m slope > 20.0 deg or walkback > 2000.0 m, verdict is immediately NO_GO regardless of geologic or scientific value."
+  },
+  "verdict_thresholds": {
+    "go_min_t": 0.60,
+    "go_max_f": 0.20,
+    "nogo_min_f": 0.50
+  },
+  "astar_weights": {
+    "alpha_slope": 0.12,
+    "beta_untruth": 1.50,
+    "gamma_indeterminacy": 1.20
+  },
+  "attributes": {
+    "A1_multiscale_slope": {
+      "name": "Multi-scale DTM slope (1m, 4m, 16m, 64m)",
+      "dominant_value": "<= 15.0 deg (Apollo practical EVA envelope)",
+      "source_id": "SRC-USGS-HIRISE-DTM-1M",
+      "tag": "DERIVED",
+      "contradiction_degrees": {
+        "le_5_deg": 0.02,
+        "5_to_10_deg": 0.12,
+        "10_to_15_deg": 0.28,
+        "15_to_20_deg": 0.60,
+        "gt_20_deg": 0.95
+      }
+    },
+    "A2_scale_divergence": {
+      "name": "Multi-scale slope divergence (max - min across 1m..64m) & local roughness",
+      "dominant_value": "<= 2.0 deg divergence (scale-consistent terrain)",
+      "source_id": "SRC-USGS-HIRISE-DTM-1M",
+      "tag": "DERIVED",
+      "contradiction_degrees": {
+        "le_2_deg": 0.05,
+        "2_to_5_deg": 0.30,
+        "5_to_8_deg": 0.65,
+        "gt_8_deg": 0.90
+      }
+    },
+    "A3_suit_slope_margin": {
+      "name": "Margin to 20.0 deg NASA xEVA suit slope ceiling",
+      "dominant_value": "margin >= 5.0 deg",
+      "source_id": "SRC-NASA-XEVA",
+      "tag": "MEASURED",
+      "contradiction_degrees": {
+        "margin_ge_10_deg": 0.02,
+        "margin_5_to_10_deg": 0.15,
+        "margin_2_to_5_deg": 0.55,
+        "margin_lt_2_deg": 0.92
+      }
+    },
+    "A4_walkback_distance": {
+      "name": "Great-circle walkback distance to EVA origin",
+      "dominant_value": "<= 2000.0 m (NASA xEVA walkback limit)",
+      "source_id": "SRC-NASA-XEVA",
+      "tag": "MEASURED",
+      "contradiction_degrees": {
+        "le_1000_m": 0.02,
+        "1000_to_1500_m": 0.18,
+        "1500_to_2000_m": 0.42,
+        "gt_2000_m": 1.00
+      }
+    },
+    "A5_geologic_unit": {
+      "name": "USGS SIM 3464 Jezero Crater geologic unit",
+      "dominant_value": "Delta front / sedimentary target unit",
+      "source_id": "SRC-USGS-SIM3464",
+      "tag": "MEASURED",
+      "contradiction_degrees": {
+        "delta_target_unit": 0.05,
+        "transition_margin_unit": 0.25,
+        "crater_floor_baseline_unit": 0.45,
+        "steep_scarp_or_aeolian_hazard": 0.85
+      }
+    },
+    "A6_science_proximity": {
+      "name": "Proximity to Perseverance M20 sampling / science waypoints",
+      "dominant_value": "<= 250 m to verified M20 science stop",
+      "source_id": "SRC-M20-WAYPOINTS",
+      "tag": "MEASURED",
+      "contradiction_degrees": {
+        "le_150_m": 0.04,
+        "150_to_350_m": 0.22,
+        "350_to_700_m": 0.50,
+        "gt_700_m": 0.78
+      }
+    }
+  }
+}

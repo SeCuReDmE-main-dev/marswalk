@@ -26,6 +26,7 @@ def main(argv: list[str] | None = None) -> int:
 
     p_build = sub.add_parser("build-pack", help="Build and sign a static site pack")
     p_build.add_argument("--site", default="jezero", choices=["jezero"])
+    p_build.add_argument("--mode", default="engine", choices=["engine", "placeholder"])
 
     p_verify = sub.add_parser("verify-pack", help="Verify SHA-256 digests and contract schemas")
     p_verify.add_argument("--site", default="jezero", choices=["jezero"])
@@ -40,8 +41,11 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "build-pack":
-        manifest = build_jezero_pack(root)
-        print(f"[PACK BUILT] site={manifest.site_id} version={manifest.contract_version}")
+        manifest = build_jezero_pack(root, mode=args.mode)
+        print(
+            f"[PACK BUILT] site={manifest.site_id} "
+            f"contract={manifest.contract_version} pack_version={manifest.pack_version}"
+        )
         for f in manifest.files:
             print(f"  - {f.path}: {f.bytes} bytes | sha256={f.sha256}")
         return 0

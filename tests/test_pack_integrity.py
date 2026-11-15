@@ -11,7 +11,6 @@ import pytest
 
 from marswalk.contracts.models import Quantity
 from marswalk.middleware.build_pack import (
-    SYNTHETIC_SOURCE_ID,
     build_jezero_pack,
     spherical_distance_m,
 )
@@ -29,9 +28,12 @@ def test_jezero_pack_loads_and_verifies_sha256() -> None:
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
     assert pack.site_id == "jezero"
     assert pack.manifest.contract_version == "1.0.0"
-    assert pack.manifest.pack_version == "1.0.1"
-    assert len(pack.manifest.files) == 5
-    assert len(pack.manifest.inputs) == 2
+    assert pack.manifest.pack_version == "1.1.0"
+    assert len(pack.manifest.files) == 9
+    assert len(pack.manifest.inputs) == 4
+    input_sources = {inp.source_id for inp in pack.manifest.inputs}
+    assert "SRC-USGS-HIRISE-DTM-1M" in input_sources
+    assert "SRC-USGS-SIM3464" in input_sources
 
     total_bytes = sum(f.bytes for f in pack.manifest.files)
     assert total_bytes < 5 * 1024 * 1024
@@ -56,26 +58,26 @@ def test_jezero_pack_loads_and_verifies_sha256() -> None:
     assert max_tilt > 20.0
 
 
-def test_hazard_grid_is_simulated_placeholder_without_monotonic_lock() -> None:
-    """Verify R1 and R3: placeholder grid uses SIMULATED + synthetic-v1 and rock_cfa_pct=None."""
+def test_hazard_grid_is_real_dtm_engine_without_monotonic_lock() -> None:
+    """Verify Phase 2b R1/R3: ENGINE grid uses DERIVED + SRC-USGS-HIRISE-DTM-1M."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
-    assert pack.hazards.grid_status == "PLACEHOLDER"
+    assert pack.hazards.grid_status == "ENGINE"
     assert pack.hazards.rows == 16
     assert pack.hazards.cols == 24
     assert len(pack.hazards.cells) == 384
 
     non_monotonic_count = 0
     for cell in pack.hazards.cells:
-        assert cell.elev_m.tag == "SIMULATED"
-        assert cell.elev_m.source_id == SYNTHETIC_SOURCE_ID
-        assert cell.scale_divergence.tag == "SIMULATED"
-        assert cell.scale_divergence.source_id == SYNTHETIC_SOURCE_ID
+        assert cell.elev_m.tag == "DERIVED"
+        assert cell.elev_m.source_id == "SRC-USGS-HIRISE-DTM-1M"
+        assert cell.scale_divergence.tag == "DERIVED"
+        assert cell.scale_divergence.source_id == "SRC-USGS-HIRISE-DTM-1M"
         assert cell.rock_cfa_pct is None
         assert cell.measured_rover_tilt_deg is None
         for b_key in ("1", "4", "16", "64"):
             q = cell.slope_deg_by_baseline[b_key]
-            assert q.tag == "SIMULATED"
-            assert q.source_id == SYNTHETIC_SOURCE_ID
+            assert q.tag == "DERIVED"
+            assert q.source_id == "SRC-USGS-HIRISE-DTM-1M"
 
         s1 = cell.slope_deg_by_baseline["1"].value
         s4 = cell.slope_deg_by_baseline["4"].value
@@ -84,7 +86,7 @@ def test_hazard_grid_is_simulated_placeholder_without_monotonic_lock() -> None:
         if not (s1 >= s4 >= s16 >= s64):
             non_monotonic_count += 1
 
-    # Prove R3: slopes are NOT artificially forced into s1 >= s4 >= s16 >= s64
+    # Prove R3: real DTM slopes are NOT artificially forced into s1 >= s4 >= s16 >= s64
     assert non_monotonic_count > 0
 
 
@@ -97,8 +99,8 @@ def test_science_stops_on_eva_route_within_2km_and_benchmarks_separated() -> Non
     assert len(eva_features) == 1
     eva_feat = eva_features[0]
     assert eva_feat.properties.max_slope_deg is not None
-    assert eva_feat.properties.max_slope_deg.tag == "SIMULATED"
-    assert eva_feat.properties.max_slope_deg.source_id == SYNTHETIC_SOURCE_ID
+    assert eva_feat.properties.max_slope_deg.tag == "DERIVED"
+    assert eva_feat.properties.max_slope_deg.source_id == "SRC-USGS-HIRISE-DTM-1M"
     assert eva_feat.properties.estimated_radiation_msv is not None
     assert eva_feat.properties.estimated_radiation_msv.tag == "SIMULATED"
     assert eva_feat.properties.estimated_radiation_msv.note == "proxy Curiosity RAD, Gale"

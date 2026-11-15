@@ -1,0 +1,3003 @@
+{
+  "contract_version": "1.0.0",
+  "pack_version": "1.1.0",
+  "site_id": "jezero",
+  "dtm_source_id": "SRC-USGS-HIRISE-DTM-1M",
+  "rover_source_id": "SRC-M20-WAYPOINTS",
+  "window_bbox": [
+    77.376709,
+    18.447804,
+    77.41045,
+    18.481545
+  ],
+  "waypoint_count_in_window": 147,
+  "steep_threshold_deg": 8.0,
+  "steep_waypoint_count": 43,
+  "metrics_by_baseline": {
+    "1": {
+      "baseline_m": 1,
+      "sample_count": 147,
+      "mae_deg": 1.994,
+      "rmse_deg": 2.768,
+      "bias_deg": 0.459,
+      "steep_sample_count": 43,
+      "steep_mae_deg": 2.557,
+      "steep_bias_deg": -0.974
+    },
+    "4": {
+      "baseline_m": 4,
+      "sample_count": 147,
+      "mae_deg": 1.62,
+      "rmse_deg": 2.196,
+      "bias_deg": 0.263,
+      "steep_sample_count": 43,
+      "steep_mae_deg": 2.137,
+      "steep_bias_deg": -0.856
+    },
+    "16": {
+      "baseline_m": 16,
+      "sample_count": 147,
+      "mae_deg": 1.125,
+      "rmse_deg": 1.745,
+      "bias_deg": -0.229,
+      "steep_sample_count": 43,
+      "steep_mae_deg": 2.009,
+      "steep_bias_deg": -0.727
+    },
+    "64": {
+      "baseline_m": 64,
+      "sample_count": 147,
+      "mae_deg": 1.703,
+      "rmse_deg": 2.646,
+      "bias_deg": -0.665,
+      "steep_sample_count": 43,
+      "steep_mae_deg": 3.3,
+      "steep_bias_deg": -2.307
+    }
+  },
+  "best_overall_baseline_m": 16,
+  "worst_steep_baseline_m": 64,
+  "orbital_scale_gap_summary": "Across 147 ground-truth Perseverance stops in the 2x2 km Western Delta Front window (43 steep stops >= 8 deg), intermediate baselines (4m MAE=1.62 deg, 16m MAE=1.12 deg) closely track rover chassis tilt, whereas the 64m coarse orbital baseline systematically underestimates steep delta scarps (steep bias=-2.31 deg, steep MAE=3.30 deg; e.g. Sol 700 measured 20.33 deg vs 64m DTM 12.65 deg).",
+  "samples": [
+    {
+      "waypoint_id": "M20-22_0-SOL409",
+      "sol": 409,
+      "lon": 77.410419,
+      "lat": 18.45394613,
+      "measured_rover_tilt_deg": 0.807,
+      "dtm_elev_m": -2545.6,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.628,
+        "4": 1.324,
+        "16": 0.73,
+        "64": 1.251
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.821,
+        "4": 0.517,
+        "16": -0.077,
+        "64": 0.444
+      }
+    },
+    {
+      "waypoint_id": "M20-22_412-SOL413",
+      "sol": 413,
+      "lon": 77.40900942,
+      "lat": 18.45420266,
+      "measured_rover_tilt_deg": 0.631,
+      "dtm_elev_m": -2544.52,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.438,
+        "4": 1.827,
+        "16": 0.59,
+        "64": 0.612
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.807,
+        "4": 1.196,
+        "16": -0.041,
+        "64": -0.019
+      }
+    },
+    {
+      "waypoint_id": "M20-22_532-SOL413",
+      "sol": 413,
+      "lon": 77.40880772,
+      "lat": 18.45393366,
+      "measured_rover_tilt_deg": 0.962,
+      "dtm_elev_m": -2544.75,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.872,
+        "4": 3.843,
+        "16": 1.044,
+        "64": 0.564
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.91,
+        "4": 2.881,
+        "16": 0.082,
+        "64": -0.398
+      }
+    },
+    {
+      "waypoint_id": "M20-22_634-SOL413",
+      "sol": 413,
+      "lon": 77.40864576,
+      "lat": 18.45363993,
+      "measured_rover_tilt_deg": 0.704,
+      "dtm_elev_m": -2545.03,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.448,
+        "4": 3.6,
+        "16": 1.309,
+        "64": 0.69
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.744,
+        "4": 2.896,
+        "16": 0.605,
+        "64": -0.014
+      }
+    },
+    {
+      "waypoint_id": "M20-22_788-SOL413",
+      "sol": 413,
+      "lon": 77.40855229,
+      "lat": 18.45316104,
+      "measured_rover_tilt_deg": 0.786,
+      "dtm_elev_m": -2545.27,
+      "dtm_slope_deg_by_baseline": {
+        "1": 0.531,
+        "4": 0.472,
+        "16": 0.415,
+        "64": 0.607
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.255,
+        "4": -0.314,
+        "16": -0.371,
+        "64": -0.179
+      }
+    },
+    {
+      "waypoint_id": "M20-22_822-SOL414",
+      "sol": 414,
+      "lon": 77.40846779,
+      "lat": 18.45303333,
+      "measured_rover_tilt_deg": 0.624,
+      "dtm_elev_m": -2545.12,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.823,
+        "4": 1.523,
+        "16": 0.95,
+        "64": 0.545
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.199,
+        "4": 0.899,
+        "16": 0.326,
+        "64": -0.079
+      }
+    },
+    {
+      "waypoint_id": "M20-23_0-SOL414",
+      "sol": 414,
+      "lon": 77.40604967,
+      "lat": 18.45194249,
+      "measured_rover_tilt_deg": 1.222,
+      "dtm_elev_m": -2544.81,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.282,
+        "4": 1.951,
+        "16": 1.351,
+        "64": 1.102
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.06,
+        "4": 0.729,
+        "16": 0.129,
+        "64": -0.12
+      }
+    },
+    {
+      "waypoint_id": "M20-23_824-SOL415",
+      "sol": 415,
+      "lon": 77.405186,
+      "lat": 18.44940515,
+      "measured_rover_tilt_deg": 5.407,
+      "dtm_elev_m": -2540.18,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.327,
+        "4": 8.16,
+        "16": 5.745,
+        "64": 4.639
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.92,
+        "4": 2.753,
+        "16": 0.338,
+        "64": -0.768
+      }
+    },
+    {
+      "waypoint_id": "M20-23_1180-SOL416",
+      "sol": 416,
+      "lon": 77.40482659,
+      "lat": 18.44830598,
+      "measured_rover_tilt_deg": 6.067,
+      "dtm_elev_m": -2534.61,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.227,
+        "4": 8.126,
+        "16": 7.171,
+        "64": 6.205
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.16,
+        "4": 2.059,
+        "16": 1.104,
+        "64": 0.138
+      }
+    },
+    {
+      "waypoint_id": "M20-23_2096-SOL418",
+      "sol": 418,
+      "lon": 77.40210279,
+      "lat": 18.44894017,
+      "measured_rover_tilt_deg": 7.064,
+      "dtm_elev_m": -2523.93,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.368,
+        "4": 7.022,
+        "16": 6.809,
+        "64": 6.702
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.304,
+        "4": -0.042,
+        "16": -0.255,
+        "64": -0.362
+      }
+    },
+    {
+      "waypoint_id": "M20-23_2532-SOL419",
+      "sol": 419,
+      "lon": 77.40164179,
+      "lat": 18.44878815,
+      "measured_rover_tilt_deg": 6.627,
+      "dtm_elev_m": -2520.88,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.052,
+        "4": 4.352,
+        "16": 6.945,
+        "64": 5.996
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -2.575,
+        "4": -2.275,
+        "16": 0.318,
+        "64": -0.631
+      }
+    },
+    {
+      "waypoint_id": "M20-23_2872-SOL420",
+      "sol": 420,
+      "lon": 77.40136318,
+      "lat": 18.44982498,
+      "measured_rover_tilt_deg": 0.633,
+      "dtm_elev_m": -2523.1,
+      "dtm_slope_deg_by_baseline": {
+        "1": 11.01,
+        "4": 6.216,
+        "16": 1.844,
+        "64": 4.547
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 10.377,
+        "4": 5.583,
+        "16": 1.211,
+        "64": 3.913
+      }
+    },
+    {
+      "waypoint_id": "M20-23_3142-SOL421",
+      "sol": 421,
+      "lon": 77.40143895,
+      "lat": 18.45049604,
+      "measured_rover_tilt_deg": 4.237,
+      "dtm_elev_m": -2526.38,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.473,
+        "4": 5.417,
+        "16": 4.968,
+        "64": 5.073
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.236,
+        "4": 1.18,
+        "16": 0.731,
+        "64": 0.836
+      }
+    },
+    {
+      "waypoint_id": "M20-24_0-SOL422",
+      "sol": 422,
+      "lon": 77.40142219,
+      "lat": 18.45056632,
+      "measured_rover_tilt_deg": 4.226,
+      "dtm_elev_m": -2526.45,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.252,
+        "4": 5.076,
+        "16": 4.553,
+        "64": 4.796
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.026,
+        "4": 0.85,
+        "16": 0.327,
+        "64": 0.57
+      }
+    },
+    {
+      "waypoint_id": "M20-24_902-SOL426",
+      "sol": 426,
+      "lon": 77.40343754,
+      "lat": 18.45017673,
+      "measured_rover_tilt_deg": 6.802,
+      "dtm_elev_m": -2534.57,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.655,
+        "4": 6.454,
+        "16": 7.128,
+        "64": 6.016
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.147,
+        "4": -0.348,
+        "16": 0.326,
+        "64": -0.786
+      }
+    },
+    {
+      "waypoint_id": "M20-24_1328-SOL427",
+      "sol": 427,
+      "lon": 77.40449868,
+      "lat": 18.44999863,
+      "measured_rover_tilt_deg": 6.991,
+      "dtm_elev_m": -2539.19,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.685,
+        "4": 4.949,
+        "16": 5.835,
+        "64": 5.144
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -2.306,
+        "4": -2.042,
+        "16": -1.156,
+        "64": -1.847
+      }
+    },
+    {
+      "waypoint_id": "M20-24_1970-SOL428",
+      "sol": 428,
+      "lon": 77.4052943,
+      "lat": 18.45153095,
+      "measured_rover_tilt_deg": 1.836,
+      "dtm_elev_m": -2543.98,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.622,
+        "4": 5.4,
+        "16": 0.715,
+        "64": 1.289
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 4.786,
+        "4": 3.564,
+        "16": -1.121,
+        "64": -0.547
+      }
+    },
+    {
+      "waypoint_id": "M20-24_1992-SOL430",
+      "sol": 430,
+      "lon": 77.4052943,
+      "lat": 18.45153222,
+      "measured_rover_tilt_deg": 1.506,
+      "dtm_elev_m": -2543.98,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.622,
+        "4": 5.4,
+        "16": 0.715,
+        "64": 1.289
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 5.116,
+        "4": 3.894,
+        "16": -0.791,
+        "64": -0.217
+      }
+    },
+    {
+      "waypoint_id": "M20-24_2770-SOL432",
+      "sol": 432,
+      "lon": 77.40753889,
+      "lat": 18.45287486,
+      "measured_rover_tilt_deg": 0.224,
+      "dtm_elev_m": -2545.06,
+      "dtm_slope_deg_by_baseline": {
+        "1": 0.789,
+        "4": 0.625,
+        "16": 0.74,
+        "64": 1.109
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.565,
+        "4": 0.401,
+        "16": 0.516,
+        "64": 0.885
+      }
+    },
+    {
+      "waypoint_id": "M20-24_2824-SOL433",
+      "sol": 433,
+      "lon": 77.40764358,
+      "lat": 18.4528804,
+      "measured_rover_tilt_deg": 1.014,
+      "dtm_elev_m": -2545.08,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.42,
+        "4": 1.465,
+        "16": 0.639,
+        "64": 1.366
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.406,
+        "4": 0.451,
+        "16": -0.375,
+        "64": 0.352
+      }
+    },
+    {
+      "waypoint_id": "M20-24_2932-SOL433",
+      "sol": 433,
+      "lon": 77.40813751,
+      "lat": 18.45286847,
+      "measured_rover_tilt_deg": 1.583,
+      "dtm_elev_m": -2545.16,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.355,
+        "4": 1.209,
+        "16": 0.915,
+        "64": 0.951
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.228,
+        "4": -0.374,
+        "16": -0.668,
+        "64": -0.632
+      }
+    },
+    {
+      "waypoint_id": "M20-24_3076-SOL433",
+      "sol": 433,
+      "lon": 77.40835547,
+      "lat": 18.45332096,
+      "measured_rover_tilt_deg": 0.841,
+      "dtm_elev_m": -2545.16,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.957,
+        "4": 2.632,
+        "16": 1.32,
+        "64": 1.078
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.116,
+        "4": 1.791,
+        "16": 0.479,
+        "64": 0.237
+      }
+    },
+    {
+      "waypoint_id": "M20-24_3170-SOL433",
+      "sol": 433,
+      "lon": 77.40842016,
+      "lat": 18.45364754,
+      "measured_rover_tilt_deg": 1.028,
+      "dtm_elev_m": -2544.98,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.25,
+        "4": 2.804,
+        "16": 0.714,
+        "64": 0.778
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.222,
+        "4": 1.776,
+        "16": -0.314,
+        "64": -0.25
+      }
+    },
+    {
+      "waypoint_id": "M20-24_3204-SOL434",
+      "sol": 434,
+      "lon": 77.40838887,
+      "lat": 18.45374139,
+      "measured_rover_tilt_deg": 1.132,
+      "dtm_elev_m": -2544.81,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.085,
+        "4": 1.3,
+        "16": 1.042,
+        "64": 0.833
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.047,
+        "4": 0.168,
+        "16": -0.09,
+        "64": -0.299
+      }
+    },
+    {
+      "waypoint_id": "M20-24_3256-SOL434",
+      "sol": 434,
+      "lon": 77.40851049,
+      "lat": 18.45410525,
+      "measured_rover_tilt_deg": 1.089,
+      "dtm_elev_m": -2544.7,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.489,
+        "4": 2.151,
+        "16": 0.714,
+        "64": 0.397
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.4,
+        "4": 1.062,
+        "16": -0.375,
+        "64": -0.692
+      }
+    },
+    {
+      "waypoint_id": "M20-24_3290-SOL434",
+      "sol": 434,
+      "lon": 77.40851169,
+      "lat": 18.45410468,
+      "measured_rover_tilt_deg": 1.189,
+      "dtm_elev_m": -2544.7,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.489,
+        "4": 2.151,
+        "16": 0.714,
+        "64": 0.397
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.3,
+        "4": 0.962,
+        "16": -0.475,
+        "64": -0.792
+      }
+    },
+    {
+      "waypoint_id": "M20-24_3900-SOL436",
+      "sol": 436,
+      "lon": 77.40846432,
+      "lat": 18.45598091,
+      "measured_rover_tilt_deg": 1.894,
+      "dtm_elev_m": -2543.24,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.421,
+        "4": 2.111,
+        "16": 3.35,
+        "64": 2.523
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.527,
+        "4": 0.217,
+        "16": 1.456,
+        "64": 0.629
+      }
+    },
+    {
+      "waypoint_id": "M20-24_4232-SOL437",
+      "sol": 437,
+      "lon": 77.40874595,
+      "lat": 18.45710164,
+      "measured_rover_tilt_deg": 5.537,
+      "dtm_elev_m": -2539.89,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.913,
+        "4": 9.024,
+        "16": 5.534,
+        "64": 5.415
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 4.376,
+        "4": 3.487,
+        "16": -0.003,
+        "64": -0.122
+      }
+    },
+    {
+      "waypoint_id": "M20-24_4308-SOL439",
+      "sol": 439,
+      "lon": 77.40885123,
+      "lat": 18.45731155,
+      "measured_rover_tilt_deg": 5.498,
+      "dtm_elev_m": -2539.06,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.219,
+        "4": 5.407,
+        "16": 5.128,
+        "64": 7.246
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.721,
+        "4": -0.091,
+        "16": -0.37,
+        "64": 1.748
+      }
+    },
+    {
+      "waypoint_id": "M20-24_4358-SOL439",
+      "sol": 439,
+      "lon": 77.40888074,
+      "lat": 18.45738915,
+      "measured_rover_tilt_deg": 4.663,
+      "dtm_elev_m": -2538.77,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.537,
+        "4": 5.356,
+        "16": 5.842,
+        "64": 7.76
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.874,
+        "4": 0.693,
+        "16": 1.179,
+        "64": 3.097
+      }
+    },
+    {
+      "waypoint_id": "M20-24_4412-SOL441",
+      "sol": 441,
+      "lon": 77.40890722,
+      "lat": 18.45763848,
+      "measured_rover_tilt_deg": 12.093,
+      "dtm_elev_m": -2536.43,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.32,
+        "4": 9.819,
+        "16": 12.893,
+        "64": 11.514
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -3.773,
+        "4": -2.274,
+        "16": 0.8,
+        "64": -0.579
+      }
+    },
+    {
+      "waypoint_id": "M20-24_4470-SOL441",
+      "sol": 441,
+      "lon": 77.40881368,
+      "lat": 18.45764262,
+      "measured_rover_tilt_deg": 12.571,
+      "dtm_elev_m": -2536.06,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.884,
+        "4": 10.401,
+        "16": 13.017,
+        "64": 11.667
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -4.687,
+        "4": -2.17,
+        "16": 0.446,
+        "64": -0.904
+      }
+    },
+    {
+      "waypoint_id": "M20-24_4516-SOL441",
+      "sol": 441,
+      "lon": 77.40866415,
+      "lat": 18.45766456,
+      "measured_rover_tilt_deg": 13.591,
+      "dtm_elev_m": -2535.66,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.59,
+        "4": 10.973,
+        "16": 12.688,
+        "64": 11.533
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -3.001,
+        "4": -2.618,
+        "16": -0.903,
+        "64": -2.058
+      }
+    },
+    {
+      "waypoint_id": "M20-25_0-SOL441",
+      "sol": 441,
+      "lon": 77.40857967,
+      "lat": 18.45766138,
+      "measured_rover_tilt_deg": 11.882,
+      "dtm_elev_m": -2535.69,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.552,
+        "4": 10.557,
+        "16": 11.774,
+        "64": 11.675
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.33,
+        "4": -1.325,
+        "16": -0.108,
+        "64": -0.207
+      }
+    },
+    {
+      "waypoint_id": "M20-25_94-SOL443",
+      "sol": 443,
+      "lon": 77.40810055,
+      "lat": 18.45758854,
+      "measured_rover_tilt_deg": 11.475,
+      "dtm_elev_m": -2536.18,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.648,
+        "4": 10.458,
+        "16": 10.542,
+        "64": 10.097
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.827,
+        "4": -1.017,
+        "16": -0.933,
+        "64": -1.378
+      }
+    },
+    {
+      "waypoint_id": "M20-25_214-SOL443",
+      "sol": 443,
+      "lon": 77.40746956,
+      "lat": 18.45752717,
+      "measured_rover_tilt_deg": 11.898,
+      "dtm_elev_m": -2536.06,
+      "dtm_slope_deg_by_baseline": {
+        "1": 14.974,
+        "4": 13.338,
+        "16": 10.334,
+        "64": 8.968
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.076,
+        "4": 1.44,
+        "16": -1.564,
+        "64": -2.93
+      }
+    },
+    {
+      "waypoint_id": "M20-25_294-SOL448",
+      "sol": 448,
+      "lon": 77.40714133,
+      "lat": 18.45761876,
+      "measured_rover_tilt_deg": 11.188,
+      "dtm_elev_m": -2534.61,
+      "dtm_slope_deg_by_baseline": {
+        "1": 13.87,
+        "4": 13.669,
+        "16": 12.173,
+        "64": 10.872
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.682,
+        "4": 2.481,
+        "16": 0.985,
+        "64": -0.316
+      }
+    },
+    {
+      "waypoint_id": "M20-25_446-SOL448",
+      "sol": 448,
+      "lon": 77.40633801,
+      "lat": 18.45744513,
+      "measured_rover_tilt_deg": 12.308,
+      "dtm_elev_m": -2535.61,
+      "dtm_slope_deg_by_baseline": {
+        "1": 11.758,
+        "4": 10.92,
+        "16": 10.217,
+        "64": 9.815
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.55,
+        "4": -1.388,
+        "16": -2.091,
+        "64": -2.493
+      }
+    },
+    {
+      "waypoint_id": "M20-26_0-SOL449",
+      "sol": 449,
+      "lon": 77.40630146,
+      "lat": 18.45750967,
+      "measured_rover_tilt_deg": 10.902,
+      "dtm_elev_m": -2534.81,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.405,
+        "4": 10.344,
+        "16": 10.217,
+        "64": 10.505
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.497,
+        "4": -0.558,
+        "16": -0.685,
+        "64": -0.397
+      }
+    },
+    {
+      "waypoint_id": "M20-26_96-SOL455",
+      "sol": 455,
+      "lon": 77.40627698,
+      "lat": 18.45789036,
+      "measured_rover_tilt_deg": 13.89,
+      "dtm_elev_m": -2530.05,
+      "dtm_slope_deg_by_baseline": {
+        "1": 11.546,
+        "4": 12.554,
+        "16": 15.592,
+        "64": 10.532
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -2.344,
+        "4": -1.336,
+        "16": 1.702,
+        "64": -3.358
+      }
+    },
+    {
+      "waypoint_id": "M20-26_160-SOL456",
+      "sol": 456,
+      "lon": 77.40650296,
+      "lat": 18.45795715,
+      "measured_rover_tilt_deg": 17.956,
+      "dtm_elev_m": -2528.75,
+      "dtm_slope_deg_by_baseline": {
+        "1": 21.006,
+        "4": 19.905,
+        "16": 15.795,
+        "64": 10.546
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.05,
+        "4": 1.949,
+        "16": -2.161,
+        "64": -7.41
+      }
+    },
+    {
+      "waypoint_id": "M20-26_218-SOL456",
+      "sol": 456,
+      "lon": 77.4064976,
+      "lat": 18.45801694,
+      "measured_rover_tilt_deg": 15.95,
+      "dtm_elev_m": -2527.42,
+      "dtm_slope_deg_by_baseline": {
+        "1": 13.317,
+        "4": 14.228,
+        "16": 14.283,
+        "64": 9.941
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -2.633,
+        "4": -1.722,
+        "16": -1.667,
+        "64": -6.009
+      }
+    },
+    {
+      "waypoint_id": "M20-26_282-SOL460",
+      "sol": 460,
+      "lon": 77.40644329,
+      "lat": 18.45809645,
+      "measured_rover_tilt_deg": 10.228,
+      "dtm_elev_m": -2526.5,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.453,
+        "4": 10.105,
+        "16": 10.015,
+        "64": 9.028
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.225,
+        "4": -0.123,
+        "16": -0.213,
+        "64": -1.2
+      }
+    },
+    {
+      "waypoint_id": "M20-26_470-SOL460",
+      "sol": 460,
+      "lon": 77.40609259,
+      "lat": 18.45851434,
+      "measured_rover_tilt_deg": 4.67,
+      "dtm_elev_m": -2524.21,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.132,
+        "4": 3.552,
+        "16": 4.527,
+        "64": 11.036
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.538,
+        "4": -1.118,
+        "16": -0.143,
+        "64": 6.366
+      }
+    },
+    {
+      "waypoint_id": "M20-26_522-SOL461",
+      "sol": 461,
+      "lon": 77.40614657,
+      "lat": 18.45860783,
+      "measured_rover_tilt_deg": 3.306,
+      "dtm_elev_m": -2523.94,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.859,
+        "4": 6.928,
+        "16": 5.388,
+        "64": 10.661
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 4.553,
+        "4": 3.622,
+        "16": 2.082,
+        "64": 7.355
+      }
+    },
+    {
+      "waypoint_id": "M20-26_630-SOL461",
+      "sol": 461,
+      "lon": 77.40614454,
+      "lat": 18.4586918,
+      "measured_rover_tilt_deg": 9.251,
+      "dtm_elev_m": -2523.3,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.752,
+        "4": 6.985,
+        "16": 7.25,
+        "64": 10.179
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -2.499,
+        "4": -2.266,
+        "16": -2.001,
+        "64": 0.928
+      }
+    },
+    {
+      "waypoint_id": "M20-26_694-SOL464",
+      "sol": 464,
+      "lon": 77.4059739,
+      "lat": 18.45871915,
+      "measured_rover_tilt_deg": 9.36,
+      "dtm_elev_m": -2522.75,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.604,
+        "4": 9.251,
+        "16": 10.384,
+        "64": 10.834
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.244,
+        "4": -0.109,
+        "16": 1.024,
+        "64": 1.474
+      }
+    },
+    {
+      "waypoint_id": "M20-26_756-SOL464",
+      "sol": 464,
+      "lon": 77.40601278,
+      "lat": 18.45879356,
+      "measured_rover_tilt_deg": 12.318,
+      "dtm_elev_m": -2522.12,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.75,
+        "4": 13.941,
+        "16": 14.083,
+        "64": 10.116
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.568,
+        "4": 1.623,
+        "16": 1.765,
+        "64": -2.202
+      }
+    },
+    {
+      "waypoint_id": "M20-26_850-SOL474",
+      "sol": 474,
+      "lon": 77.40609995,
+      "lat": 18.4588559,
+      "measured_rover_tilt_deg": 16.017,
+      "dtm_elev_m": -2521.17,
+      "dtm_slope_deg_by_baseline": {
+        "1": 28.452,
+        "4": 24.274,
+        "16": 17.556,
+        "64": 10.027
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 12.435,
+        "4": 8.257,
+        "16": 1.539,
+        "64": -5.99
+      }
+    },
+    {
+      "waypoint_id": "M20-26_1004-SOL477",
+      "sol": 477,
+      "lon": 77.40616768,
+      "lat": 18.45889532,
+      "measured_rover_tilt_deg": 13.948,
+      "dtm_elev_m": -2520.96,
+      "dtm_slope_deg_by_baseline": {
+        "1": 20.395,
+        "4": 19.777,
+        "16": 18.059,
+        "64": 10.088
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 6.447,
+        "4": 5.829,
+        "16": 4.111,
+        "64": -3.86
+      }
+    },
+    {
+      "waypoint_id": "M20-26_1110-SOL501",
+      "sol": 501,
+      "lon": 77.40603023,
+      "lat": 18.45872741,
+      "measured_rover_tilt_deg": 8.844,
+      "dtm_elev_m": -2522.83,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.515,
+        "4": 8.199,
+        "16": 10.59,
+        "64": 10.431
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.329,
+        "4": -0.645,
+        "16": 1.746,
+        "64": 1.587
+      }
+    },
+    {
+      "waypoint_id": "M20-26_1154-SOL501",
+      "sol": 501,
+      "lon": 77.40595178,
+      "lat": 18.45869497,
+      "measured_rover_tilt_deg": 9.445,
+      "dtm_elev_m": -2522.85,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.639,
+        "4": 9.094,
+        "16": 9.257,
+        "64": 11.039
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.194,
+        "4": -0.351,
+        "16": -0.188,
+        "64": 1.594
+      }
+    },
+    {
+      "waypoint_id": "M20-26_1222-SOL502",
+      "sol": 502,
+      "lon": 77.40592495,
+      "lat": 18.45864728,
+      "measured_rover_tilt_deg": 14.358,
+      "dtm_elev_m": -2523.2,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.918,
+        "4": 7.888,
+        "16": 7.188,
+        "64": 11.508
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -6.44,
+        "4": -6.47,
+        "16": -7.17,
+        "64": -2.85
+      }
+    },
+    {
+      "waypoint_id": "M20-26_1652-SOL535",
+      "sol": 535,
+      "lon": 77.40732773,
+      "lat": 18.45835024,
+      "measured_rover_tilt_deg": 5.776,
+      "dtm_elev_m": -2525.48,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.379,
+        "4": 3.886,
+        "16": 6.286,
+        "64": 9.409
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -3.397,
+        "4": -1.889,
+        "16": 0.51,
+        "64": 3.634
+      }
+    },
+    {
+      "waypoint_id": "M20-26_2018-SOL536",
+      "sol": 536,
+      "lon": 77.4085763,
+      "lat": 18.45821603,
+      "measured_rover_tilt_deg": 8.459,
+      "dtm_elev_m": -2526.3,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.468,
+        "4": 9.686,
+        "16": 11.048,
+        "64": 12.304
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.009,
+        "4": 1.227,
+        "16": 2.589,
+        "64": 3.845
+      }
+    },
+    {
+      "waypoint_id": "M20-26_2142-SOL537",
+      "sol": 537,
+      "lon": 77.40884856,
+      "lat": 18.45821029,
+      "measured_rover_tilt_deg": 8.522,
+      "dtm_elev_m": -2526.75,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.211,
+        "4": 9.96,
+        "16": 12.659,
+        "64": 12.873
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.689,
+        "4": 1.438,
+        "16": 4.137,
+        "64": 4.351
+      }
+    },
+    {
+      "waypoint_id": "M20-26_2216-SOL538",
+      "sol": 538,
+      "lon": 77.40867746,
+      "lat": 18.45795842,
+      "measured_rover_tilt_deg": 15.909,
+      "dtm_elev_m": -2531.68,
+      "dtm_slope_deg_by_baseline": {
+        "1": 15.492,
+        "4": 15.799,
+        "16": 16.623,
+        "64": 12.625
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.417,
+        "4": -0.11,
+        "16": 0.714,
+        "64": -3.284
+      }
+    },
+    {
+      "waypoint_id": "M20-26_2548-SOL538",
+      "sol": 538,
+      "lon": 77.40865142,
+      "lat": 18.45682814,
+      "measured_rover_tilt_deg": 2.569,
+      "dtm_elev_m": -2540.96,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.803,
+        "4": 5.556,
+        "16": 4.103,
+        "64": 3.873
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.234,
+        "4": 2.987,
+        "16": 1.534,
+        "64": 1.304
+      }
+    },
+    {
+      "waypoint_id": "M20-26_3008-SOL539",
+      "sol": 539,
+      "lon": 77.40790912,
+      "lat": 18.45531877,
+      "measured_rover_tilt_deg": 1.002,
+      "dtm_elev_m": -2543.66,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.459,
+        "4": 3.606,
+        "16": 1.835,
+        "64": 1.131
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.457,
+        "4": 2.603,
+        "16": 0.833,
+        "64": 0.129
+      }
+    },
+    {
+      "waypoint_id": "M20-26_3482-SOL541",
+      "sol": 541,
+      "lon": 77.40689591,
+      "lat": 18.45380683,
+      "measured_rover_tilt_deg": 2.069,
+      "dtm_elev_m": -2543.39,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.247,
+        "4": 1.884,
+        "16": 1.536,
+        "64": 1.524
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.178,
+        "4": -0.185,
+        "16": -0.533,
+        "64": -0.545
+      }
+    },
+    {
+      "waypoint_id": "M20-26_4200-SOL542",
+      "sol": 542,
+      "lon": 77.4056822,
+      "lat": 18.45192532,
+      "measured_rover_tilt_deg": 0.249,
+      "dtm_elev_m": -2544.45,
+      "dtm_slope_deg_by_baseline": {
+        "1": 0.697,
+        "4": 0.801,
+        "16": 0.396,
+        "64": 1.006
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.448,
+        "4": 0.552,
+        "16": 0.147,
+        "64": 0.757
+      }
+    },
+    {
+      "waypoint_id": "M20-26_5150-SOL543",
+      "sol": 543,
+      "lon": 77.40491107,
+      "lat": 18.45027532,
+      "measured_rover_tilt_deg": 5.123,
+      "dtm_elev_m": -2541.16,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.478,
+        "4": 3.32,
+        "16": 4.504,
+        "64": 3.764
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.645,
+        "4": -1.803,
+        "16": -0.619,
+        "64": -1.359
+      }
+    },
+    {
+      "waypoint_id": "M20-26_5214-SOL548",
+      "sol": 548,
+      "lon": 77.40477294,
+      "lat": 18.45009054,
+      "measured_rover_tilt_deg": 12.162,
+      "dtm_elev_m": -2540.05,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.819,
+        "4": 5.773,
+        "16": 4.498,
+        "64": 4.496
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -6.343,
+        "4": -6.389,
+        "16": -7.664,
+        "64": -7.666
+      }
+    },
+    {
+      "waypoint_id": "M20-26_5226-SOL551",
+      "sol": 551,
+      "lon": 77.40476489,
+      "lat": 18.45009086,
+      "measured_rover_tilt_deg": 10.406,
+      "dtm_elev_m": -2540.05,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.819,
+        "4": 5.773,
+        "16": 4.498,
+        "64": 4.496
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -4.587,
+        "4": -4.633,
+        "16": -5.908,
+        "64": -5.91
+      }
+    },
+    {
+      "waypoint_id": "M20-26_6236-SOL555",
+      "sol": 555,
+      "lon": 77.40263341,
+      "lat": 18.45019745,
+      "measured_rover_tilt_deg": 3.002,
+      "dtm_elev_m": -2530.54,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.958,
+        "4": 5.109,
+        "16": 6.59,
+        "64": 5.739
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.956,
+        "4": 2.107,
+        "16": 3.588,
+        "64": 2.737
+      }
+    },
+    {
+      "waypoint_id": "M20-27_0-SOL555",
+      "sol": 555,
+      "lon": 77.40179971,
+      "lat": 18.45032366,
+      "measured_rover_tilt_deg": 8.062,
+      "dtm_elev_m": -2527.43,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.759,
+        "4": 8.062,
+        "16": 7.213,
+        "64": 5.437
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.697,
+        "4": -0.0,
+        "16": -0.849,
+        "64": -2.625
+      }
+    },
+    {
+      "waypoint_id": "M20-27_186-SOL556",
+      "sol": 556,
+      "lon": 77.40158916,
+      "lat": 18.45076256,
+      "measured_rover_tilt_deg": 7.967,
+      "dtm_elev_m": -2527.06,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.991,
+        "4": 5.221,
+        "16": 5.275,
+        "64": 4.382
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -2.976,
+        "4": -2.746,
+        "16": -2.692,
+        "64": -3.585
+      }
+    },
+    {
+      "waypoint_id": "M20-27_230-SOL556",
+      "sol": 556,
+      "lon": 77.40149797,
+      "lat": 18.45075494,
+      "measured_rover_tilt_deg": 3.203,
+      "dtm_elev_m": -2526.75,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.296,
+        "4": 3.395,
+        "16": 4.13,
+        "64": 4.363
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.093,
+        "4": 0.192,
+        "16": 0.927,
+        "64": 1.16
+      }
+    },
+    {
+      "waypoint_id": "M20-28_0-SOL557",
+      "sol": 557,
+      "lon": 77.40144297,
+      "lat": 18.45074348,
+      "measured_rover_tilt_deg": 2.276,
+      "dtm_elev_m": -2526.57,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.365,
+        "4": 3.282,
+        "16": 3.375,
+        "64": 4.307
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.089,
+        "4": 1.006,
+        "16": 1.099,
+        "64": 2.031
+      }
+    },
+    {
+      "waypoint_id": "M20-29_0-SOL565",
+      "sol": 565,
+      "lon": 77.4014403,
+      "lat": 18.45072631,
+      "measured_rover_tilt_deg": 4.401,
+      "dtm_elev_m": -2526.52,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.947,
+        "4": 3.11,
+        "16": 3.337,
+        "64": 4.285
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.454,
+        "4": -1.291,
+        "16": -1.064,
+        "64": -0.116
+      }
+    },
+    {
+      "waypoint_id": "M20-29_58-SOL592",
+      "sol": 592,
+      "lon": 77.40134507,
+      "lat": 18.45101191,
+      "measured_rover_tilt_deg": 6.421,
+      "dtm_elev_m": -2526.17,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.857,
+        "4": 1.962,
+        "16": 2.657,
+        "64": 3.992
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -4.564,
+        "4": -4.459,
+        "16": -3.764,
+        "64": -2.429
+      }
+    },
+    {
+      "waypoint_id": "M20-29_144-SOL592",
+      "sol": 592,
+      "lon": 77.40133067,
+      "lat": 18.45136112,
+      "measured_rover_tilt_deg": 5.869,
+      "dtm_elev_m": -2525.4,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.827,
+        "4": 7.215,
+        "16": 6.176,
+        "64": 3.898
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.958,
+        "4": 1.346,
+        "16": 0.307,
+        "64": -1.971
+      }
+    },
+    {
+      "waypoint_id": "M20-30_0-SOL593",
+      "sol": 593,
+      "lon": 77.4012579,
+      "lat": 18.45132996,
+      "measured_rover_tilt_deg": 5.765,
+      "dtm_elev_m": -2525.26,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.736,
+        "4": 8.301,
+        "16": 6.218,
+        "64": 3.839
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.971,
+        "4": 2.536,
+        "16": 0.453,
+        "64": -1.926
+      }
+    },
+    {
+      "waypoint_id": "M20-30_1096-SOL606",
+      "sol": 606,
+      "lon": 77.39914701,
+      "lat": 18.45353204,
+      "measured_rover_tilt_deg": 7.931,
+      "dtm_elev_m": -2517.64,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.593,
+        "4": 6.484,
+        "16": 6.566,
+        "64": 5.539
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.338,
+        "4": -1.447,
+        "16": -1.365,
+        "64": -2.392
+      }
+    },
+    {
+      "waypoint_id": "M20-30_1172-SOL609",
+      "sol": 609,
+      "lon": 77.39915371,
+      "lat": 18.45364399,
+      "measured_rover_tilt_deg": 5.373,
+      "dtm_elev_m": -2517.24,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.103,
+        "4": 5.336,
+        "16": 6.631,
+        "64": 5.953
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.27,
+        "4": -0.037,
+        "16": 1.258,
+        "64": 0.58
+      }
+    },
+    {
+      "waypoint_id": "M20-30_1344-SOL629",
+      "sol": 629,
+      "lon": 77.39918589,
+      "lat": 18.4529265,
+      "measured_rover_tilt_deg": 6.277,
+      "dtm_elev_m": -2518.38,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.777,
+        "4": 5.527,
+        "16": 3.852,
+        "64": 3.745
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.5,
+        "4": -0.75,
+        "16": -2.425,
+        "64": -2.532
+      }
+    },
+    {
+      "waypoint_id": "M20-30_1524-SOL629",
+      "sol": 629,
+      "lon": 77.3995604,
+      "lat": 18.45254963,
+      "measured_rover_tilt_deg": 7.566,
+      "dtm_elev_m": -2518.2,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.91,
+        "4": 6.266,
+        "16": 5.859,
+        "64": 5.367
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.656,
+        "4": -1.3,
+        "16": -1.707,
+        "64": -2.199
+      }
+    },
+    {
+      "waypoint_id": "M20-30_1776-SOL629",
+      "sol": 629,
+      "lon": 77.40034327,
+      "lat": 18.45240492,
+      "measured_rover_tilt_deg": 4.492,
+      "dtm_elev_m": -2520.98,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.379,
+        "4": 4.964,
+        "16": 4.153,
+        "64": 4.442
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.887,
+        "4": 0.472,
+        "16": -0.339,
+        "64": -0.05
+      }
+    },
+    {
+      "waypoint_id": "M20-30_2188-SOL629",
+      "sol": 629,
+      "lon": 77.40143694,
+      "lat": 18.45162509,
+      "measured_rover_tilt_deg": 12.764,
+      "dtm_elev_m": -2523.86,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.283,
+        "4": 7.75,
+        "16": 8.527,
+        "64": 2.679
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -5.481,
+        "4": -5.014,
+        "16": -4.237,
+        "64": -10.085
+      }
+    },
+    {
+      "waypoint_id": "M20-30_2224-SOL632",
+      "sol": 632,
+      "lon": 77.40143715,
+      "lat": 18.45161915,
+      "measured_rover_tilt_deg": 13.139,
+      "dtm_elev_m": -2523.86,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.283,
+        "4": 7.75,
+        "16": 8.527,
+        "64": 2.679
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -5.856,
+        "4": -5.389,
+        "16": -4.612,
+        "64": -10.46
+      }
+    },
+    {
+      "waypoint_id": "M20-30_2252-SOL632",
+      "sol": 632,
+      "lon": 77.40144068,
+      "lat": 18.45145541,
+      "measured_rover_tilt_deg": 7.433,
+      "dtm_elev_m": -2525.2,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.872,
+        "4": 6.6,
+        "16": 6.793,
+        "64": 3.595
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.561,
+        "4": -0.833,
+        "16": -0.64,
+        "64": -3.838
+      }
+    },
+    {
+      "waypoint_id": "M20-30_2310-SOL632",
+      "sol": 632,
+      "lon": 77.40134244,
+      "lat": 18.45135578,
+      "measured_rover_tilt_deg": 6.169,
+      "dtm_elev_m": -2525.49,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.55,
+        "4": 7.016,
+        "16": 5.842,
+        "64": 3.934
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.381,
+        "4": 0.847,
+        "16": -0.327,
+        "64": -2.235
+      }
+    },
+    {
+      "waypoint_id": "M20-31_0-SOL632",
+      "sol": 632,
+      "lon": 77.40125715,
+      "lat": 18.45133122,
+      "measured_rover_tilt_deg": 6.146,
+      "dtm_elev_m": -2525.26,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.736,
+        "4": 8.301,
+        "16": 6.218,
+        "64": 3.839
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.59,
+        "4": 2.155,
+        "16": 0.072,
+        "64": -2.307
+      }
+    },
+    {
+      "waypoint_id": "M20-31_466-SOL641",
+      "sol": 641,
+      "lon": 77.40176216,
+      "lat": 18.45007178,
+      "measured_rover_tilt_deg": 5.126,
+      "dtm_elev_m": -2525.99,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.568,
+        "4": 6.446,
+        "16": 6.362,
+        "64": 5.665
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.442,
+        "4": 1.32,
+        "16": 1.236,
+        "64": 0.539
+      }
+    },
+    {
+      "waypoint_id": "M20-31_500-SOL641",
+      "sol": 641,
+      "lon": 77.40183055,
+      "lat": 18.45003743,
+      "measured_rover_tilt_deg": 5.159,
+      "dtm_elev_m": -2526.3,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.068,
+        "4": 6.53,
+        "16": 6.866,
+        "64": 5.742
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.909,
+        "4": 1.371,
+        "16": 1.707,
+        "64": 0.583
+      }
+    },
+    {
+      "waypoint_id": "M20-31_856-SOL645",
+      "sol": 645,
+      "lon": 77.40293495,
+      "lat": 18.45017609,
+      "measured_rover_tilt_deg": 8.191,
+      "dtm_elev_m": -2532.11,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.89,
+        "4": 9.079,
+        "16": 8.216,
+        "64": 5.807
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.699,
+        "4": 0.888,
+        "16": 0.025,
+        "64": -2.384
+      }
+    },
+    {
+      "waypoint_id": "M20-31_1710-SOL646",
+      "sol": 646,
+      "lon": 77.40473773,
+      "lat": 18.45030141,
+      "measured_rover_tilt_deg": 2.88,
+      "dtm_elev_m": -2540.73,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.094,
+        "4": 3.546,
+        "16": 4.854,
+        "64": 3.839
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.214,
+        "4": 0.666,
+        "16": 1.974,
+        "64": 0.959
+      }
+    },
+    {
+      "waypoint_id": "M20-31_2154-SOL647",
+      "sol": 647,
+      "lon": 77.40512364,
+      "lat": 18.45119319,
+      "measured_rover_tilt_deg": 3.821,
+      "dtm_elev_m": -2543.46,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.486,
+        "4": 3.023,
+        "16": 1.189,
+        "64": 2.182
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.335,
+        "4": -0.798,
+        "16": -2.632,
+        "64": -1.639
+      }
+    },
+    {
+      "waypoint_id": "M20-32_0-SOL648",
+      "sol": 648,
+      "lon": 77.40720154,
+      "lat": 18.45251633,
+      "measured_rover_tilt_deg": 1.593,
+      "dtm_elev_m": -2545.16,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.174,
+        "4": 1.662,
+        "16": 1.028,
+        "64": 1.218
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.581,
+        "4": 0.069,
+        "16": -0.565,
+        "64": -0.375
+      }
+    },
+    {
+      "waypoint_id": "M20-32_94-SOL652",
+      "sol": 652,
+      "lon": 77.40771256,
+      "lat": 18.45255415,
+      "measured_rover_tilt_deg": 1.415,
+      "dtm_elev_m": -2545.55,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.783,
+        "4": 2.816,
+        "16": 2.138,
+        "64": 1.208
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.368,
+        "4": 1.401,
+        "16": 0.723,
+        "64": -0.207
+      }
+    },
+    {
+      "waypoint_id": "M20-32_148-SOL652",
+      "sol": 652,
+      "lon": 77.40775601,
+      "lat": 18.45262651,
+      "measured_rover_tilt_deg": 1.226,
+      "dtm_elev_m": -2545.3,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.723,
+        "4": 4.205,
+        "16": 1.806,
+        "64": 1.062
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.497,
+        "4": 2.979,
+        "16": 0.58,
+        "64": -0.164
+      }
+    },
+    {
+      "waypoint_id": "M20-32_172-SOL654",
+      "sol": 654,
+      "lon": 77.40773083,
+      "lat": 18.45258445,
+      "measured_rover_tilt_deg": 1.475,
+      "dtm_elev_m": -2545.39,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.928,
+        "4": 4.931,
+        "16": 2.031,
+        "64": 1.159
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 5.453,
+        "4": 3.456,
+        "16": 0.556,
+        "64": -0.316
+      }
+    },
+    {
+      "waypoint_id": "M20-32_250-SOL654",
+      "sol": 654,
+      "lon": 77.40784692,
+      "lat": 18.4525234,
+      "measured_rover_tilt_deg": 0.606,
+      "dtm_elev_m": -2545.48,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.724,
+        "4": 2.207,
+        "16": 2.738,
+        "64": 1.156
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.118,
+        "4": 1.601,
+        "16": 2.132,
+        "64": 0.55
+      }
+    },
+    {
+      "waypoint_id": "M20-32_274-SOL658",
+      "sol": 658,
+      "lon": 77.40789156,
+      "lat": 18.4525002,
+      "measured_rover_tilt_deg": 0.893,
+      "dtm_elev_m": -2545.58,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.416,
+        "4": 2.419,
+        "16": 2.733,
+        "64": 1.055
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.523,
+        "4": 1.526,
+        "16": 1.84,
+        "64": 0.162
+      }
+    },
+    {
+      "waypoint_id": "M20-32_378-SOL658",
+      "sol": 658,
+      "lon": 77.408056,
+      "lat": 18.45267034,
+      "measured_rover_tilt_deg": 0.974,
+      "dtm_elev_m": -2545.32,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.306,
+        "4": 1.281,
+        "16": 1.597,
+        "64": 1.162
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.332,
+        "4": 0.307,
+        "16": 0.623,
+        "64": 0.188
+      }
+    },
+    {
+      "waypoint_id": "M20-32_402-SOL663",
+      "sol": 663,
+      "lon": 77.40810488,
+      "lat": 18.45268399,
+      "measured_rover_tilt_deg": 0.583,
+      "dtm_elev_m": -2545.3,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.332,
+        "4": 1.351,
+        "16": 0.965,
+        "64": 1.083
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.749,
+        "4": 0.768,
+        "16": 0.382,
+        "64": 0.5
+      }
+    },
+    {
+      "waypoint_id": "M20-32_432-SOL663",
+      "sol": 663,
+      "lon": 77.40807322,
+      "lat": 18.45272186,
+      "measured_rover_tilt_deg": 0.945,
+      "dtm_elev_m": -2545.25,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.704,
+        "4": 1.842,
+        "16": 1.129,
+        "64": 1.083
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.759,
+        "4": 0.897,
+        "16": 0.184,
+        "64": 0.138
+      }
+    },
+    {
+      "waypoint_id": "M20-32_482-SOL663",
+      "sol": 663,
+      "lon": 77.40807823,
+      "lat": 18.45276569,
+      "measured_rover_tilt_deg": 0.63,
+      "dtm_elev_m": -2545.18,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.279,
+        "4": 1.176,
+        "16": 0.895,
+        "64": 0.839
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.649,
+        "4": 0.546,
+        "16": 0.265,
+        "64": 0.209
+      }
+    },
+    {
+      "waypoint_id": "M20-32_506-SOL667",
+      "sol": 667,
+      "lon": 77.40807336,
+      "lat": 18.45271758,
+      "measured_rover_tilt_deg": 0.854,
+      "dtm_elev_m": -2545.25,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.704,
+        "4": 1.842,
+        "16": 1.129,
+        "64": 1.083
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.85,
+        "4": 0.988,
+        "16": 0.275,
+        "64": 0.229
+      }
+    },
+    {
+      "waypoint_id": "M20-32_580-SOL667",
+      "sol": 667,
+      "lon": 77.4082,
+      "lat": 18.45272365,
+      "measured_rover_tilt_deg": 0.67,
+      "dtm_elev_m": -2545.27,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.357,
+        "4": 0.867,
+        "16": 0.847,
+        "64": 1.085
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.687,
+        "4": 0.197,
+        "16": 0.177,
+        "64": 0.415
+      }
+    },
+    {
+      "waypoint_id": "M20-32_604-SOL670",
+      "sol": 670,
+      "lon": 77.40825085,
+      "lat": 18.45272802,
+      "measured_rover_tilt_deg": 0.903,
+      "dtm_elev_m": -2545.27,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.679,
+        "4": 1.642,
+        "16": 0.908,
+        "64": 1.069
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.776,
+        "4": 0.739,
+        "16": 0.005,
+        "64": 0.166
+      }
+    },
+    {
+      "waypoint_id": "M20-32_672-SOL670",
+      "sol": 670,
+      "lon": 77.40824352,
+      "lat": 18.45281322,
+      "measured_rover_tilt_deg": 0.267,
+      "dtm_elev_m": -2545.1,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.339,
+        "4": 2.536,
+        "16": 0.678,
+        "64": 0.763
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.072,
+        "4": 2.269,
+        "16": 0.411,
+        "64": 0.496
+      }
+    },
+    {
+      "waypoint_id": "M20-32_696-SOL674",
+      "sol": 674,
+      "lon": 77.40824596,
+      "lat": 18.45276514,
+      "measured_rover_tilt_deg": 1.212,
+      "dtm_elev_m": -2545.21,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.406,
+        "4": 2.639,
+        "16": 0.703,
+        "64": 0.886
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.194,
+        "4": 1.426,
+        "16": -0.509,
+        "64": -0.326
+      }
+    },
+    {
+      "waypoint_id": "M20-32_774-SOL674",
+      "sol": 674,
+      "lon": 77.40833585,
+      "lat": 18.45272753,
+      "measured_rover_tilt_deg": 0.635,
+      "dtm_elev_m": -2545.45,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.899,
+        "4": 1.885,
+        "16": 0.515,
+        "64": 0.95
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.264,
+        "4": 1.25,
+        "16": -0.12,
+        "64": 0.315
+      }
+    },
+    {
+      "waypoint_id": "M20-32_798-SOL678",
+      "sol": 678,
+      "lon": 77.40838286,
+      "lat": 18.45270871,
+      "measured_rover_tilt_deg": 0.281,
+      "dtm_elev_m": -2545.29,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.088,
+        "4": 2.476,
+        "16": 1.12,
+        "64": 0.924
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.807,
+        "4": 2.195,
+        "16": 0.839,
+        "64": 0.643
+      }
+    },
+    {
+      "waypoint_id": "M20-32_862-SOL678",
+      "sol": 678,
+      "lon": 77.40847172,
+      "lat": 18.45292748,
+      "measured_rover_tilt_deg": 0.983,
+      "dtm_elev_m": -2545.29,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.78,
+        "4": 3.84,
+        "16": 0.179,
+        "64": 0.554
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.797,
+        "4": 2.857,
+        "16": -0.804,
+        "64": -0.429
+      }
+    },
+    {
+      "waypoint_id": "M20-32_896-SOL678",
+      "sol": 678,
+      "lon": 77.4085047,
+      "lat": 18.45300487,
+      "measured_rover_tilt_deg": 0.609,
+      "dtm_elev_m": -2545.08,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.588,
+        "4": 2.052,
+        "16": 0.737,
+        "64": 0.528
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.979,
+        "4": 1.443,
+        "16": 0.128,
+        "64": -0.081
+      }
+    },
+    {
+      "waypoint_id": "M20-32_920-SOL681",
+      "sol": 681,
+      "lon": 77.4084859,
+      "lat": 18.45296035,
+      "measured_rover_tilt_deg": 0.636,
+      "dtm_elev_m": -2545.1,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.908,
+        "4": 3.068,
+        "16": 0.197,
+        "64": 0.539
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.272,
+        "4": 2.432,
+        "16": -0.439,
+        "64": -0.097
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1038-SOL681",
+      "sol": 681,
+      "lon": 77.40860064,
+      "lat": 18.45306554,
+      "measured_rover_tilt_deg": 0.904,
+      "dtm_elev_m": -2545.29,
+      "dtm_slope_deg_by_baseline": {
+        "1": 0.41,
+        "4": 0.518,
+        "16": 0.828,
+        "64": 0.616
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.494,
+        "4": -0.386,
+        "16": -0.076,
+        "64": -0.288
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1062-SOL684",
+      "sol": 684,
+      "lon": 77.40859222,
+      "lat": 18.45311341,
+      "measured_rover_tilt_deg": 0.664,
+      "dtm_elev_m": -2545.27,
+      "dtm_slope_deg_by_baseline": {
+        "1": 0.737,
+        "4": 0.503,
+        "16": 1.02,
+        "64": 0.718
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.073,
+        "4": -0.161,
+        "16": 0.356,
+        "64": 0.054
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1174-SOL684",
+      "sol": 684,
+      "lon": 77.4084479,
+      "lat": 18.45336511,
+      "measured_rover_tilt_deg": 1.192,
+      "dtm_elev_m": -2545.2,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.544,
+        "4": 1.445,
+        "16": 0.767,
+        "64": 0.708
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.353,
+        "4": 0.254,
+        "16": -0.424,
+        "64": -0.484
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1184-SOL686",
+      "sol": 686,
+      "lon": 77.40844668,
+      "lat": 18.45337179,
+      "measured_rover_tilt_deg": 1.202,
+      "dtm_elev_m": -2545.18,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.9,
+        "4": 1.514,
+        "16": 0.857,
+        "64": 0.645
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.698,
+        "4": 0.312,
+        "16": -0.345,
+        "64": -0.557
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1208-SOL693",
+      "sol": 693,
+      "lon": 77.40843777,
+      "lat": 18.4534195,
+      "measured_rover_tilt_deg": 1.028,
+      "dtm_elev_m": -2545.12,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.044,
+        "4": 1.526,
+        "16": 1.174,
+        "64": 0.62
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.016,
+        "4": 0.498,
+        "16": 0.146,
+        "64": -0.408
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1214-SOL693",
+      "sol": 693,
+      "lon": 77.40843791,
+      "lat": 18.45341952,
+      "measured_rover_tilt_deg": 0.824,
+      "dtm_elev_m": -2545.12,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.044,
+        "4": 1.526,
+        "16": 1.174,
+        "64": 0.62
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.22,
+        "4": 0.703,
+        "16": 0.35,
+        "64": -0.204
+      }
+    },
+    {
+      "waypoint_id": "M20-32_1394-SOL693",
+      "sol": 693,
+      "lon": 77.40844783,
+      "lat": 18.45417628,
+      "measured_rover_tilt_deg": 0.766,
+      "dtm_elev_m": -2544.46,
+      "dtm_slope_deg_by_baseline": {
+        "1": 1.854,
+        "4": 1.874,
+        "16": 1.345,
+        "64": 0.575
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.088,
+        "4": 1.108,
+        "16": 0.579,
+        "64": -0.191
+      }
+    },
+    {
+      "waypoint_id": "M20-32_2340-SOL694",
+      "sol": 694,
+      "lon": 77.40878417,
+      "lat": 18.45722377,
+      "measured_rover_tilt_deg": 5.534,
+      "dtm_elev_m": -2539.51,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.925,
+        "4": 8.919,
+        "16": 5.553,
+        "64": 6.584
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 5.391,
+        "4": 3.385,
+        "16": 0.019,
+        "64": 1.05
+      }
+    },
+    {
+      "waypoint_id": "M20-33_0-SOL695",
+      "sol": 695,
+      "lon": 77.40880429,
+      "lat": 18.45739106,
+      "measured_rover_tilt_deg": 6.447,
+      "dtm_elev_m": -2538.54,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.346,
+        "4": 7.741,
+        "16": 7.008,
+        "64": 7.937
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.899,
+        "4": 1.294,
+        "16": 0.561,
+        "64": 1.49
+      }
+    },
+    {
+      "waypoint_id": "M20-33_212-SOL698",
+      "sol": 698,
+      "lon": 77.40863038,
+      "lat": 18.45788655,
+      "measured_rover_tilt_deg": 12.841,
+      "dtm_elev_m": -2532.38,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.538,
+        "4": 9.206,
+        "16": 14.842,
+        "64": 12.309
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -4.303,
+        "4": -3.635,
+        "16": 2.001,
+        "64": -0.532
+      }
+    },
+    {
+      "waypoint_id": "M20-33_262-SOL698",
+      "sol": 698,
+      "lon": 77.40864336,
+      "lat": 18.45796415,
+      "measured_rover_tilt_deg": 17.362,
+      "dtm_elev_m": -2531.52,
+      "dtm_slope_deg_by_baseline": {
+        "1": 17.031,
+        "4": 17.453,
+        "16": 16.927,
+        "64": 12.57
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.331,
+        "4": 0.091,
+        "16": -0.435,
+        "64": -4.792
+      }
+    },
+    {
+      "waypoint_id": "M20-33_366-SOL700",
+      "sol": 700,
+      "lon": 77.4087634,
+      "lat": 18.45810853,
+      "measured_rover_tilt_deg": 20.334,
+      "dtm_elev_m": -2528.21,
+      "dtm_slope_deg_by_baseline": {
+        "1": 18.561,
+        "4": 18.108,
+        "16": 17.212,
+        "64": 12.641
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.773,
+        "4": -2.226,
+        "16": -3.122,
+        "64": -7.693
+      }
+    },
+    {
+      "waypoint_id": "M20-33_402-SOL702",
+      "sol": 702,
+      "lon": 77.40869551,
+      "lat": 18.45821443,
+      "measured_rover_tilt_deg": 10.523,
+      "dtm_elev_m": -2526.45,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.673,
+        "4": 10.31,
+        "16": 11.826,
+        "64": 12.407
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.85,
+        "4": -0.213,
+        "16": 1.303,
+        "64": 1.884
+      }
+    },
+    {
+      "waypoint_id": "M20-33_430-SOL706",
+      "sol": 706,
+      "lon": 77.40869434,
+      "lat": 18.45821856,
+      "measured_rover_tilt_deg": 10.733,
+      "dtm_elev_m": -2526.42,
+      "dtm_slope_deg_by_baseline": {
+        "1": 9.411,
+        "4": 10.107,
+        "16": 11.904,
+        "64": 12.408
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.322,
+        "4": -0.626,
+        "16": 1.171,
+        "64": 1.675
+      }
+    },
+    {
+      "waypoint_id": "M20-33_580-SOL707",
+      "sol": 707,
+      "lon": 77.40854413,
+      "lat": 18.45862182,
+      "measured_rover_tilt_deg": 8.198,
+      "dtm_elev_m": -2522.93,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.91,
+        "4": 8.939,
+        "16": 9.087,
+        "64": 10.561
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.712,
+        "4": 0.741,
+        "16": 0.889,
+        "64": 2.363
+      }
+    },
+    {
+      "waypoint_id": "M20-33_612-SOL707",
+      "sol": 707,
+      "lon": 77.40845696,
+      "lat": 18.45864154,
+      "measured_rover_tilt_deg": 8.925,
+      "dtm_elev_m": -2522.83,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.738,
+        "4": 9.262,
+        "16": 9.099,
+        "64": 10.575
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.187,
+        "4": 0.337,
+        "16": 0.174,
+        "64": 1.65
+      }
+    },
+    {
+      "waypoint_id": "M20-33_1756-SOL708",
+      "sol": 708,
+      "lon": 77.4058418,
+      "lat": 18.46007456,
+      "measured_rover_tilt_deg": 9.506,
+      "dtm_elev_m": -2509.64,
+      "dtm_slope_deg_by_baseline": {
+        "1": 10.542,
+        "4": 10.746,
+        "16": 9.944,
+        "64": 9.228
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 1.036,
+        "4": 1.24,
+        "16": 0.438,
+        "64": -0.278
+      }
+    },
+    {
+      "waypoint_id": "M20-33_2864-SOL709",
+      "sol": 709,
+      "lon": 77.40293429,
+      "lat": 18.46167105,
+      "measured_rover_tilt_deg": 6.451,
+      "dtm_elev_m": -2496.79,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.906,
+        "4": 6.178,
+        "16": 5.914,
+        "64": 6.205
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.545,
+        "4": -0.273,
+        "16": -0.537,
+        "64": -0.246
+      }
+    },
+    {
+      "waypoint_id": "M20-33_3878-SOL713",
+      "sol": 713,
+      "lon": 77.40209744,
+      "lat": 18.46404029,
+      "measured_rover_tilt_deg": 4.398,
+      "dtm_elev_m": -2491.24,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.007,
+        "4": 3.635,
+        "16": 4.286,
+        "64": 4.357
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.391,
+        "4": -0.763,
+        "16": -0.112,
+        "64": -0.041
+      }
+    },
+    {
+      "waypoint_id": "M20-33_4752-SOL714",
+      "sol": 714,
+      "lon": 77.40063764,
+      "lat": 18.46551938,
+      "measured_rover_tilt_deg": 2.353,
+      "dtm_elev_m": -2490.41,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.973,
+        "4": 4.124,
+        "16": 2.089,
+        "64": 1.506
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 2.62,
+        "4": 1.771,
+        "16": -0.264,
+        "64": -0.847
+      }
+    },
+    {
+      "waypoint_id": "M20-34_0-SOL715",
+      "sol": 715,
+      "lon": 77.39987924,
+      "lat": 18.46860632,
+      "measured_rover_tilt_deg": 1.339,
+      "dtm_elev_m": -2486.95,
+      "dtm_slope_deg_by_baseline": {
+        "1": 0.703,
+        "4": 0.519,
+        "16": 0.892,
+        "64": 0.836
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.636,
+        "4": -0.82,
+        "16": -0.447,
+        "64": -0.503
+      }
+    },
+    {
+      "waypoint_id": "M20-34_952-SOL716",
+      "sol": 716,
+      "lon": 77.39906252,
+      "lat": 18.47147663,
+      "measured_rover_tilt_deg": 3.822,
+      "dtm_elev_m": -2483.15,
+      "dtm_slope_deg_by_baseline": {
+        "1": 3.173,
+        "4": 3.093,
+        "16": 3.102,
+        "64": 2.755
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.649,
+        "4": -0.729,
+        "16": -0.72,
+        "64": -1.067
+      }
+    },
+    {
+      "waypoint_id": "M20-34_2098-SOL717",
+      "sol": 717,
+      "lon": 77.39743441,
+      "lat": 18.47436854,
+      "measured_rover_tilt_deg": 5.986,
+      "dtm_elev_m": -2478.14,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.655,
+        "4": 6.516,
+        "16": 5.77,
+        "64": 6.264
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.669,
+        "4": 0.53,
+        "16": -0.216,
+        "64": 0.278
+      }
+    },
+    {
+      "waypoint_id": "M20-34_3196-SOL718",
+      "sol": 718,
+      "lon": 77.39409774,
+      "lat": 18.47537085,
+      "measured_rover_tilt_deg": 6.681,
+      "dtm_elev_m": -2475.04,
+      "dtm_slope_deg_by_baseline": {
+        "1": 6.104,
+        "4": 6.406,
+        "16": 6.893,
+        "64": 7.461
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.577,
+        "4": -0.275,
+        "16": 0.212,
+        "64": 0.78
+      }
+    },
+    {
+      "waypoint_id": "M20-34_4394-SOL719",
+      "sol": 719,
+      "lon": 77.39036747,
+      "lat": 18.47563606,
+      "measured_rover_tilt_deg": 8.122,
+      "dtm_elev_m": -2462.87,
+      "dtm_slope_deg_by_baseline": {
+        "1": 8.956,
+        "4": 7.751,
+        "16": 5.985,
+        "64": 3.988
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.834,
+        "4": -0.371,
+        "16": -2.137,
+        "64": -4.134
+      }
+    },
+    {
+      "waypoint_id": "M20-34_5120-SOL721",
+      "sol": 721,
+      "lon": 77.38981627,
+      "lat": 18.47444231,
+      "measured_rover_tilt_deg": 9.49,
+      "dtm_elev_m": -2459.08,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.728,
+        "4": 6.216,
+        "16": 6.673,
+        "64": 5.102
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -3.762,
+        "4": -3.274,
+        "16": -2.817,
+        "64": -4.388
+      }
+    },
+    {
+      "waypoint_id": "M20-35_0-SOL726",
+      "sol": 726,
+      "lon": 77.38981627,
+      "lat": 18.47444231,
+      "measured_rover_tilt_deg": 9.567,
+      "dtm_elev_m": -2459.08,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.728,
+        "4": 6.216,
+        "16": 6.673,
+        "64": 5.102
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -3.839,
+        "4": -3.351,
+        "16": -2.894,
+        "64": -4.465
+      }
+    },
+    {
+      "waypoint_id": "M20-36_0-SOL727",
+      "sol": 727,
+      "lon": 77.38981627,
+      "lat": 18.47444231,
+      "measured_rover_tilt_deg": 9.456,
+      "dtm_elev_m": -2459.08,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.728,
+        "4": 6.216,
+        "16": 6.673,
+        "64": 5.102
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -3.728,
+        "4": -3.24,
+        "16": -2.783,
+        "64": -4.354
+      }
+    },
+    {
+      "waypoint_id": "M20-36_334-SOL731",
+      "sol": 731,
+      "lon": 77.38880776,
+      "lat": 18.47460702,
+      "measured_rover_tilt_deg": 2.068,
+      "dtm_elev_m": -2462.43,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.179,
+        "4": 4.508,
+        "16": 1.562,
+        "64": 1.621
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.111,
+        "4": 2.44,
+        "16": -0.506,
+        "64": -0.447
+      }
+    },
+    {
+      "waypoint_id": "M20-36_1610-SOL731",
+      "sol": 731,
+      "lon": 77.38675117,
+      "lat": 18.47292863,
+      "measured_rover_tilt_deg": 3.498,
+      "dtm_elev_m": -2455.23,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.0,
+        "4": 2.034,
+        "16": 3.548,
+        "64": 4.115
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.498,
+        "4": -1.464,
+        "16": 0.05,
+        "64": 0.617
+      }
+    },
+    {
+      "waypoint_id": "M20-36_3294-SOL732",
+      "sol": 732,
+      "lon": 77.38429159,
+      "lat": 18.47036808,
+      "measured_rover_tilt_deg": 1.543,
+      "dtm_elev_m": -2449.15,
+      "dtm_slope_deg_by_baseline": {
+        "1": 4.581,
+        "4": 3.542,
+        "16": 1.195,
+        "64": 3.659
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.038,
+        "4": 1.999,
+        "16": -0.348,
+        "64": 2.116
+      }
+    },
+    {
+      "waypoint_id": "M20-36_3368-SOL736",
+      "sol": 736,
+      "lon": 77.38407433,
+      "lat": 18.47019571,
+      "measured_rover_tilt_deg": 4.539,
+      "dtm_elev_m": -2449.05,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.351,
+        "4": 4.703,
+        "16": 4.148,
+        "64": 3.825
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.812,
+        "4": 0.164,
+        "16": -0.391,
+        "64": -0.714
+      }
+    },
+    {
+      "waypoint_id": "M20-36_3398-SOL736",
+      "sol": 736,
+      "lon": 77.38398783,
+      "lat": 18.4702116,
+      "measured_rover_tilt_deg": 3.435,
+      "dtm_elev_m": -2449.09,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.574,
+        "4": 2.702,
+        "16": 3.145,
+        "64": 3.633
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.861,
+        "4": -0.733,
+        "16": -0.29,
+        "64": 0.198
+      }
+    },
+    {
+      "waypoint_id": "M20-37_0-SOL736",
+      "sol": 736,
+      "lon": 77.38398783,
+      "lat": 18.4702116,
+      "measured_rover_tilt_deg": 3.447,
+      "dtm_elev_m": -2449.09,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.574,
+        "4": 2.702,
+        "16": 3.145,
+        "64": 3.633
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.873,
+        "4": -0.745,
+        "16": -0.302,
+        "64": 0.186
+      }
+    },
+    {
+      "waypoint_id": "M20-37_1798-SOL753",
+      "sol": 753,
+      "lon": 77.37931207,
+      "lat": 18.47038842,
+      "measured_rover_tilt_deg": 7.493,
+      "dtm_elev_m": -2442.56,
+      "dtm_slope_deg_by_baseline": {
+        "1": 2.969,
+        "4": 3.043,
+        "16": 2.203,
+        "64": 3.322
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -4.524,
+        "4": -4.45,
+        "16": -5.29,
+        "64": -4.171
+      }
+    },
+    {
+      "waypoint_id": "M20-37_2462-SOL755",
+      "sol": 755,
+      "lon": 77.37760619,
+      "lat": 18.47135516,
+      "measured_rover_tilt_deg": 7.368,
+      "dtm_elev_m": -2437.58,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.277,
+        "4": 6.948,
+        "16": 4.934,
+        "64": 4.899
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -0.091,
+        "4": -0.42,
+        "16": -2.434,
+        "64": -2.469
+      }
+    },
+    {
+      "waypoint_id": "M20-37_2562-SOL755",
+      "sol": 755,
+      "lon": 77.3773715,
+      "lat": 18.47134625,
+      "measured_rover_tilt_deg": 9.142,
+      "dtm_elev_m": -2436.94,
+      "dtm_slope_deg_by_baseline": {
+        "1": 7.483,
+        "4": 7.632,
+        "16": 7.477,
+        "64": 5.789
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.659,
+        "4": -1.51,
+        "16": -1.665,
+        "64": -3.353
+      }
+    },
+    {
+      "waypoint_id": "M20-37_3758-SOL759",
+      "sol": 759,
+      "lon": 77.37988874,
+      "lat": 18.47368229,
+      "measured_rover_tilt_deg": 1.832,
+      "dtm_elev_m": -2441.55,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.535,
+        "4": 4.528,
+        "16": 1.886,
+        "64": 5.02
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 3.703,
+        "4": 2.696,
+        "16": 0.054,
+        "64": 3.188
+      }
+    },
+    {
+      "waypoint_id": "M20-37_4972-SOL762",
+      "sol": 762,
+      "lon": 77.37704963,
+      "lat": 18.47393096,
+      "measured_rover_tilt_deg": 5.301,
+      "dtm_elev_m": -2433.42,
+      "dtm_slope_deg_by_baseline": {
+        "1": 5.841,
+        "4": 5.822,
+        "16": 4.415,
+        "64": 4.279
+      },
+      "signed_error_deg_by_baseline": {
+        "1": 0.54,
+        "4": 0.521,
+        "16": -0.886,
+        "64": -1.022
+      }
+    }
+  ]
+}
