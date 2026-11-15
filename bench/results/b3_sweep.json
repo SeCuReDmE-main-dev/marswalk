@@ -1,0 +1,2078 @@
+{
+  "benchmark_id": "B3_SWEET_SPOT_SWEEP_128",
+  "split": "odd_sols_only_tune",
+  "n_tune_odd": 75,
+  "total_combinations": 128,
+  "shard_count": 8,
+  "combinations_per_shard": 16,
+  "execution_backend": "local_8_shards_fallback (E2B_API_KEY not set in environment)",
+  "e2b_remote_sha256": null,
+  "local_vs_e2b_sha_match": null,
+  "total_wall_seconds": 13.8021,
+  "sweet_spot": {
+    "shard_id": 5,
+    "params": {
+      "p": 3,
+      "tau_max": 0.2,
+      "h_min": 0.7,
+      "eps": 0.005
+    },
+    "mae_tune": 1.3293,
+    "mean_i_star": 0.1881,
+    "zero_i_star_count": 0,
+    "b3_persistent_hazard_pass": true,
+    "b9_entropy_floor_pass": true,
+    "sha256": "293c35979ac2687eb274a927ae20407316a07c090c810180c3e457d776d5a198",
+    "seconds": 0.35953
+  },
+  "records": [
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.484,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "8ebce49a8b4143e649d0dd9907d0b8d11aa94fb830eefb0220306f26d8a78f31",
+      "seconds": 0.09565
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.484,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "a48fee688f063b26ffec28c3a0b6cc51b0b75bab9d682dcee85be9130cd6d3af",
+      "seconds": 0.15463
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.484,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "1f7fea036cf21fcb8299340a1728077ee7a3d9815375fb8e336715aac7d7b60f",
+      "seconds": 0.29348
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.484,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "5050fb85995d9fe0b866fd5e00c98fdce483fd4f2e222221a1cc30ac5def64d6",
+      "seconds": 0.18004
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4837,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "7f20924b9451ee1842c6b53ec2da29b7b9b569f048668aa57ff302cdac5e8415",
+      "seconds": 0.13752
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4837,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "89eb8a1e7109bb7a856c3f8519c610f027799e33a6d417a662b69392cae80e14",
+      "seconds": 0.18588
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4837,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "366e175b52858fb93fc2943989a7f89e5affd5ba18af0e17b2a9cc763cb529b1",
+      "seconds": 0.27289
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4837,
+      "mean_i_star": 0.189,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "874a93a0c0e19f329b8ae29c7f4283090d65ed802cc8c1cbd55b436b8c916ad3",
+      "seconds": 0.36922
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4824,
+      "mean_i_star": 0.1873,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "aab5022787056a0d5dbbb593ea79dddbbaa832a08f9773ff4a1371d5c8bd0213",
+      "seconds": 0.21443
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4824,
+      "mean_i_star": 0.1873,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "d607c10177cf06ef30e1e1b9d921fab4118cd607b657a4bc4f193f678d7c2cc4",
+      "seconds": 0.34294
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4824,
+      "mean_i_star": 0.1873,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "5ff64ad067cd22b3969ac6f2cae9e6321dcd4900a5d2d14fc9bda045c34d2a5d",
+      "seconds": 0.62022
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4824,
+      "mean_i_star": 0.1873,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "5e511afd70879459218902fcea7035955347d07ed1a66a6eb57b4d0973a9233f",
+      "seconds": 0.32996
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4838,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9bf93ff96a2cd8c7ae13c011be7cd23496e9e0cf7fb8c3d968ea0039476f786c",
+      "seconds": 0.28465
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4838,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9e80a73ce07c2b1d84e266a842ff2dc79d1cb6214bb1505b36cc34b8858b42c1",
+      "seconds": 0.25331
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4838,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "f550282dde2268064aacb910cc6d73fa1cea541e429244143785ee5b082d56e6",
+      "seconds": 0.58311
+    },
+    {
+      "shard_id": 0,
+      "params": {
+        "p": 2,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4838,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "8fa00023fa3f5cd3a5788fb283a87c4fc00d36865a4813a2c371ce0052f94c55",
+      "seconds": 1.08818
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b526cb81734a3206664de94f10d941aa54e7293f863f6a657befa2c170250d3f",
+      "seconds": 1.04805
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "88c9cdbe6f43b0119bf2726e1d308b8b89efa978be4aa6f4e8a1225b66450889",
+      "seconds": 1.64431
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "63fcba48f2f3796d10c47d982d077f88454b870046e2463f17ce217e1e7dfe77",
+      "seconds": 0.84314
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "3852ff15c215ead316a28a0db0b0a2b26c676818514d9584eb508688c5e0352c",
+      "seconds": 0.99918
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "6e7122483f35d9baab39957ec85710629017f73eb2ccc76b2b0b1378864988e0",
+      "seconds": 2.50079
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "60698aca670508374323084e339fdb76f74ab8d655933828c1db5ef01c349c89",
+      "seconds": 1.84214
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "be76a27784edc4e18903792a38a94eda169d50235526a6c6783dc6df99bcf6d4",
+      "seconds": 0.68052
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "df1f9b0469d91b541f8e9648bcf583d03e378eb17e6d7ee560b2e010de2a3248",
+      "seconds": 0.75984
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "40f6b5f116248592b0988a1590d9cc2db31076946490a800a67f7841e6c30885",
+      "seconds": 0.40528
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "8873c6a16ee5310b90a756d7b8cb545c6082ce6528d502fc8aa2919d16ca6c88",
+      "seconds": 0.14919
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "7ca1a7713d37a3ef41d528e38c9c01ceb54d244d154b546250ddbf75e492413a",
+      "seconds": 0.09916
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "2c190774f73a1532fc0226130a5bca1abe68578f5034731b7dac54eaf330ee41",
+      "seconds": 0.16853
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "042da2580c8ffac71e85d24185fe9feaae32a4b262746563ec206f63494ac28a",
+      "seconds": 0.17293
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9c2dadbb6d7c65985fa590d468e14b52942195886433abf03e0c85b37b66c834",
+      "seconds": 0.45171
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "20b76b7d54250886be49e89aa67d188491661f38eba44e48de5cc8b35a8bbc69",
+      "seconds": 0.25632
+    },
+    {
+      "shard_id": 1,
+      "params": {
+        "p": 2,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "66f2afad2828bbc6e55c5d389e017307f76619f5f738bc0d238c1eb890fcd16c",
+      "seconds": 0.14883
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "e59bcad7896800d45c0b64f66725febde3957cd4bb697cbb4470b1011d30c41a",
+      "seconds": 0.59173
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "2cce3e15be00f4af8f8105ad87e0aa2309f0b1ef4ac226fe9050ae9302bc9d6e",
+      "seconds": 2.07786
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "27f73474bf8a112f6199a5d8fca441d3618e4470449f0ca8db14be5553e127a2",
+      "seconds": 2.67027
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "e395223a026c905e9107d711b2eca71c1c9b1cd61cb855a21920f5cbc6a2f2a7",
+      "seconds": 1.95059
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "75731f83bb26238d58fab2dc749363d804213dfbb6661847ff51ce524e709e00",
+      "seconds": 0.86739
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "882916c0321ef17975b0dba093324bba9496e0de696765d5f068eab48ddc56a7",
+      "seconds": 0.99023
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "166c6d249481f962f1bd38c673b676a22b591811ccad6bde8600c68b57b84234",
+      "seconds": 0.54283
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "0c9efccf15512f8933b8b463cd83cf0d850f40a19697d0934acfdec0698ab99d",
+      "seconds": 0.56647
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "6fa47f9e59e0bddecc0e301a733c8707d6aa17bd3f5e987ad4b106e4050afcc3",
+      "seconds": 0.40285
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "808f045a258c7d0b6c9e52b19d95582dcae794101c9d5d6df5102724f59521d5",
+      "seconds": 0.35172
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "e95136fac333584cf54abca78707aa1071b20f9c5a21c298abf7785ef3cfa34e",
+      "seconds": 0.56599
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "32a206cc83f771db4015d7c82447b350b308394554d14acb5f49113f860e7435",
+      "seconds": 0.38222
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "78f680abe9ee90944f55d2d6d7ed336888b26c97a2653bd80dc1e27d7648a9c8",
+      "seconds": 0.20247
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9308a52503cfcb941dbf57e63692a693390f6fc7b402ee89fea9e0b9fc57face",
+      "seconds": 0.14098
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "04ae914858fce667d9e970ddf36160c081885480056e05ea78d3e6ce838b5a62",
+      "seconds": 0.10982
+    },
+    {
+      "shard_id": 2,
+      "params": {
+        "p": 2,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "38fa6b0135594a651dacba6ede2aa47de8c567a8b4dd4f6658ec43896b95b318",
+      "seconds": 0.23056
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "4e1c5c081a47120340299939642d6681e7f20d46de257f6cf8dc772b50033a30",
+      "seconds": 0.19687
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "bfe0144398bf292eea85bd7cbfba2e1cd89b0246d32f5fdff31b486a90cfdb72",
+      "seconds": 0.36653
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "25e6e333b7df30cdc693b363476c08bb148d127286ba062b6d0483801ea357c8",
+      "seconds": 0.64769
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4844,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b014ebb85115d94c9d1f9feec19dd909a349a9ae88b06030d43369a6cb0c03a4",
+      "seconds": 0.26223
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "3aeccabf971361fce52c5c2c2b32991643b30543999b6957e118d02bcad7a93d",
+      "seconds": 0.4046
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "7c66fd03773975c0ae65fbf89467b6a329b6f0809805903dd213bdc549a12886",
+      "seconds": 0.43641
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "4bf10b33b9c7d9ccf46e6acb78912814a2549d55119b207a6432bbbcced61feb",
+      "seconds": 0.33601
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4841,
+      "mean_i_star": 0.1932,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "df90578b03fa8df6f27b1e030b1cc4ea24355882e0154f48d4510e24195e8bf1",
+      "seconds": 0.27183
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "0f3db29a96aabda88eff6c1f7f8417a5bfcc13504d3b0328f4518568f85973a3",
+      "seconds": 0.165
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "49dc2e089f9eaded468f938e6117158e2bc6bb8220e037273b7513bd909cef05",
+      "seconds": 0.79917
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "679029037bfb7c72110928d2c69850ec574540211fd97c9ba992518ac4d768f9",
+      "seconds": 0.59922
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4805,
+      "mean_i_star": 0.1902,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "006e723f223fe59122b07acd764bda0acc94781f1263a4dd98b00d0060c633fe",
+      "seconds": 1.1763
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "7a9ad804b8b8de09d2e6937187d97bc939872d3b52781ee14b1ba34c44b10efe",
+      "seconds": 0.4106
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "8d6d53a01cb7ed6ddd7d89007fd4d87a83e8d01ff60fc8573a0d30706ea93cf8",
+      "seconds": 0.26438
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "91434c3baa64eb71cbda2fb67bb2570ba573364a111c8e632f51a8fe27596765",
+      "seconds": 0.67323
+    },
+    {
+      "shard_id": 3,
+      "params": {
+        "p": 2,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.4835,
+      "mean_i_star": 0.1863,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "663f6a8772c36521a2cbdbd834a0debc9ad1f74ebc48eb48b2be4c15c8331f95",
+      "seconds": 0.36838
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3334,
+      "mean_i_star": 0.1867,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "88cab95bf9f568437720a5795e781ee763a6612f6373348b99416c2a3d40f009",
+      "seconds": 0.20963
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3334,
+      "mean_i_star": 0.1867,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b9b6bb69fdea37e0b496b50a003a27a70351c01be513798196b6debb4610823b",
+      "seconds": 0.18193
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3334,
+      "mean_i_star": 0.1867,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "3a838e6a2d7c68a7207f1dd64cb198d1b4cb1eb4063f117764af9b986d9f1439",
+      "seconds": 0.319
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3334,
+      "mean_i_star": 0.1867,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "807e3cb8b059551310dd3a33ac88e1f41836378b02ff51794a19f2d386ce5659",
+      "seconds": 0.64673
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3331,
+      "mean_i_star": 0.1866,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "099dab49f1c6e06177efe46795c35a4dbf3393ef105fad8b210c7c7443755738",
+      "seconds": 0.43482
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3331,
+      "mean_i_star": 0.1866,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "1b6024f165f7eb06d4be7bfe937db9da8647f9b98aff2a3d48533d7b87ceafb4",
+      "seconds": 0.24121
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3331,
+      "mean_i_star": 0.1866,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "d52243bd7a5409bc71f8154197823f8af4e1dbab2d918e0a04cea7020635b2b9",
+      "seconds": 0.25159
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3331,
+      "mean_i_star": 0.1866,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "1745dbe4bdfca061bf99c3e5aef159f76ba2546716fd617397574a22113b8c68",
+      "seconds": 0.39536
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3318,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "4c413a70bf82f638f4cd3d3a63de2c997e59516aa310043d618de06314bde1e0",
+      "seconds": 0.30106
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3318,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "75b21236e1b4aca1d948e30ec1c7e8062bc6594f06cfed56f04afee92cfcf0ee",
+      "seconds": 0.26584
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3318,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "3363bbae171026511bd0aa99ca80ffe325e393461e8356cb1ae6af3eb1e2c5b1",
+      "seconds": 0.42202
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3318,
+      "mean_i_star": 0.185,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "6585b94a6bb50e489417e518ce36fdfacf762fe42d1c656b2493e5e57569da58",
+      "seconds": 1.30678
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3333,
+      "mean_i_star": 0.1827,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "75f008d6b0991c8972d288c8553659eb8ce51b6c0b46073a43d6f141165078a8",
+      "seconds": 0.65044
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3333,
+      "mean_i_star": 0.1827,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "e0dc51391627ae97b726b431cf1c55843a9ecbbaa1017068ca7c3add0b751c19",
+      "seconds": 0.28851
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3333,
+      "mean_i_star": 0.1827,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9d155018042147aaff3a76bec8462a31a91c8e675460571fada4325875e730f5",
+      "seconds": 0.39968
+    },
+    {
+      "shard_id": 4,
+      "params": {
+        "p": 3,
+        "tau_max": 0.1,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3333,
+      "mean_i_star": 0.1827,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "750c823d07c0dd42d80e794ceaadadfb6c6d9f3d31c81d448d96afb893cba33a",
+      "seconds": 0.35366
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "ea77ec914a9c1714b84d6f6da9e9187a6ec72b2e780324711ef35ac010f6670a",
+      "seconds": 1.72492
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "f34419ec44b55ca9bd2b4ddec7e80e6d65736e340026bac1268459aa6d801a28",
+      "seconds": 2.38729
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "e86db85df35b23afe6aed72590e8c30529148d423524b464a96e73c7451fc7e9",
+      "seconds": 1.5127
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "843e527feff3e87bd02ad1b9945ccf0cb4bb3f0be2f34db97ba59399a17dfc85",
+      "seconds": 0.61703
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "38cee9fead2a73df212b4e4a2394dda9a640d91301a2345fb9c3f305377147b9",
+      "seconds": 1.27816
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "576ed8163cee5d7119468bbdb1e344bfd1cf99048a75accda1a10a1941a30d3e",
+      "seconds": 0.72965
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "502cedcc61b1535d72da3540103555a8d48c474e1957e1208dde6deff9f0caa0",
+      "seconds": 1.61019
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b6bb5d223f26956b439e1e40536d3b1055d33cf55f29d8e1c07bf095dea9487e",
+      "seconds": 0.76272
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "293c35979ac2687eb274a927ae20407316a07c090c810180c3e457d776d5a198",
+      "seconds": 0.35953
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "1b979ee642ec9b303a3a685105cb6f95024bcf3dd53414b98a81bb2060594ad0",
+      "seconds": 0.40687
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "2f9ce856a572283f116094b28f9f2f96f2fd42e5bcfe6db57d5d69fbc362b704",
+      "seconds": 0.12923
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "ba1f77f2deff6aa701c9066dca4c623ee4229361641746016e0f304fd8c60403",
+      "seconds": 0.1485
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "26804ac8a3e200ead8afc9f13b8014a1a0c1937b0cb0d2b1dc68d541b3501fa1",
+      "seconds": 0.28241
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9578f2632cb2c0ede0984a6893bfbde456ef4c1c5832c1439d67196f74c101b6",
+      "seconds": 0.37248
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "674dd7d451f06a2921377eb368b5a0c9f9adfa0478d47bf7953a91311679ce80",
+      "seconds": 0.25809
+    },
+    {
+      "shard_id": 5,
+      "params": {
+        "p": 3,
+        "tau_max": 0.2,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b0b555191e9fe20642d20c2e4d7dc9939ce7f0996cd708ba4e559773f1809781",
+      "seconds": 0.2485
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "4d76a818dcd1a80a32cfa04f17604f0fc11ee458fd542b10479e840f9f6850bc",
+      "seconds": 1.38777
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b386be48051e035a7ff49e43e6600b51295787ddaae8086dd07ed12d57ddb6f2",
+      "seconds": 0.92945
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b17e69695840c57e78d3c6e2f3e2708a717dfbbacdbe5eaa7fdfe269cc12cf28",
+      "seconds": 0.44283
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "e0be84d4608ef6f0743fcbb8dbe5a7d910e6b4f9b38cb11b6307a736ec772c95",
+      "seconds": 1.49205
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "29edefc2a164ee0209bb7cbad09ded1c4a591d3033c1d67bad684335533930eb",
+      "seconds": 0.74106
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "1654ad70f4b3d90365da47968dc7ef465fbb53dccd936f8a955cf1109791181f",
+      "seconds": 1.37928
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "d8bf41a0888d6b3524bfaa1c5b7e4f61e1309b740f65cb94285572f1d74ba8f5",
+      "seconds": 0.74286
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "1a7d5e51f0eaf8de4500d4b4c183e80e2d3ac20047d1da98abfb308f46d71b85",
+      "seconds": 0.13541
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "473e083edb0fde5844687aab6a94e2d37525eca0a7364219223e82ab7d9a0b3e",
+      "seconds": 0.2573
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "ca0f3590402a3bb111d26a0c8b8cbb1661f991ce4a70cf96474ddd5b04abe526",
+      "seconds": 0.43374
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "72bd56e42b8e4e2d0dc64804fd00b58af5251ec2f774eb1ce115c50d9e6187a7",
+      "seconds": 0.52185
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "511dc61083c76973b3be967f8d1c05377d2e5926e2966b67b0a3c9e32d4f9045",
+      "seconds": 0.45009
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "204ff78b49d959971ba9bccb632663e50185f4ac01bca1a7362b77ff456f9a43",
+      "seconds": 0.39772
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "72d3b5bd6b136c059cd69a0194a21d11f159029317d06e3cf8973bc518f5eed2",
+      "seconds": 0.29239
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "2b7fa2d20e9e98d1a76e512df450533eb3c483568c2066c66769ed2a7da681c1",
+      "seconds": 0.21812
+    },
+    {
+      "shard_id": 6,
+      "params": {
+        "p": 3,
+        "tau_max": 0.3,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "caffff0996047444a0108caf52221dd5066ef01763397e2a6f7ee513496866ca",
+      "seconds": 0.1156
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "8cf4ff7425aef846a63937519dec071e81ba215e577378fc7a5a82db08b65b52",
+      "seconds": 0.60861
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "ccfe766231c4a2ab239b4cf870c7d0d442195f9ab3c3e886c7f8138673df94ca",
+      "seconds": 0.8678
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "6135cebee43208e1fb6eaa73137acbc5c0f973448392ee17b15cf4c0036b7be3",
+      "seconds": 0.30761
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.3,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3332,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "254cf975d3f230550a8c91e6b5092d67b39135eeee034c4524c15b9c6ed5be63",
+      "seconds": 0.99252
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.005
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "b0490e7b0611b8341557f7e2b6cedd30ff285648b6175bbba28c9efb2d03cecb",
+      "seconds": 0.88907
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.01
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "9154dae0d749ae533b0f7f3365ee3d0cf0ae64127248224bb6c7c630ff1ee8ad",
+      "seconds": 0.38348
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.02
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "5e73f8326ebba0ca45688e3c600ec8210146d54c4bca9a6c948ecd5dcbe3e9c9",
+      "seconds": 0.29979
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.5,
+        "eps": 0.05
+      },
+      "mae_tune": 1.333,
+      "mean_i_star": 0.1911,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "8f600446df83c32fe6b1e5ea5203319cd792df1a3298278f9fabb9a453622b0a",
+      "seconds": 0.39188
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "4ea10763a5b622d15bea7552785b48dc86a6bb03f4e8b9bc8d11250c211783f9",
+      "seconds": 0.251
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "373057751d768bc6ca090340bb08a441b41e6d15ecbe400c322e7ca9a18240c2",
+      "seconds": 0.21705
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "99133dae5ff08e752142cfe856fd8912a8930e408a665ce5472017b3c23d95a5",
+      "seconds": 0.25956
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 0.7,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3293,
+      "mean_i_star": 0.1881,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "baf2d48071af35dd081519e2df0a604d30e6a4039b63c03fee0ec7f44d8e27d1",
+      "seconds": 0.26894
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.005
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "67440a02f9d12ea845cd12f9817e5f292aa0ff2d9083dd5bb5fadb24e946d37c",
+      "seconds": 0.26985
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.01
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "cf9fba11d80f7571564971213deb1024bc084f100c0db549bb398ee6a5533f97",
+      "seconds": 0.20908
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.02
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "2123e3dcb90b729586513952a78be205a4e7d9fefd89ddb3c887c449871c3dbd",
+      "seconds": 0.24804
+    },
+    {
+      "shard_id": 7,
+      "params": {
+        "p": 3,
+        "tau_max": 0.4,
+        "h_min": 1.0,
+        "eps": 0.05
+      },
+      "mae_tune": 1.3309,
+      "mean_i_star": 0.184,
+      "zero_i_star_count": 0,
+      "b3_persistent_hazard_pass": true,
+      "b9_entropy_floor_pass": true,
+      "sha256": "fd5742efb6e323e4cb50c465099abe253737ac599bfd1a06b1f30a555698bf7d",
+      "seconds": 0.23082
+    }
+  ]
+}

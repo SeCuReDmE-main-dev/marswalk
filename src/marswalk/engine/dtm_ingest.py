@@ -107,6 +107,31 @@ def eqc_y_m_to_lat(y_m: float) -> float:
     return math.degrees(y_m / MARS_SPHERE_RADIUS_M)
 
 
+def verify_mars_crs_roundtrip(
+    lon_deg: float,
+    lat_deg: float,
+    *,
+    sphere_radius_m: float = MARS_SPHERE_RADIUS_M,
+    max_error_m: float = 0.05,
+) -> float:
+    """Validate single-CRS Mars IAU 2015 sphere (`3,396,190 m`) and EQC round-trip error."""
+    if not math.isfinite(sphere_radius_m) or abs(sphere_radius_m - MARS_SPHERE_RADIUS_M) > 1.0:
+        raise ValueError(
+            f"Invalid CRS sphere radius {sphere_radius_m} m; contract requires "
+            f"Mars IAU 2015 sphere {MARS_SPHERE_RADIUS_M:.0f} m (3396190 m)."
+        )
+    x_m = lon_to_eqc_x_m(lon_deg)
+    y_m = lat_to_eqc_y_m(lat_deg)
+    lon_rt = eqc_x_m_to_lon(x_m)
+    lat_rt = eqc_y_m_to_lat(y_m)
+    dx_m = MARS_SPHERE_RADIUS_M * math.radians(lon_rt - lon_deg)
+    dy_m = MARS_SPHERE_RADIUS_M * math.radians(lat_rt - lat_deg)
+    err_m = math.hypot(dx_m, dy_m)
+    if err_m > max_error_m:
+        raise ValueError(f"EQC round-trip error {err_m:.6f} m exceeds {max_error_m} m.")
+    return err_m
+
+
 def select_optimal_delta_window_2x2km(
     waypoints: WaypointFeatureCollection,
     window_size_m: float = 2000.0,

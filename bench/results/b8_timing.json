@@ -1,0 +1,17 @@
+{
+  "benchmark_id": "B8_WINDOW_2X2KM_TIMING",
+  "window_size_km": "2x2",
+  "dtm_shape_px": [
+    2128,
+    2128
+  ],
+  "sphere_radius_m": 3396190.0,
+  "cell_count": 384,
+  "seconds": 1.5739,
+  "verdict_counts": {
+    "GO": 47,
+    "CAUTION": 212,
+    "NO_GO": 125
+  },
+  "note": "Empirical wall-clock runtime measured locally on real 1 m/px USGS HiRISE window."
+}

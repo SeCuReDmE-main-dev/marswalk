@@ -1,9 +1,9 @@
 {
   "profile_id": "funnel_v1",
-  "version": "1.0.0",
-  "proposition_note": "Initial multi-scale fractal pruning funnel parameters before odd-sol tuning (Section 4 of MOTEUR_PLITHOGENIQUE_SWEET_SPOT_MARTIAN_MAP_14_11_26.md).",
-  "p": 2,
-  "tau_max": 0.25,
-  "h_min": 0.50,
-  "eps": 0.01
+  "version": "1.1.0",
+  "proposition_note": "Sweet-spot multi-scale fractal pruning funnel parameters selected via 128-combination grid sweep strictly on odd-numbered Perseverance sols (n_tune=75, mae_tune=1.3293 deg, B3=PASS, B9=PASS).",
+  "p": 3,
+  "tau_max": 0.20,
+  "h_min": 0.70,
+  "eps": 0.005
 }
