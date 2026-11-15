@@ -74,6 +74,12 @@ from marswalk.engine.gates import (
     run_gate_with_hold_loop,
 )
 from marswalk.engine.meda_envelope import load_cached_meda_summary
+from marswalk.engine.obstacles_m1 import (
+    PlannerGrid10m,
+    build_planner_grid_10m_from_window,
+    save_planner_grid_10m_png,
+)
+from marswalk.engine.planner_m2 import PlannedSegmentPlanResult, plan_obstacle_aware_route
 from marswalk.engine.prefilter import prefilter_cell
 from marswalk.engine.radiation_svf import (
     compute_sky_view_factor_32az,
@@ -84,6 +90,7 @@ from marswalk.engine.sim3464_ingest import (
     classify_sim3464_unit_context,
 )
 from marswalk.engine.themis_ingest import load_cached_themis_summary
+from marswalk.engine.topographic_refuge_m3 import estimate_cell_max_toe_occlusion
 from marswalk.engine.validation import ValidationReport, build_validation_report
 from marswalk.middleware.build_pack import (
     JEZERO_SITE_BBOX,
@@ -167,6 +174,7 @@ def _classify_grid_from_samples(
     overlay_output_path: Path,
     funnel_params: FunnelParams | None = None,
     retained_carriers: tuple[str, ...] | None = None,
+    planner_grid_10m: PlannerGrid10m | None = None,
 ) -> tuple[HazardGrid, float]:
     """Classify every DTM cell via boolean prefilter + multi-scale pruning funnel.
 
@@ -306,6 +314,26 @@ def _classify_grid_from_samples(
             step_x_m=dx_ground,
             max_radius_px=36,
         )
+        half_cell_px = max(8, int(round(0.5 * s.size_m)))
+        refuge_est = estimate_cell_max_toe_occlusion(
+            arr,
+            r0=row_px - half_cell_px,
+            r1=row_px + half_cell_px,
+            c0=col_px - half_cell_px,
+            c1=col_px + half_cell_px,
+            center_svf=svf_val,
+            step_x_m=dx_ground,
+        )
+        obs_frac_val = 0.0
+        if planner_grid_10m is not None:
+            pr0 = int(round(s.row * planner_grid_10m.rows / float(rows)))
+            pr1 = max(pr0 + 1, int(round((s.row + 1) * planner_grid_10m.rows / float(rows))))
+            pc0 = int(round(s.col * planner_grid_10m.cols / float(cols)))
+            pc1 = max(pc0 + 1, int(round((s.col + 1) * planner_grid_10m.cols / float(cols))))
+            obs_frac_val = round(
+                float(np.mean(planner_grid_10m.blocked_mask[pr0:pr1, pc0:pc1])),
+                4,
+            )
 
         pf = prefilter_cell(
             lon=s.lon,
@@ -481,6 +509,27 @@ def _classify_grid_from_samples(
                     source_id=DTM_SOURCE_ID,
                 ),
                 rf_comms_verdict=rf_v,
+                partial_topographic_refuge=refuge_est.partial_topographic_refuge,
+                partial_refuge_gcr_reduction_pct=Quantity(
+                    value=round(
+                        0.5
+                        * (
+                            refuge_est.expected_gcr_reduction_min_pct
+                            + refuge_est.expected_gcr_reduction_max_pct
+                        ),
+                        3,
+                    ),
+                    unit="%",
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                    note="MSL RAD GCR empirical band (Ehresmann 2021; Guo 2021)",
+                ),
+                obstacle_mask_fraction=Quantity(
+                    value=obs_frac_val,
+                    unit="ratio",
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                ),
             )
         )
 
@@ -497,6 +546,8 @@ def _classify_grid_from_samples(
         rows=rows,
         cols=cols,
         cell_size_m=cells[0].size_m if cells else 100.0,
+        planner_grid_file="planner_grid_10m.png" if planner_grid_10m is not None else None,
+        obstacles_file="obstacles.geojson" if planner_grid_10m is not None else None,
         external_layers_status=external_layers_status,
         cells=cells,
     )
@@ -508,6 +559,7 @@ def _build_engine_eva_route(
     raw_traverse: dict[str, Any],
     astar_res: AStarRouteResult,
     stops: tuple[Waypoint, Waypoint, Waypoint],
+    m2_plan_res: PlannedSegmentPlanResult | None = None,
 ) -> tuple[EvaRoute, dict[str, Any]]:
     """Build `route.geojson` from the 2-agent A* corridor and compute G3 plan metrics."""
     traverse_coords: list[tuple[float, float]] = []
@@ -722,11 +774,72 @@ def _build_engine_eva_route(
         ),
     ]
 
+    extra_eva_features: list[EvaRouteFeature] = []
+    if m2_plan_res is not None and m2_plan_res.reachable and len(m2_plan_res.coordinates) >= 2:
+        m2_max_slope = round(
+            max(m2_plan_res.max_longitudinal_slope_deg, m2_plan_res.max_cross_slope_deg),
+            2,
+        )
+        m2_roundtrip_h = round((2.0 * m2_plan_res.pure_walking_time_s) / 3600.0 + 1.5, 2)
+        m2_rad_msv = round(0.67 * (m2_roundtrip_h / 24.0), 4)
+        extra_eva_features.append(
+            EvaRouteFeature(
+                geometry=GeoJsonLineGeometry(coordinates=m2_plan_res.coordinates),
+                properties=EvaRouteProperties(
+                    feature_id="ROUTE-EVA-M2-OBSTACLE-AWARE",
+                    segment_type="DERIVED_OBSTACLE_AWARE_EVA",
+                    title=(
+                        "Obstacle-Aware EVA Corridor Avoiding Scarps & >= 4 m Formations "
+                        "(10 m HiRISE DTM Grid)"
+                    ),
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                    verdict=m2_plan_res.verdict,
+                    distance_m=Quantity(
+                        value=m2_plan_res.total_distance_m,
+                        unit="m",
+                        tag="DERIVED",
+                        source_id=DTM_SOURCE_ID,
+                    ),
+                    max_slope_deg=Quantity(
+                        value=m2_max_slope,
+                        unit="deg",
+                        tag="DERIVED",
+                        source_id=DTM_SOURCE_ID,
+                    ),
+                    estimated_duration_h=Quantity(
+                        value=m2_roundtrip_h,
+                        unit="h",
+                        tag="DERIVED",
+                        source_id=DTM_SOURCE_ID,
+                    ),
+                    estimated_radiation_msv=Quantity(
+                        value=m2_rad_msv,
+                        unit="mSv",
+                        tag="SIMULATED",
+                        source_id="SRC-RAD-GALE",
+                        note="proxy Curiosity RAD, Gale",
+                    ),
+                    geologic_unit=(
+                        "Nle Delta Margin Contact -> NHjf1/NHjf2 Western Delta Fan (SIM 3464)"
+                    ),
+                    notes=(
+                        f"Phase 4 M2 obstacle-avoiding route on 200x190 10m DTM grid: "
+                        f"distance={m2_plan_res.total_distance_m:.1f} m, max longitudinal="
+                        f"{m2_plan_res.max_longitudinal_slope_deg:.2f} deg, max cross-slope="
+                        f"{m2_plan_res.max_cross_slope_deg:.2f} deg, cost-guard rejections="
+                        f"{m2_plan_res.string_pull_audit.rejected_by_cost_guard_count}."
+                    ),
+                ),
+            )
+        )
+
     route = EvaRoute(
         site_id="jezero",
         features=[
             measured_traverse_feature,
             simulated_eva_feature,
+            *extra_eva_features,
             *science_stop_features,
             *benchmark_features,
         ],
@@ -814,6 +927,19 @@ async def run_engine_pipeline_async(
     stops = _select_delta_science_stops(waypoints, dtm)
     origin_lon, origin_lat = stops[0].properties.lon, stops[0].properties.lat
 
+    win_bbox = (
+        dtm.window.min_lon,
+        dtm.window.min_lat,
+        dtm.window.max_lon,
+        dtm.window.max_lat,
+    )
+    planner_grid_10m, obstacles_geojson = build_planner_grid_10m_from_window(
+        dtm.elevation_m,
+        dtm.transform_x_min_m,
+        dtm.transform_y_max_m,
+        win_bbox,
+    )
+
     samples = await compute_multiscale_grid_async(dtm, rows=rows, cols=cols, max_concurrency=8)
     overlay_tmp_path = pack_dir / "hazard_overlay.png"
     hazard_grid, mean_cell_i = _classify_grid_from_samples(
@@ -827,6 +953,7 @@ async def run_engine_pipeline_async(
         overlay_tmp_path,
         funnel_params=funnel_params,
         retained_carriers=retained_carriers,
+        planner_grid_10m=planner_grid_10m,
     )
     val_report = build_validation_report(dtm, waypoints)
     scale_coherence_deg = round(
@@ -898,7 +1025,18 @@ async def run_engine_pipeline_async(
         raise RuntimeError(f"Pipeline halted at G2_SEARCH: {v_g2.reasons}")
 
     # ── STAGE 4: PLAN + Gate G3 + PACK ──────────────────────────────────────
-    route, g3_ctx = _build_engine_eva_route(waypoints, raw_traverse, astar_res, stops)
+    m2_plan_res = plan_obstacle_aware_route(
+        planner_grid_10m,
+        list(stop_lonlats),
+        heuristic_weight=1.0,
+    )
+    route, g3_ctx = _build_engine_eva_route(
+        waypoints,
+        raw_traverse,
+        astar_res,
+        stops,
+        m2_plan_res=m2_plan_res,
+    )
 
     async def _refine_g3(attempt: int, ctx: dict[str, Any]) -> dict[str, Any]:
         return dict(ctx)
@@ -921,6 +1059,8 @@ async def run_engine_pipeline_async(
     wp_out = pack_dir / "waypoints.geojson"
     route_out = pack_dir / "route.geojson"
     hazard_out = pack_dir / "hazard_grid.json"
+    planner_grid_out = pack_dir / "planner_grid_10m.png"
+    obstacles_out = pack_dir / "obstacles.geojson"
     constraints_out = pack_dir / "eva_constraints.json"
     val_out = pack_dir / "validation_report.json"
     gate_log_out = pack_dir / "gate_log.jsonl"
@@ -949,6 +1089,8 @@ async def run_engine_pipeline_async(
     _write_deterministic_json(wp_out, waypoints.model_dump(mode="json"))
     _write_deterministic_json(route_out, route.model_dump(mode="json"))
     _write_deterministic_json(hazard_out, hazard_grid.model_dump(mode="json", exclude_none=True))
+    save_planner_grid_10m_png(planner_grid_10m, planner_grid_out)
+    _write_deterministic_json(obstacles_out, obstacles_geojson)
     _write_deterministic_json(constraints_out, constraints.model_dump(mode="json"))
     _write_deterministic_json(val_out, val_report.model_dump(mode="json"))
 
@@ -965,6 +1107,8 @@ async def run_engine_pipeline_async(
         _compute_file_digest(route_out),
         _compute_file_digest(hazard_out),
         _compute_file_digest(overlay_tmp_path),
+        _compute_file_digest(planner_grid_out),
+        _compute_file_digest(obstacles_out),
         _compute_file_digest(constraints_out),
         _compute_file_digest(val_out),
         _compute_file_digest(gate_log_out),

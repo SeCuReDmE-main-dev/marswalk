@@ -19,6 +19,7 @@ import logging
 import math
 import os
 import re
+from typing import Literal
 
 from pydantic import ConfigDict, Field
 
@@ -31,13 +32,16 @@ from marswalk.contracts.models import (
 )
 from marswalk.engine.eva_human_rf import (
     bullington_nu_max_profile,
+    evaluate_route_rf_fresnel_bullington,
     fresnel_j_db,
     metabolic_rate_w,
     rf_verdict,
     walkback_o2_margin_min,
     walkback_return_h,
 )
+from marswalk.engine.m20_raw_images_m5 import fetch_or_load_m20_sol_cameras
 from marswalk.engine.meda_envelope import evaluate_dust_tau_verdict
+from marswalk.engine.planner_m2 import plan_obstacle_aware_route
 from marswalk.middleware.build_pack import spherical_distance_m
 from marswalk.middleware.pack_loader import LoadedSitePack
 
@@ -188,6 +192,95 @@ class RouteEvaluationResult(FrozenContractModel):
     walkback_o2_margin_min: Quantity | None = Field(default=None)
     rf_diffraction_loss_db: Quantity | None = Field(default=None)
     rf_comms_verdict: VerdictLiteral | None = Field(default=None)
+
+
+class PlanRouteRequest(FrozenContractModel):
+    """Request payload for `POST /v1/sites/{site_id}/plan-route` (`M2`)."""
+
+    waypoints: list[tuple[float, float]] = Field(
+        ...,
+        min_length=2,
+        max_length=32,
+        description="Ordered [lon, lat] stops on the Mars sphere to connect avoiding scarps.",
+    )
+    heuristic_weight: float = Field(
+        default=1.0,
+        ge=1.0,
+        le=3.0,
+        description="A* heuristic weight (1.0 = strictly optimal, >1.0 = bounded-suboptimal).",
+    )
+    spe_alert: bool = Field(
+        default=False,
+        description="Solar Particle Event (SPE) switch: forces NO_GO + fastest pure-time egress.",
+    )
+    dust_tau_880nm: float = Field(default=0.45, ge=0.0, le=10.0)
+    payload_kg: float = Field(default=0.0, ge=0.0, le=120.0)
+    rf_link_margin_db: float = Field(default=6.0, ge=0.0, le=40.0)
+
+
+class PlanRouteStringPullSummary(FrozenContractModel):
+    """Measured string-pulling audit counters returned by `/plan-route` (`H2`)."""
+
+    candidates_tested: int
+    accepted_count: int
+    rejected_by_obstacle_count: int
+    rejected_by_cost_guard_count: int
+    raw_cost_s: float
+    smoothed_cost_s: float
+
+
+class PlanRouteResult(FrozenContractModel):
+    """Response payload for `POST /v1/sites/{site_id}/plan-route` (zero camera fields)."""
+
+    site_id: str
+    reachable: bool
+    coordinates: list[tuple[float, float]]
+    total_distance_m: Quantity
+    walkback_distance_m: Quantity
+    walkback_within_limit: bool
+    pure_walking_time_s: Quantity
+    max_longitudinal_slope_deg: Quantity
+    max_cross_slope_deg: Quantity
+    cells_expanded: int
+    optimality_guarantee: str
+    verdict: VerdictLiteral
+    reasons: list[str]
+    string_pull_audit: PlanRouteStringPullSummary
+    metabolic_rate_w: Quantity
+    walkback_o2_margin_min: Quantity
+    rf_bullington_nu: Quantity
+    rf_min_clearance_over_f1: Quantity
+    rf_diffraction_loss_db: Quantity
+    rf_comms_verdict: VerdictLiteral
+
+
+class RoverCameraItem(FrozenContractModel):
+    """Single Mars 2020 raw camera frame returned by `GET .../waypoints/{sol}/cameras` (`M5`)."""
+
+    image_id: str
+    sol: int
+    site: int | None = None
+    drive: int | None = None
+    instrument: str
+    image_url: str
+    mast_azimuth_deg: float | None = None
+    mast_elevation_deg: float | None = None
+    attitude_quaternion: str | None = None
+    camera_model_type: str | None = None
+    azimuth_delta_deg: float | None = None
+
+
+class RoverCamerasResponse(FrozenContractModel):
+    """Paginated response for `GET /v1/sites/{site_id}/waypoints/{sol}/cameras` (`M5`)."""
+
+    site_id: str
+    sol: int
+    source_status: Literal["cached", "live", "offline_unavailable"]
+    cache_sha256: str | None = None
+    total_matching: int
+    page: int
+    page_size: int
+    items: list[RoverCameraItem]
 
 
 class PackQueryService:
@@ -718,4 +811,337 @@ class PackQueryService:
                 value=rf_loss_db, unit="dB", tag="DERIVED", source_id="SRC-NASA-XEVA"
             ),
             rf_comms_verdict=rf_v,
+        )
+
+    def _build_failsafe_plan_result(self, reason: str) -> PlanRouteResult:
+        """Build a valid HTTP 200 NO_GO `/plan-route` response on safe mode or engine error."""
+        reasons = [reason, *self._unavailable_layer_reasons()]
+        return PlanRouteResult(
+            site_id=self.pack.site_id,
+            reachable=False,
+            coordinates=[],
+            total_distance_m=Quantity(
+                value=0.0, unit="m", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            walkback_distance_m=Quantity(
+                value=0.0, unit="m", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            walkback_within_limit=False,
+            pure_walking_time_s=Quantity(
+                value=0.0, unit="s", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            max_longitudinal_slope_deg=Quantity(
+                value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            max_cross_slope_deg=Quantity(
+                value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+            ),
+            cells_expanded=0,
+            optimality_guarantee="failsafe",
+            verdict="NO_GO",
+            reasons=reasons,
+            string_pull_audit=PlanRouteStringPullSummary(
+                candidates_tested=0,
+                accepted_count=0,
+                rejected_by_obstacle_count=0,
+                rejected_by_cost_guard_count=0,
+                raw_cost_s=0.0,
+                smoothed_cost_s=0.0,
+            ),
+            metabolic_rate_w=Quantity(
+                value=0.0, unit="W", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            walkback_o2_margin_min=Quantity(
+                value=0.0, unit="min", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_bullington_nu=Quantity(
+                value=0.0, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_min_clearance_over_f1=Quantity(
+                value=0.0, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_diffraction_loss_db=Quantity(
+                value=0.0, unit="dB", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_comms_verdict="NO_GO",
+        )
+
+    def plan_route(self, req: PlanRouteRequest) -> PlanRouteResult:
+        """Plan an obstacle-avoiding route on `planner_grid_10m` with NO_GO fail-safe envelope."""
+        if is_safe_mode_enabled():
+            return self._build_failsafe_plan_result(
+                reason="SAFE_MODE: route planning disabled by operator"
+            )
+        try:
+            return self._plan_route_impl(req)
+        except Exception:
+            logger.exception("FAIL_SAFE caught unexpected error during plan_route")
+            return self._build_failsafe_plan_result(reason="FAIL_SAFE: engine error")
+
+    def _plan_route_impl(self, req: PlanRouteRequest) -> PlanRouteResult:
+        """Internal obstacle-aware A* + string-pulling route planner (`M2` + `M4` + `M6`)."""
+        grid = self.pack.planner_grid_10m
+        if grid is None:
+            return self._build_failsafe_plan_result(
+                reason="FAIL_SAFE: missing planner_grid_10m in site pack"
+            )
+
+        planned = plan_obstacle_aware_route(
+            grid,
+            req.waypoints,
+            heuristic_weight=req.heuristic_weight,
+            spe_alert=req.spe_alert,
+            enable_string_pull=True,
+        )
+        audit_summary = PlanRouteStringPullSummary(
+            candidates_tested=planned.string_pull_audit.candidates_tested,
+            accepted_count=planned.string_pull_audit.accepted_count,
+            rejected_by_obstacle_count=planned.string_pull_audit.rejected_by_obstacle_count,
+            rejected_by_cost_guard_count=planned.string_pull_audit.rejected_by_cost_guard_count,
+            raw_cost_s=planned.string_pull_audit.raw_cost_s,
+            smoothed_cost_s=planned.string_pull_audit.smoothed_cost_s,
+        )
+
+        if not planned.reachable or len(planned.coordinates) < 2:
+            reasons = [*planned.reasons, *self._unavailable_layer_reasons()]
+            return PlanRouteResult(
+                site_id=self.pack.site_id,
+                reachable=False,
+                coordinates=[],
+                total_distance_m=Quantity(
+                    value=0.0, unit="m", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                ),
+                walkback_distance_m=Quantity(
+                    value=0.0, unit="m", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                ),
+                walkback_within_limit=False,
+                pure_walking_time_s=Quantity(
+                    value=0.0, unit="s", tag="DERIVED", source_id="SRC-NASA-XEVA"
+                ),
+                max_longitudinal_slope_deg=Quantity(
+                    value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                ),
+                max_cross_slope_deg=Quantity(
+                    value=0.0, unit="deg", tag="DERIVED", source_id="SRC-USGS-HIRISE-DTM-1M"
+                ),
+                cells_expanded=planned.cells_expanded,
+                optimality_guarantee=planned.optimality_guarantee,
+                verdict="NO_GO",
+                reasons=reasons,
+                string_pull_audit=audit_summary,
+                metabolic_rate_w=Quantity(
+                    value=0.0, unit="W", tag="DERIVED", source_id="SRC-NASA-XEVA"
+                ),
+                walkback_o2_margin_min=Quantity(
+                    value=0.0, unit="min", tag="DERIVED", source_id="SRC-NASA-XEVA"
+                ),
+                rf_bullington_nu=Quantity(
+                    value=0.0, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
+                ),
+                rf_min_clearance_over_f1=Quantity(
+                    value=0.0, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
+                ),
+                rf_diffraction_loss_db=Quantity(
+                    value=0.0, unit="dB", tag="DERIVED", source_id="SRC-NASA-XEVA"
+                ),
+                rf_comms_verdict="NO_GO",
+            )
+
+        origin_lon, origin_lat = req.waypoints[0]
+        max_walkback_m = max(
+            spherical_distance_m(origin_lon, origin_lat, lon_pt, lat_pt)
+            for lon_pt, lat_pt in planned.coordinates
+        )
+        max_walkback_m = round(max_walkback_m, 2)
+        walkback_limit_m = self.pack.constraints.walkback_max_km.value * 1000.0
+        walkback_ok = max_walkback_m <= walkback_limit_m
+
+        grade_est = math.tan(math.radians(planned.max_longitudinal_slope_deg))
+        met_w = round(metabolic_rate_w(grade=grade_est, payload_kg=req.payload_kg), 1)
+        wb_ret_h = round(walkback_return_h(distance_m=max_walkback_m, grade=grade_est), 3)
+        wb_o2_min = round(
+            walkback_o2_margin_min(
+                distance_m=max_walkback_m,
+                grade=grade_est,
+                payload_kg=req.payload_kg,
+            ),
+            1,
+        )
+
+        # Unified ITU-R P.526-16 Fresnel/Bullington RF from rover mast [0] to suit along path (`M6`)
+        worst_rf = None
+        for lon_pt, lat_pt in planned.coordinates:
+            d_los_m = spherical_distance_m(origin_lon, origin_lat, lon_pt, lat_pt)
+            if d_los_m < 5.0:
+                continue
+            los_profile = self._sample_grid_los_profile(
+                origin_lon, origin_lat, lon_pt, lat_pt, dist_m=d_los_m, step_m=10.0
+            )
+            rf_eval = evaluate_route_rf_fresnel_bullington(
+                los_profile,
+                d_los_m,
+                link_margin_db=req.rf_link_margin_db,
+            )
+            if worst_rf is None or rf_eval.nu_max > worst_rf.nu_max:
+                worst_rf = rf_eval
+
+        if worst_rf is None:
+            nu_max = -0.85
+            min_c_over_f1 = round(0.85 / math.sqrt(2.0), 4)
+            rf_loss_db = 0.0
+            rf_v: VerdictLiteral = "GO"
+        else:
+            nu_max = worst_rf.nu_max
+            min_c_over_f1 = worst_rf.min_clearance_over_f1
+            rf_loss_db = worst_rf.diffraction_loss_db
+            rf_v = worst_rf.verdict
+
+        dust_v = evaluate_dust_tau_verdict(req.dust_tau_880nm)
+        duration_h = planned.pure_walking_time_s / 3600.0
+
+        verdict: VerdictLiteral = planned.verdict
+        reasons: list[str] = list(planned.reasons)
+
+        if dust_v == "NO_GO":
+            verdict = "NO_GO"
+            reasons.append(
+                f"Atmospheric dust optical depth (tau_880nm={req.dust_tau_880nm:.2f} > 1.00) "
+                "exceeds MEDA EVA visibility and thermal safety threshold."
+            )
+        if not walkback_ok or wb_ret_h > 1.0:
+            verdict = "NO_GO"
+            reasons.append(
+                f"Walkback distance ({max_walkback_m:.0f} m, return walk {wb_ret_h:.2f} h) "
+                "exceeds NASA xEVA 2,000 m / 1.0 h contingency return limit."
+            )
+        if wb_o2_min < 0.0:
+            verdict = "NO_GO"
+            reasons.append(
+                f"Primary O2 reserve exhausted ({wb_o2_min:.1f} min margin after walkback "
+                "+ 30 min dust decontamination ingress)."
+            )
+        if rf_v == "NO_GO":
+            verdict = "NO_GO"
+            reasons.append(
+                f"UHF 414.2 MHz diffraction loss ({rf_loss_db:.2f} dB) exceeds "
+                f"link margin ({req.rf_link_margin_db:.1f} dB)."
+            )
+        if duration_h > self.pack.constraints.eva_duration_max_h.value:
+            verdict = "NO_GO"
+            reasons.append(
+                f"Estimated EVA duration ({duration_h:.2f} h) exceeds 8.0 h xEVA ceiling."
+            )
+
+        if verdict != "NO_GO" and (dust_v == "CAUTION" or rf_v == "CAUTION" or met_w >= 550.0):
+            verdict = "CAUTION"
+            reasons.append(
+                f"Elevated dust/RF/metabolic load along planned route "
+                f"(tau={req.dust_tau_880nm:.2f}, RF={rf_v}, M={met_w:.0f} W)."
+            )
+
+        reasons.extend(self._unavailable_layer_reasons())
+
+        return PlanRouteResult(
+            site_id=self.pack.site_id,
+            reachable=True,
+            coordinates=planned.coordinates,
+            total_distance_m=Quantity(
+                value=planned.total_distance_m,
+                unit="m",
+                tag="DERIVED",
+                source_id="SRC-USGS-HIRISE-DTM-1M",
+            ),
+            walkback_distance_m=Quantity(
+                value=max_walkback_m,
+                unit="m",
+                tag="DERIVED",
+                source_id="SRC-USGS-HIRISE-DTM-1M",
+            ),
+            walkback_within_limit=walkback_ok,
+            pure_walking_time_s=Quantity(
+                value=planned.pure_walking_time_s,
+                unit="s",
+                tag="DERIVED",
+                source_id="SRC-NASA-XEVA",
+            ),
+            max_longitudinal_slope_deg=Quantity(
+                value=planned.max_longitudinal_slope_deg,
+                unit="deg",
+                tag="DERIVED",
+                source_id="SRC-USGS-HIRISE-DTM-1M",
+            ),
+            max_cross_slope_deg=Quantity(
+                value=planned.max_cross_slope_deg,
+                unit="deg",
+                tag="DERIVED",
+                source_id="SRC-USGS-HIRISE-DTM-1M",
+            ),
+            cells_expanded=planned.cells_expanded,
+            optimality_guarantee=planned.optimality_guarantee,
+            verdict=verdict,
+            reasons=reasons,
+            string_pull_audit=audit_summary,
+            metabolic_rate_w=Quantity(
+                value=met_w, unit="W", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            walkback_o2_margin_min=Quantity(
+                value=wb_o2_min, unit="min", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_bullington_nu=Quantity(
+                value=nu_max, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_min_clearance_over_f1=Quantity(
+                value=min_c_over_f1, unit="1", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_diffraction_loss_db=Quantity(
+                value=rf_loss_db, unit="dB", tag="DERIVED", source_id="SRC-NASA-XEVA"
+            ),
+            rf_comms_verdict=rf_v,
+        )
+
+    def get_waypoint_cameras(
+        self,
+        sol: int,
+        *,
+        azimuth_deg: float | None = None,
+        max_azimuth_delta_deg: float = 90.0,
+        page: int = 1,
+        page_size: int = 12,
+        allow_network: bool = False,
+    ) -> RoverCamerasResponse:
+        """Query Mars 2020 `raw_images` frames for `sol` via dedicated `M5` connector."""
+        datalake_dir = self.pack.pack_dir.parents[2] / "datalake"
+        res = fetch_or_load_m20_sol_cameras(
+            datalake_dir=datalake_dir,
+            sol=sol,
+            target_azimuth_deg=azimuth_deg,
+            max_azimuth_delta_deg=max_azimuth_delta_deg,
+            page=page,
+            page_size=page_size,
+            allow_network=allow_network,
+        )
+        return RoverCamerasResponse(
+            site_id=self.pack.site_id,
+            sol=res.sol,
+            source_status=res.source_status,
+            cache_sha256=res.cache_sha256,
+            total_matching=res.total_matching,
+            page=res.page,
+            page_size=res.page_size,
+            items=[
+                RoverCameraItem(
+                    image_id=it.image_id,
+                    sol=it.sol,
+                    site=it.site,
+                    drive=it.drive,
+                    instrument=it.instrument,
+                    image_url=it.image_url,
+                    mast_azimuth_deg=it.mast_azimuth_deg,
+                    mast_elevation_deg=it.mast_elevation_deg,
+                    attitude_quaternion=it.attitude_quaternion,
+                    camera_model_type=it.camera_model_type,
+                    azimuth_delta_deg=it.azimuth_delta_deg,
+                )
+                for it in res.items
+            ],
         )

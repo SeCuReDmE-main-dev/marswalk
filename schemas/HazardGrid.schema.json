@@ -375,6 +375,40 @@
           ],
           "default": null,
           "title": "Rf Comms Verdict"
+        },
+        "partial_topographic_refuge": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Partial Topographic Refuge"
+        },
+        "partial_refuge_gcr_reduction_pct": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "obstacle_mask_fraction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -542,6 +576,30 @@
       "default": "hazard_overlay.png",
       "title": "Overlay File",
       "type": "string"
+    },
+    "planner_grid_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Planner Grid File"
+    },
+    "obstacles_file": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Obstacles File"
     },
     "external_layers_status": {
       "anyOf": [

@@ -303,6 +303,9 @@ class HazardCell(FrozenContractModel):
     rf_bullington_nu: Quantity | None = Field(default=None)
     rf_diffraction_loss_db: Quantity | None = Field(default=None)
     rf_comms_verdict: VerdictLiteral | None = Field(default=None)
+    partial_topographic_refuge: bool | None = Field(default=None)
+    partial_refuge_gcr_reduction_pct: Quantity | None = Field(default=None)
+    obstacle_mask_fraction: Quantity | None = Field(default=None)
 
     @field_validator("slope_deg_by_baseline")
     @classmethod
@@ -327,6 +330,8 @@ class HazardGrid(FrozenContractModel):
     cell_size_m: float = Field(..., gt=0.0)
     baselines_m: tuple[int, int, int, int] = Field(default=(1, 4, 16, 64))
     overlay_file: str = Field(default="hazard_overlay.png")
+    planner_grid_file: str | None = Field(default=None)
+    obstacles_file: str | None = Field(default=None)
     external_layers_status: dict[str, dict[str, str | float | bool]] | None = Field(default=None)
     cells: list[HazardCell] = Field(..., min_length=1)
 
@@ -365,6 +370,7 @@ class EvaRouteProperties(FrozenContractModel):
     segment_type: Literal[
         "MEASURED_ROVER_TRAVERSE",
         "SIMULATED_ASTRONAUT_EVA",
+        "DERIVED_OBSTACLE_AWARE_EVA",
         "SCIENCE_STOP",
         "BENCHMARK",
     ]
@@ -398,3 +404,49 @@ class EvaRoute(FrozenContractModel):
     contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
     site_id: str = Field(..., min_length=2)
     features: list[EvaRouteFeature] = Field(..., min_length=2)
+
+
+class GeoJsonPolygonGeometry(FrozenContractModel):
+    """GeoJSON Polygon geometry for mapped obstacle clusters (`obstacles.geojson`)."""
+
+    type: Literal["Polygon"] = "Polygon"
+    coordinates: list[list[tuple[float, float]]] = Field(..., min_length=1)
+
+
+class ObstaclePolygonProperties(FrozenContractModel):
+    """Metadata and DERIVED provenance for an obstacle polygon (`M1`)."""
+
+    obstacle_id: str = Field(..., min_length=3)
+    obstacle_type: Literal["scarp", "large_rock_formation"]
+    tag: ProvenanceTag
+    source_id: str = Field(..., min_length=3)
+    footprint_area_m2: float = Field(..., ge=0.0)
+    internal_relief_m: float = Field(..., ge=0.0)
+    physical_clearance_m: float = Field(..., ge=0.0)
+    resolution_note: str = Field(..., min_length=10)
+
+
+class ObstaclePolygonFeature(FrozenContractModel):
+    """Single GeoJSON Feature in `obstacles.geojson`."""
+
+    type: Literal["Feature"] = "Feature"
+    geometry: GeoJsonPolygonGeometry
+    properties: ObstaclePolygonProperties
+
+
+class OnoRoverCfaReference(FrozenContractModel):
+    """Ono et al. (2016) rover CFA reference metadata stored alongside `obstacles.geojson`."""
+
+    ok_pct: float = Field(..., ge=0.0, le=100.0)
+    caution_pct: float = Field(..., ge=0.0, le=100.0)
+    golombek_1p5m_at_15pct: float = Field(..., ge=0.0, le=1.0)
+
+
+class ObstacleFeatureCollection(FrozenContractModel):
+    """GeoJSON FeatureCollection of DTM-derived scarps & >= 4 m formations (`obstacles.geojson`)."""
+
+    type: Literal["FeatureCollection"] = "FeatureCollection"
+    contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
+    site_id: str = Field(..., min_length=2)
+    ono_rover_cfa_reference_pct: OnoRoverCfaReference
+    features: list[ObstaclePolygonFeature] = Field(default_factory=list)

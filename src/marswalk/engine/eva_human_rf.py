@@ -20,6 +20,7 @@ Implements:
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -237,3 +238,81 @@ def walkback_o2_margin_min(
     remaining_g = primary_o2_budget_g - used_g
     burn_rate_g_per_min = o2_consumption_g_per_h(walkback_w) / 60.0
     return remaining_g / max(1e-6, burn_rate_g_per_min)
+
+
+@dataclass(frozen=True)
+class RouteRfFresnelAssessment:
+    """Unified ITU-R P.526-16 Fresnel/Bullington UHF assessment along a route (`M6`)."""
+
+    frequency_hz: float
+    wavelength_m: float
+    h_tx_rover_mast_m: float
+    h_rx_suit_antenna_m: float
+    distance_m: float
+    nu_max: float
+    min_clearance_over_f1: float
+    first_fresnel_radius_mid_m: float
+    diffraction_loss_db: float
+    verdict: VerdictLiteral
+
+
+def first_fresnel_radius_m(
+    d1_m: float,
+    d2_m: float,
+    wavelength_m: float = UHF_WAVELENGTH_M,
+) -> float:
+    """Compute first Fresnel zone radius `F1 = sqrt(lambda * d1 * d2 / (d1 + d2))` in metres."""
+    a = max(0.0, float(d1_m))
+    b = max(0.0, float(d2_m))
+    if a <= 0.0 or b <= 0.0:
+        return 0.0
+    return math.sqrt(float(wavelength_m) * a * b / (a + b))
+
+
+def evaluate_route_rf_fresnel_bullington(
+    elev_profile_m: np.ndarray | list[float],
+    distance_m: float,
+    *,
+    link_margin_db: float = 6.0,
+    fade_margin_db: float = 1.0,
+    h_tx_m: float = ROVER_MAST_HEIGHT_M,
+    h_rx_m: float = SUIT_ANTENNA_HEIGHT_M,
+    wavelength_m: float = UHF_WAVELENGTH_M,
+    sphere_radius_m: float = MARS_SPHERE_RADIUS_M,
+) -> RouteRfFresnelAssessment:
+    """Unify Fresnel clearance ratio `c / F1` with `bullington_nu_max_profile` (`M6`).
+
+    Exact identity: `nu = -sqrt(2) * (c / F1)` where `c = z_LOS - (z_terrain + bulge)`.
+    In particular, 60% first-Fresnel clearance (`c / F1 = +0.60`) equals
+    `nu = -0.60 * sqrt(2) = -0.8485 <= -0.78`, yielding `J(nu) = 0.0 dB` diffraction loss.
+    Preserves `h_tx_m = 3.0 m` (rover mast at origin `[0]`) and `h_rx_m = 1.8 m` (suit `[-1]`).
+    """
+    dist = max(0.0, float(distance_m))
+    nu_val = bullington_nu_max_profile(
+        elev_profile_m,
+        dist,
+        h_tx_m=h_tx_m,
+        h_rx_m=h_rx_m,
+        wavelength_m=wavelength_m,
+        sphere_radius_m=sphere_radius_m,
+    )
+    min_c_over_f1 = -nu_val / math.sqrt(2.0)
+    f1_mid = first_fresnel_radius_m(0.5 * dist, 0.5 * dist, wavelength_m=wavelength_m)
+    loss_db = fresnel_j_db(nu_val)
+    verdict = rf_verdict(
+        nu_max=nu_val,
+        link_margin_db=link_margin_db,
+        fade_margin_db=fade_margin_db,
+    )
+    return RouteRfFresnelAssessment(
+        frequency_hz=UHF_FREQ_HZ,
+        wavelength_m=round(wavelength_m, 6),
+        h_tx_rover_mast_m=h_tx_m,
+        h_rx_suit_antenna_m=h_rx_m,
+        distance_m=round(dist, 2),
+        nu_max=round(nu_val, 6),
+        min_clearance_over_f1=round(min_c_over_f1, 6),
+        first_fresnel_radius_mid_m=round(f1_mid, 4),
+        diffraction_loss_db=round(loss_db, 4),
+        verdict=verdict,
+    )

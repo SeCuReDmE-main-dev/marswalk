@@ -11,10 +11,12 @@ from marswalk.contracts.models import (
     EvaConstraints,
     EvaRoute,
     HazardGrid,
+    ObstacleFeatureCollection,
     Quantity,
     SiteManifest,
     WaypointFeatureCollection,
 )
+from marswalk.engine.obstacles_m1 import PlannerGrid10m, load_planner_grid_10m_png
 
 
 class PackIntegrityError(RuntimeError):
@@ -32,6 +34,8 @@ class LoadedSitePack:
     route: EvaRoute
     hazards: HazardGrid
     constraints: EvaConstraints
+    obstacles: ObstacleFeatureCollection | None = None
+    planner_grid_10m: PlannerGrid10m | None = None
 
 
 def _verify_quantities_sources(
@@ -123,6 +127,31 @@ def load_and_verify_pack(repo_root: Path, site_id: str = "jezero") -> LoadedSite
     _verify_quantities_sources(hazards, valid_sources, verified_inputs, "hazards")
     _verify_quantities_sources(constraints, valid_sources, verified_inputs, "constraints")
 
+    file_paths_in_manifest = {f.path for f in manifest.files}
+    obstacles: ObstacleFeatureCollection | None = None
+    if "obstacles.geojson" in file_paths_in_manifest:
+        obstacles = ObstacleFeatureCollection.model_validate(
+            json.loads((pack_dir / "obstacles.geojson").read_text(encoding="utf-8"))
+        )
+        for idx, feat in enumerate(obstacles.features):
+            p = feat.properties
+            if p.source_id not in valid_sources:
+                raise PackIntegrityError(
+                    f"obstacles.features[{idx}]: unknown source_id '{p.source_id}'"
+                )
+            if p.tag == "DERIVED" and p.source_id not in verified_inputs:
+                raise PackIntegrityError(
+                    f"obstacles.features[{idx}]: DERIVED source_id '{p.source_id}' "
+                    "missing from manifest.inputs[]"
+                )
+
+    planner_grid: PlannerGrid10m | None = None
+    if "planner_grid_10m.png" in file_paths_in_manifest:
+        planner_grid = load_planner_grid_10m_png(
+            pack_dir / "planner_grid_10m.png",
+            bbox=hazards.bbox,
+        )
+
     return LoadedSitePack(
         site_id=site_id,
         pack_dir=pack_dir,
@@ -131,4 +160,6 @@ def load_and_verify_pack(repo_root: Path, site_id: str = "jezero") -> LoadedSite
         route=route,
         hazards=hazards,
         constraints=constraints,
+        obstacles=obstacles,
+        planner_grid_10m=planner_grid,
     )

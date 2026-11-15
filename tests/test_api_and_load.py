@@ -34,7 +34,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
 
     r_route = client.get("/v1/sites/jezero/route")
     assert r_route.status_code == 200
-    assert len(r_route.json()["features"]) == 7
+    assert len(r_route.json()["features"]) == 8
 
     r_haz = client.get("/v1/sites/jezero/hazards")
     assert r_haz.status_code == 200

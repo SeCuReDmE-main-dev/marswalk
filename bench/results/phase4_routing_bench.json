@@ -1,0 +1,96 @@
+{
+  "benchmark": "phase4_obstacle_aware_routing",
+  "tag": "DERIVED",
+  "source_id": "SRC-USGS-HIRISE-DTM-1M",
+  "dtm_sha256": "2ab1a8451ee910012f53e7be9264e3639b07bf8fea75456edbbbfc7fb0771bb1",
+  "machine_info": {
+    "system": "Windows",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "python_version": "3.10.11"
+  },
+  "grids": [
+    {
+      "grid_id": "grid_10m_200x190",
+      "rows": 200,
+      "cols": 190,
+      "step_x_ground_m": 9.98435,
+      "step_y_ground_m": 9.999938,
+      "blocked_cells": 2182,
+      "build_grid_ms": 5345.2,
+      "scenarios": [
+        {
+          "scenario": "worst_case_se_to_nw_across_scarp",
+          "reachable": true,
+          "cells_expanded": 35332,
+          "total_cells": 38000,
+          "expansion_fraction": 0.9298,
+          "median_ms": 1566.39,
+          "p95_ms": 1680.21,
+          "total_distance_m": 2761.31,
+          "raw_cost_s": 8682.264759,
+          "smoothed_cost_s": 8632.638559,
+          "rejected_by_obstacle_count": 425,
+          "rejected_by_cost_guard_count": 2560,
+          "optimality_guarantee": "exact_admissible"
+        },
+        {
+          "scenario": "cross_diagonal_sw_to_ne",
+          "reachable": true,
+          "cells_expanded": 34033,
+          "total_cells": 38000,
+          "expansion_fraction": 0.8956,
+          "median_ms": 1301.09,
+          "p95_ms": 1355.62,
+          "total_distance_m": 3100.1,
+          "raw_cost_s": 8295.757977,
+          "smoothed_cost_s": 8245.01472,
+          "rejected_by_obstacle_count": 265,
+          "rejected_by_cost_guard_count": 2229,
+          "optimality_guarantee": "exact_admissible"
+        }
+      ]
+    },
+    {
+      "grid_id": "grid_5m_400x379",
+      "rows": 400,
+      "cols": 379,
+      "step_x_ground_m": 5.005347,
+      "step_y_ground_m": 4.999969,
+      "blocked_cells": 7910,
+      "build_grid_ms": 14439.5,
+      "scenarios": [
+        {
+          "scenario": "worst_case_se_to_nw_across_scarp",
+          "reachable": true,
+          "cells_expanded": 141812,
+          "total_cells": 151600,
+          "expansion_fraction": 0.9354,
+          "median_ms": 6198.27,
+          "p95_ms": 6466.1,
+          "total_distance_m": 2790.82,
+          "raw_cost_s": 8746.103933,
+          "smoothed_cost_s": 8716.649894,
+          "rejected_by_obstacle_count": 599,
+          "rejected_by_cost_guard_count": 4070,
+          "optimality_guarantee": "exact_admissible"
+        },
+        {
+          "scenario": "cross_diagonal_sw_to_ne",
+          "reachable": true,
+          "cells_expanded": 136106,
+          "total_cells": 151600,
+          "expansion_fraction": 0.8978,
+          "median_ms": 5171.32,
+          "p95_ms": 5226.09,
+          "total_distance_m": 3128.8,
+          "raw_cost_s": 8327.249343,
+          "smoothed_cost_s": 8275.339417,
+          "rejected_by_obstacle_count": 222,
+          "rejected_by_cost_guard_count": 3576,
+          "optimality_guarantee": "exact_admissible"
+        }
+      ]
+    }
+  ]
+}

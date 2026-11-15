@@ -1,0 +1,3292 @@
+{
+  "type": "FeatureCollection",
+  "contract_version": "1.1.0",
+  "site_id": "jezero",
+  "ono_rover_cfa_reference_pct": {
+    "ok_pct": 7.0,
+    "caution_pct": 15.0,
+    "golombek_1p5m_at_15pct": 0.002238
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.393224,
+              18.454215
+            ],
+            [
+              77.399973,
+              18.454215
+            ],
+            [
+              77.399973,
+              18.460457
+            ],
+            [
+              77.393224,
+              18.460457
+            ],
+            [
+              77.393224,
+              18.454215
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-001",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 35344.4,
+        "internal_relief_m": 45.53,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.404767,
+              18.458939
+            ],
+            [
+              77.41045,
+              18.458939
+            ],
+            [
+              77.41045,
+              18.465181
+            ],
+            [
+              77.404767,
+              18.465181
+            ],
+            [
+              77.404767,
+              18.458939
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-002",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 25060.6,
+        "internal_relief_m": 47.35,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.376709,
+              18.457251
+            ],
+            [
+              77.381326,
+              18.457251
+            ],
+            [
+              77.381326,
+              18.460288
+            ],
+            [
+              77.376709,
+              18.460288
+            ],
+            [
+              77.376709,
+              18.457251
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-003",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 18670.6,
+        "internal_relief_m": 43.32,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.376709,
+              18.475303
+            ],
+            [
+              77.380438,
+              18.475303
+            ],
+            [
+              77.380438,
+              18.477665
+            ],
+            [
+              77.376709,
+              18.477665
+            ],
+            [
+              77.376709,
+              18.475303
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-004",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 14277.5,
+        "internal_relief_m": 44.9,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.396954,
+              18.475978
+            ],
+            [
+              77.400683,
+              18.475978
+            ],
+            [
+              77.400683,
+              18.478677
+            ],
+            [
+              77.396954,
+              18.478677
+            ],
+            [
+              77.396954,
+              18.475978
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-005",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 10483.5,
+        "internal_relief_m": 24.14,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401926,
+              18.467711
+            ],
+            [
+              77.404412,
+              18.467711
+            ],
+            [
+              77.404412,
+              18.470242
+            ],
+            [
+              77.401926,
+              18.470242
+            ],
+            [
+              77.401926,
+              18.467711
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-006",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 10283.8,
+        "internal_relief_m": 25.2,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.380616,
+              18.468386
+            ],
+            [
+              77.38328,
+              18.468386
+            ],
+            [
+              77.38328,
+              18.470579
+            ],
+            [
+              77.380616,
+              18.470579
+            ],
+            [
+              77.380616,
+              18.468386
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-007",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 8287.0,
+        "internal_relief_m": 29.07,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.405122,
+              18.475978
+            ],
+            [
+              77.407253,
+              18.475978
+            ],
+            [
+              77.407253,
+              18.477496
+            ],
+            [
+              77.405122,
+              18.477496
+            ],
+            [
+              77.405122,
+              18.475978
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-008",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 5790.9,
+        "internal_relief_m": 20.45,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.388785,
+              18.463494
+            ],
+            [
+              77.391804,
+              18.463494
+            ],
+            [
+              77.391804,
+              18.465687
+            ],
+            [
+              77.388785,
+              18.465687
+            ],
+            [
+              77.388785,
+              18.463494
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-009",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 5291.7,
+        "internal_relief_m": 15.97,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.395178,
+              18.472435
+            ],
+            [
+              77.397309,
+              18.472435
+            ],
+            [
+              77.397309,
+              18.474122
+            ],
+            [
+              77.395178,
+              18.474122
+            ],
+            [
+              77.395178,
+              18.472435
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-010",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 4692.6,
+        "internal_relief_m": 23.22,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.407253,
+              18.467036
+            ],
+            [
+              77.409029,
+              18.467036
+            ],
+            [
+              77.409029,
+              18.468555
+            ],
+            [
+              77.407253,
+              18.468555
+            ],
+            [
+              77.407253,
+              18.467036
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-011",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 4692.6,
+        "internal_relief_m": 17.79,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.402636,
+              18.478002
+            ],
+            [
+              77.405833,
+              18.478002
+            ],
+            [
+              77.405833,
+              18.479183
+            ],
+            [
+              77.402636,
+              18.479183
+            ],
+            [
+              77.402636,
+              18.478002
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-012",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 4393.1,
+        "internal_relief_m": 15.79,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.37813,
+              18.46265
+            ],
+            [
+              77.380261,
+              18.46265
+            ],
+            [
+              77.380261,
+              18.465855
+            ],
+            [
+              77.37813,
+              18.465855
+            ],
+            [
+              77.37813,
+              18.46265
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-013",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 4393.1,
+        "internal_relief_m": 18.37,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401393,
+              18.47311
+            ],
+            [
+              77.403524,
+              18.47311
+            ],
+            [
+              77.403524,
+              18.475472
+            ],
+            [
+              77.401393,
+              18.475472
+            ],
+            [
+              77.401393,
+              18.47311
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-014",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 4193.4,
+        "internal_relief_m": 13.14,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.37884,
+              18.466868
+            ],
+            [
+              77.380616,
+              18.466868
+            ],
+            [
+              77.380616,
+              18.468217
+            ],
+            [
+              77.37884,
+              18.468217
+            ],
+            [
+              77.37884,
+              18.466868
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-015",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 3694.2,
+        "internal_relief_m": 17.98,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.397131,
+              18.467374
+            ],
+            [
+              77.398197,
+              18.467374
+            ],
+            [
+              77.398197,
+              18.469736
+            ],
+            [
+              77.397131,
+              18.469736
+            ],
+            [
+              77.397131,
+              18.467374
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-016",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 3394.7,
+        "internal_relief_m": 12.87,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.3847,
+              18.462481
+            ],
+            [
+              77.385943,
+              18.462481
+            ],
+            [
+              77.385943,
+              18.464337
+            ],
+            [
+              77.3847,
+              18.464337
+            ],
+            [
+              77.3847,
+              18.462481
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-017",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 3095.1,
+        "internal_relief_m": 9.82,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.407609,
+              18.463325
+            ],
+            [
+              77.41045,
+              18.463325
+            ],
+            [
+              77.41045,
+              18.464337
+            ],
+            [
+              77.407609,
+              18.464337
+            ],
+            [
+              77.407609,
+              18.463325
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-018",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 3095.1,
+        "internal_relief_m": 14.85,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.397486,
+              18.458939
+            ],
+            [
+              77.399085,
+              18.458939
+            ],
+            [
+              77.399085,
+              18.460963
+            ],
+            [
+              77.397486,
+              18.460963
+            ],
+            [
+              77.397486,
+              18.458939
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-019",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 2995.3,
+        "internal_relief_m": 15.88,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.383102,
+              18.476653
+            ],
+            [
+              77.3847,
+              18.476653
+            ],
+            [
+              77.3847,
+              18.478171
+            ],
+            [
+              77.383102,
+              18.478171
+            ],
+            [
+              77.383102,
+              18.476653
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-020",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 2595.9,
+        "internal_relief_m": 20.1,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.381504,
+              18.461132
+            ],
+            [
+              77.382924,
+              18.461132
+            ],
+            [
+              77.382924,
+              18.462144
+            ],
+            [
+              77.381504,
+              18.462144
+            ],
+            [
+              77.381504,
+              18.461132
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-021",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 2296.4,
+        "internal_relief_m": 9.34,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.380083,
+              18.460119
+            ],
+            [
+              77.381326,
+              18.460119
+            ],
+            [
+              77.381326,
+              18.461469
+            ],
+            [
+              77.380083,
+              18.461469
+            ],
+            [
+              77.380083,
+              18.460119
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-022",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 2296.4,
+        "internal_relief_m": 15.22,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.404412,
+              18.470917
+            ],
+            [
+              77.405478,
+              18.470917
+            ],
+            [
+              77.405478,
+              18.472435
+            ],
+            [
+              77.404412,
+              18.472435
+            ],
+            [
+              77.404412,
+              18.470917
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-023",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 2096.7,
+        "internal_relief_m": 11.53,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.393757,
+              18.474122
+            ],
+            [
+              77.395533,
+              18.474122
+            ],
+            [
+              77.395533,
+              18.474797
+            ],
+            [
+              77.393757,
+              18.474797
+            ],
+            [
+              77.393757,
+              18.474122
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-024",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1996.9,
+        "internal_relief_m": 10.0,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.402636,
+              18.451684
+            ],
+            [
+              77.404235,
+              18.451684
+            ],
+            [
+              77.404235,
+              18.453877
+            ],
+            [
+              77.402636,
+              18.453877
+            ],
+            [
+              77.402636,
+              18.451684
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-025",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1897.0,
+        "internal_relief_m": 5.63,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.385588,
+              18.464675
+            ],
+            [
+              77.385943,
+              18.464675
+            ],
+            [
+              77.385943,
+              18.466024
+            ],
+            [
+              77.385588,
+              18.466024
+            ],
+            [
+              77.385588,
+              18.464675
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-026",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1597.5,
+        "internal_relief_m": 5.34,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.40459,
+              18.45877
+            ],
+            [
+              77.406543,
+              18.45877
+            ],
+            [
+              77.406543,
+              18.459445
+            ],
+            [
+              77.40459,
+              18.459445
+            ],
+            [
+              77.40459,
+              18.45877
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-027",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1597.5,
+        "internal_relief_m": 7.78,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.396243,
+              18.461807
+            ],
+            [
+              77.397131,
+              18.461807
+            ],
+            [
+              77.397131,
+              18.46265
+            ],
+            [
+              77.396243,
+              18.46265
+            ],
+            [
+              77.396243,
+              18.461807
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-028",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1298.0,
+        "internal_relief_m": 5.72,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401571,
+              18.47564
+            ],
+            [
+              77.402104,
+              18.47564
+            ],
+            [
+              77.402104,
+              18.476653
+            ],
+            [
+              77.401571,
+              18.476653
+            ],
+            [
+              77.401571,
+              18.47564
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-029",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1198.1,
+        "internal_relief_m": 8.25,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401571,
+              18.457251
+            ],
+            [
+              77.402636,
+              18.457251
+            ],
+            [
+              77.402636,
+              18.457926
+            ],
+            [
+              77.401571,
+              18.457926
+            ],
+            [
+              77.401571,
+              18.457251
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-030",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1198.1,
+        "internal_relief_m": 6.61,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.408141,
+              18.457926
+            ],
+            [
+              77.409917,
+              18.457926
+            ],
+            [
+              77.409917,
+              18.458264
+            ],
+            [
+              77.408141,
+              18.458264
+            ],
+            [
+              77.408141,
+              18.457926
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-031",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 1098.3,
+        "internal_relief_m": 3.81,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.409207,
+              18.474459
+            ],
+            [
+              77.40974,
+              18.474459
+            ],
+            [
+              77.40974,
+              18.475472
+            ],
+            [
+              77.409207,
+              18.475472
+            ],
+            [
+              77.409207,
+              18.474459
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-032",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 998.4,
+        "internal_relief_m": 5.95,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.396421,
+              18.471254
+            ],
+            [
+              77.397309,
+              18.471254
+            ],
+            [
+              77.397309,
+              18.47176
+            ],
+            [
+              77.396421,
+              18.47176
+            ],
+            [
+              77.396421,
+              18.471254
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-033",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 898.6,
+        "internal_relief_m": 11.27,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.387009,
+              18.464337
+            ],
+            [
+              77.38843,
+              18.464337
+            ],
+            [
+              77.38843,
+              18.465012
+            ],
+            [
+              77.387009,
+              18.465012
+            ],
+            [
+              77.387009,
+              18.464337
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-034",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 898.6,
+        "internal_relief_m": 7.26,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.384168,
+              18.461975
+            ],
+            [
+              77.384878,
+              18.461975
+            ],
+            [
+              77.384878,
+              18.462481
+            ],
+            [
+              77.384168,
+              18.462481
+            ],
+            [
+              77.384168,
+              18.461975
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-035",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 898.6,
+        "internal_relief_m": 5.92,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.385588,
+              18.479183
+            ],
+            [
+              77.386476,
+              18.479183
+            ],
+            [
+              77.386476,
+              18.479689
+            ],
+            [
+              77.385588,
+              18.479689
+            ],
+            [
+              77.385588,
+              18.479183
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-036",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 798.7,
+        "internal_relief_m": 6.73,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.403702,
+              18.472266
+            ],
+            [
+              77.404235,
+              18.472266
+            ],
+            [
+              77.404235,
+              18.472941
+            ],
+            [
+              77.403702,
+              18.472941
+            ],
+            [
+              77.403702,
+              18.472266
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-037",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 798.7,
+        "internal_relief_m": 7.08,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.403347,
+              18.459276
+            ],
+            [
+              77.404412,
+              18.459276
+            ],
+            [
+              77.404412,
+              18.459613
+            ],
+            [
+              77.403347,
+              18.459613
+            ],
+            [
+              77.403347,
+              18.459276
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-038",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 798.7,
+        "internal_relief_m": 4.27,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.385588,
+              18.467036
+            ],
+            [
+              77.386476,
+              18.467036
+            ],
+            [
+              77.386476,
+              18.467374
+            ],
+            [
+              77.385588,
+              18.467374
+            ],
+            [
+              77.385588,
+              18.467036
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-039",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 599.1,
+        "internal_relief_m": 3.7,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.399085,
+              18.463325
+            ],
+            [
+              77.399617,
+              18.463325
+            ],
+            [
+              77.399617,
+              18.463831
+            ],
+            [
+              77.399085,
+              18.463831
+            ],
+            [
+              77.399085,
+              18.463325
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-040",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 599.1,
+        "internal_relief_m": 5.55,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.402104,
+              18.458432
+            ],
+            [
+              77.402636,
+              18.458432
+            ],
+            [
+              77.402636,
+              18.459107
+            ],
+            [
+              77.402104,
+              18.459107
+            ],
+            [
+              77.402104,
+              18.458432
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-041",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 599.1,
+        "internal_relief_m": 4.96,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.39944,
+              18.480364
+            ],
+            [
+              77.40015,
+              18.480364
+            ],
+            [
+              77.40015,
+              18.480701
+            ],
+            [
+              77.39944,
+              18.480701
+            ],
+            [
+              77.39944,
+              18.480364
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-042",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 3.48,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.402814,
+              18.480533
+            ],
+            [
+              77.403702,
+              18.480533
+            ],
+            [
+              77.403702,
+              18.480701
+            ],
+            [
+              77.402814,
+              18.480701
+            ],
+            [
+              77.402814,
+              18.480533
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-043",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 1.42,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.386476,
+              18.479689
+            ],
+            [
+              77.386831,
+              18.479689
+            ],
+            [
+              77.386831,
+              18.480364
+            ],
+            [
+              77.386476,
+              18.480364
+            ],
+            [
+              77.386476,
+              18.479689
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-044",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 7.59,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401748,
+              18.479352
+            ],
+            [
+              77.402459,
+              18.479352
+            ],
+            [
+              77.402459,
+              18.479689
+            ],
+            [
+              77.401748,
+              18.479689
+            ],
+            [
+              77.401748,
+              18.479352
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-045",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 5.48,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.395711,
+              18.470579
+            ],
+            [
+              77.396243,
+              18.470579
+            ],
+            [
+              77.396243,
+              18.471254
+            ],
+            [
+              77.395711,
+              18.471254
+            ],
+            [
+              77.395711,
+              18.470579
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-046",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 4.09,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.389317,
+              18.46653
+            ],
+            [
+              77.390028,
+              18.46653
+            ],
+            [
+              77.390028,
+              18.466868
+            ],
+            [
+              77.389317,
+              18.466868
+            ],
+            [
+              77.389317,
+              18.46653
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-047",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 3.19,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.406543,
+              18.466193
+            ],
+            [
+              77.407431,
+              18.466193
+            ],
+            [
+              77.407431,
+              18.46653
+            ],
+            [
+              77.406543,
+              18.46653
+            ],
+            [
+              77.406543,
+              18.466193
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-048",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 2.78,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.379373,
+              18.461638
+            ],
+            [
+              77.380083,
+              18.461638
+            ],
+            [
+              77.380083,
+              18.461975
+            ],
+            [
+              77.379373,
+              18.461975
+            ],
+            [
+              77.379373,
+              18.461638
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-049",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 5.15,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401571,
+              18.460119
+            ],
+            [
+              77.401926,
+              18.460119
+            ],
+            [
+              77.401926,
+              18.460626
+            ],
+            [
+              77.401571,
+              18.460626
+            ],
+            [
+              77.401571,
+              18.460119
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-050",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 499.2,
+        "internal_relief_m": 5.6,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.38399,
+              18.480195
+            ],
+            [
+              77.384523,
+              18.480195
+            ],
+            [
+              77.384523,
+              18.480701
+            ],
+            [
+              77.38399,
+              18.480701
+            ],
+            [
+              77.38399,
+              18.480195
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-051",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 2.87,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.384878,
+              18.479183
+            ],
+            [
+              77.385411,
+              18.479183
+            ],
+            [
+              77.385411,
+              18.479521
+            ],
+            [
+              77.384878,
+              18.479521
+            ],
+            [
+              77.384878,
+              18.479183
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-052",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 3.01,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.395355,
+              18.477665
+            ],
+            [
+              77.395711,
+              18.477665
+            ],
+            [
+              77.395711,
+              18.478002
+            ],
+            [
+              77.395355,
+              18.478002
+            ],
+            [
+              77.395355,
+              18.477665
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-053",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 3.79,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.379906,
+              18.47564
+            ],
+            [
+              77.380616,
+              18.47564
+            ],
+            [
+              77.380616,
+              18.475978
+            ],
+            [
+              77.379906,
+              18.475978
+            ],
+            [
+              77.379906,
+              18.47564
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-054",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 5.99,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.395,
+              18.466193
+            ],
+            [
+              77.395178,
+              18.466193
+            ],
+            [
+              77.395178,
+              18.466868
+            ],
+            [
+              77.395,
+              18.466868
+            ],
+            [
+              77.395,
+              18.466193
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-055",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 1.17,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.396598,
+              18.464168
+            ],
+            [
+              77.397309,
+              18.464168
+            ],
+            [
+              77.397309,
+              18.464675
+            ],
+            [
+              77.396598,
+              18.464675
+            ],
+            [
+              77.396598,
+              18.464168
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-056",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 2.02,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.399085,
+              18.458264
+            ],
+            [
+              77.39944,
+              18.458264
+            ],
+            [
+              77.39944,
+              18.45877
+            ],
+            [
+              77.399085,
+              18.45877
+            ],
+            [
+              77.399085,
+              18.458264
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-057",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 3.61,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.406721,
+              18.457926
+            ],
+            [
+              77.407431,
+              18.457926
+            ],
+            [
+              77.407431,
+              18.458095
+            ],
+            [
+              77.406721,
+              18.458095
+            ],
+            [
+              77.406721,
+              18.457926
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-058",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 399.4,
+        "internal_relief_m": 1.85,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.376887,
+              18.478002
+            ],
+            [
+              77.377242,
+              18.478002
+            ],
+            [
+              77.377242,
+              18.478508
+            ],
+            [
+              77.376887,
+              18.478508
+            ],
+            [
+              77.376887,
+              18.478002
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-059",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 4.14,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.379373,
+              18.475472
+            ],
+            [
+              77.379728,
+              18.475472
+            ],
+            [
+              77.379728,
+              18.475809
+            ],
+            [
+              77.379373,
+              18.475809
+            ],
+            [
+              77.379373,
+              18.475472
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-060",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 3.63,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.376709,
+              18.475303
+            ],
+            [
+              77.377242,
+              18.475303
+            ],
+            [
+              77.377242,
+              18.475472
+            ],
+            [
+              77.376709,
+              18.475472
+            ],
+            [
+              77.376709,
+              18.475303
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-061",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 0.9,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.404057,
+              18.475134
+            ],
+            [
+              77.40459,
+              18.475134
+            ],
+            [
+              77.40459,
+              18.475472
+            ],
+            [
+              77.404057,
+              18.475472
+            ],
+            [
+              77.404057,
+              18.475134
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-062",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 2.96,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.385588,
+              18.467711
+            ],
+            [
+              77.386121,
+              18.467711
+            ],
+            [
+              77.386121,
+              18.468049
+            ],
+            [
+              77.385588,
+              18.468049
+            ],
+            [
+              77.385588,
+              18.467711
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-063",
+        "obstacle_type": "scarp",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 6.71,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.409029,
+              18.467542
+            ],
+            [
+              77.409562,
+              18.467542
+            ],
+            [
+              77.409562,
+              18.46788
+            ],
+            [
+              77.409029,
+              18.46788
+            ],
+            [
+              77.409029,
+              18.467542
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-064",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 4.23,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.395533,
+              18.465181
+            ],
+            [
+              77.395888,
+              18.465181
+            ],
+            [
+              77.395888,
+              18.465687
+            ],
+            [
+              77.395533,
+              18.465687
+            ],
+            [
+              77.395533,
+              18.465181
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-065",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 2.62,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.397664,
+              18.465181
+            ],
+            [
+              77.397842,
+              18.465181
+            ],
+            [
+              77.397842,
+              18.465687
+            ],
+            [
+              77.397664,
+              18.465687
+            ],
+            [
+              77.397664,
+              18.465181
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-066",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 0.63,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.392159,
+              18.461469
+            ],
+            [
+              77.392514,
+              18.461469
+            ],
+            [
+              77.392514,
+              18.461975
+            ],
+            [
+              77.392159,
+              18.461975
+            ],
+            [
+              77.392159,
+              18.461469
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-067",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 1.48,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.392692,
+              18.4613
+            ],
+            [
+              77.393047,
+              18.4613
+            ],
+            [
+              77.393047,
+              18.461807
+            ],
+            [
+              77.392692,
+              18.461807
+            ],
+            [
+              77.392692,
+              18.4613
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-068",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 1.8,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.410095,
+              18.457926
+            ],
+            [
+              77.41045,
+              18.457926
+            ],
+            [
+              77.41045,
+              18.458264
+            ],
+            [
+              77.410095,
+              18.458264
+            ],
+            [
+              77.410095,
+              18.457926
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-069",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 299.5,
+        "internal_relief_m": 3.62,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.379373,
+              18.477159
+            ],
+            [
+              77.379728,
+              18.477159
+            ],
+            [
+              77.379728,
+              18.477327
+            ],
+            [
+              77.379373,
+              18.477327
+            ],
+            [
+              77.379373,
+              18.477159
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-070",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 0.52,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.399617,
+              18.476821
+            ],
+            [
+              77.399973,
+              18.476821
+            ],
+            [
+              77.399973,
+              18.47699
+            ],
+            [
+              77.399617,
+              18.47699
+            ],
+            [
+              77.399617,
+              18.476821
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-071",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.87,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.380616,
+              18.476653
+            ],
+            [
+              77.380971,
+              18.476653
+            ],
+            [
+              77.380971,
+              18.476821
+            ],
+            [
+              77.380616,
+              18.476821
+            ],
+            [
+              77.380616,
+              18.476653
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-072",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 0.25,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.407964,
+              18.476484
+            ],
+            [
+              77.408319,
+              18.476484
+            ],
+            [
+              77.408319,
+              18.476653
+            ],
+            [
+              77.407964,
+              18.476653
+            ],
+            [
+              77.407964,
+              18.476484
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-073",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.31,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.392159,
+              18.465518
+            ],
+            [
+              77.392514,
+              18.465518
+            ],
+            [
+              77.392514,
+              18.465687
+            ],
+            [
+              77.392159,
+              18.465687
+            ],
+            [
+              77.392159,
+              18.465518
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-074",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 2.05,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.394645,
+              18.465181
+            ],
+            [
+              77.395,
+              18.465181
+            ],
+            [
+              77.395,
+              18.465349
+            ],
+            [
+              77.394645,
+              18.465349
+            ],
+            [
+              77.394645,
+              18.465181
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-075",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.29,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.388962,
+              18.464
+            ],
+            [
+              77.389317,
+              18.464
+            ],
+            [
+              77.389317,
+              18.464168
+            ],
+            [
+              77.388962,
+              18.464168
+            ],
+            [
+              77.388962,
+              18.464
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-076",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 0.52,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.397664,
+              18.463494
+            ],
+            [
+              77.398019,
+              18.463494
+            ],
+            [
+              77.398019,
+              18.463831
+            ],
+            [
+              77.397664,
+              18.463831
+            ],
+            [
+              77.397664,
+              18.463494
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-077",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.77,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.380438,
+              18.461807
+            ],
+            [
+              77.380793,
+              18.461807
+            ],
+            [
+              77.380793,
+              18.462144
+            ],
+            [
+              77.380438,
+              18.462144
+            ],
+            [
+              77.380438,
+              18.461807
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-078",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.17,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.401038,
+              18.460288
+            ],
+            [
+              77.401393,
+              18.460288
+            ],
+            [
+              77.401393,
+              18.460457
+            ],
+            [
+              77.401038,
+              18.460457
+            ],
+            [
+              77.401038,
+              18.460288
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-079",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 0.2,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.403702,
+              18.457251
+            ],
+            [
+              77.403879,
+              18.457251
+            ],
+            [
+              77.403879,
+              18.457589
+            ],
+            [
+              77.403702,
+              18.457589
+            ],
+            [
+              77.403702,
+              18.457251
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-080",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.53,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.404767,
+              18.455396
+            ],
+            [
+              77.404945,
+              18.455396
+            ],
+            [
+              77.404945,
+              18.455733
+            ],
+            [
+              77.404767,
+              18.455733
+            ],
+            [
+              77.404767,
+              18.455396
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-081",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 1.49,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.384878,
+              18.449828
+            ],
+            [
+              77.385055,
+              18.449828
+            ],
+            [
+              77.385055,
+              18.450166
+            ],
+            [
+              77.384878,
+              18.450166
+            ],
+            [
+              77.384878,
+              18.449828
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "obstacle_id": "OBS-JEZ-082",
+        "obstacle_type": "large_rock_formation",
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-HIRISE-DTM-1M",
+        "footprint_area_m2": 199.7,
+        "internal_relief_m": 0.1,
+        "physical_clearance_m": 0.8500000000000001,
+        "resolution_note": "Derived from 1 m/px HiRISE DTM (~3-4 post effective horizontal resolution; resolves formations >= ~4 m only)."
+      }
+    }
+  ]
+}
