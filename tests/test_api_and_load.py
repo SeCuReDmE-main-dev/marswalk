@@ -17,7 +17,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
     """Verify all GET and POST endpoints on /v1/sites/jezero/*."""
     r_health = client.get("/health")
     assert r_health.status_code == 200
-    assert r_health.json() == {"status": "ok", "contract_version": "1.0.0"}
+    assert r_health.json() == {"status": "ok", "contract_version": "1.1.0"}
 
     r_sites = client.get("/v1/sites")
     assert r_sites.status_code == 200
@@ -39,7 +39,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
     r_haz = client.get("/v1/sites/jezero/hazards")
     assert r_haz.status_code == 200
     assert r_haz.json()["grid_status"] == "ENGINE"
-    assert len(r_haz.json()["cells"]) == 384
+    assert len(r_haz.json()["cells"]) == 1600
 
     r_png = client.get("/v1/sites/jezero/hazard-overlay.png")
     assert r_png.status_code == 200
@@ -63,8 +63,8 @@ def test_route_evaluation_go_and_nogo() -> None:
         "/v1/sites/jezero/evaluate-route",
         json={
             "points": [
-                [77.450886, 18.444627],
-                [77.445200, 18.447800],
+                [77.3950, 18.4650],
+                [77.3960, 18.4655],
             ],
             "walking_speed_km_h": 2.5,
         },
@@ -98,16 +98,16 @@ def test_500_concurrent_requests_zero_errors() -> None:
     def _worker(idx: int) -> tuple[int, float]:
         t0 = time.perf_counter()
         if idx % 2 == 0:
-            lon = 77.23 + (idx % 20) * 0.011
-            lat = 18.42 + (idx % 8) * 0.009
+            lon = 77.378 + (idx % 20) * 0.0015
+            lat = 18.450 + (idx % 8) * 0.0035
             resp = client.get(f"/v1/sites/jezero/cell?lon={lon:.5f}&lat={lat:.5f}")
         else:
             resp = client.post(
                 "/v1/sites/jezero/evaluate-route",
                 json={
                     "points": [
-                        [77.450886, 18.444627],
-                        [77.440000, 18.450000],
+                        [77.3950, 18.4650],
+                        [77.3960, 18.4655],
                     ],
                     "walking_speed_km_h": 2.2,
                 },

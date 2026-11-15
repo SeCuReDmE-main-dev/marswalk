@@ -156,6 +156,70 @@ def compute_patch_roughness_fractal_texture(
     return (round(roughness_rms_m, 4), fractal_d, round(curvature_m_inv, 4))
 
 
+def compute_hurst_and_step_slope_3_48m(
+    patch_elev_m: np.ndarray,
+    slope_3m_deg: float,
+    step_x_m: float = 0.9485,
+    step_y_m: float = 1.0,
+    target_lags_px: tuple[int, ...] = (3, 6, 12, 24, 48),
+) -> tuple[float, float, tuple[int, ...], float]:
+    """Estimate Hurst H over 3..48 m lags on a >= 97x97 px patch and 0.75 m slope (`P5`).
+
+    Returns `(hurst_h, step_slope_075m_deg, lags_used, i_submeter_boost)`:
+    - Requires a centered patch of side >= 2 * max(target_lags_px) + 1 (>= 97 px) so lag 48
+      is never silently dropped (`P5`).
+    - Applies `step_x_m = cos(phi)` to E-W lags.
+    - Extrapolates 0.75 m human-step tangent slope from 3 m (`tan(s_0.75) = tan(s_3) * 0.25^(H-1)`)
+      and routes the extrapolation sensitivity strictly into `I` (`i_submeter_boost`), never
+      alone into `NO_GO`.
+    """
+    h, w = patch_elev_m.shape
+    max_lag_avail = (min(h, w) - 1) // 2
+    yy, xx = np.mgrid[0:h, 0:w]
+    a_mat = np.column_stack(
+        [xx.ravel() * float(step_x_m), yy.ravel() * float(step_y_m), np.ones(h * w)]
+    )
+    coeffs, _, _, _ = np.linalg.lstsq(a_mat, patch_elev_m.ravel(), rcond=None)
+    plane = (coeffs[0] * xx * float(step_x_m)) + (coeffs[1] * yy * float(step_y_m)) + coeffs[2]
+    resid = patch_elev_m - plane
+
+    lags_used: list[int] = []
+    log_h_m: list[float] = []
+    log_gamma: list[float] = []
+
+    for lag in target_lags_px:
+        if lag > max_lag_avail:
+            continue
+        dx_diff = resid[:, lag:] - resid[:, :-lag]
+        dy_diff = resid[lag:, :] - resid[:-lag, :]
+        hx_m = float(lag) * float(step_x_m)
+        hy_m = float(lag) * float(step_y_m)
+        gx = 0.5 * float(np.mean(dx_diff * dx_diff))
+        gy = 0.5 * float(np.mean(dy_diff * dy_diff))
+        if gx > 1e-10 and gy > 1e-10:
+            lags_used.append(int(lag))
+            log_h_m.extend([math.log(hx_m), math.log(hy_m)])
+            log_gamma.extend([math.log(gx), math.log(gy)])
+
+    if len(lags_used) >= 2:
+        slope_2h, _ = np.polyfit(log_h_m, log_gamma, 1)
+        hurst_h = max(0.15, min(0.95, 0.5 * float(slope_2h)))
+    else:
+        hurst_h = 0.70
+
+    tan_3m = math.tan(math.radians(max(0.1, float(slope_3m_deg))))
+    amp_factor = (0.75 / 3.0) ** (hurst_h - 1.0)
+    step_slope_075m_deg = math.degrees(math.atan(tan_3m * amp_factor))
+    # Route sub-meter extrapolation amplification strictly into I (indeterminacy)
+    i_submeter_boost = clamp01((amp_factor - 1.0) / 2.0) * 0.18
+    return (
+        round(hurst_h, 4),
+        round(step_slope_075m_deg, 2),
+        tuple(lags_used),
+        round(i_submeter_boost, 4),
+    )
+
+
 def _source_distrust_index(source_id: str) -> float:
     if source_id == "SRC-USGS-HIRISE-DTM-1M":
         return 0.04

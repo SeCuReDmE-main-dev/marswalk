@@ -1,0 +1,44 @@
+{
+  "benchmark_id": "PHASE3_SPATIAL_BLOCK_CV_AND_AOA",
+  "split_method": "leave_one_spatial_block_out",
+  "n_waypoints": 147,
+  "variogram_range_m": 350.0,
+  "block_side_m": 350.0,
+  "n_eff_spatial_blocks": 14,
+  "spatial_cv_mae_deg": {
+    "funnel": 1.1868,
+    "fixed_1m": 2.025,
+    "fixed_4m": 1.6459,
+    "fixed_16m": 1.1245,
+    "fixed_64m": 1.6921
+  },
+  "aoa_heldout_summary": {
+    "inside_aoa_fraction": 0.9388,
+    "mean_normalized_di": 0.8207,
+    "max_normalized_di": 10.2649,
+    "distinct_josang_i_count": 129,
+    "min_josang_i": 0.3192,
+    "max_josang_i": 1.0
+  },
+  "reliability_terciles": [
+    {
+      "bin_index": 1,
+      "count": 49,
+      "mean_uncertainty_i": 0.3225,
+      "mae_deg": 1.5003
+    },
+    {
+      "bin_index": 2,
+      "count": 49,
+      "mean_uncertainty_i": 0.3987,
+      "mae_deg": 0.4433
+    },
+    {
+      "bin_index": 3,
+      "count": 49,
+      "mean_uncertainty_i": 0.5591,
+      "mae_deg": 1.6168
+    }
+  ],
+  "sha256_pack": "b73ab201efed08bdbb728cefd960c77ee320b92b62cbf6a621a43879c64493f7"
+}

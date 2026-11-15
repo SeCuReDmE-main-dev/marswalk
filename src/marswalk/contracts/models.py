@@ -27,10 +27,11 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-CONTRACT_VERSION: Literal["1.0.0"] = "1.0.0"
+ContractVersionLiteral = Literal["1.0.0", "1.1.0"]
+CONTRACT_VERSION: ContractVersionLiteral = "1.1.0"
 MARS_SPHERE_RADIUS_M: float = 3_396_190.0
 
-ProvenanceTag = Literal["MEASURED", "DERIVED", "SIMULATED"]
+ProvenanceTag = Literal["MEASURED", "DERIVED", "SIMULATED", "UNAVAILABLE"]
 VerdictLiteral = Literal["GO", "CAUTION", "NO_GO"]
 BaselineKey = Literal["1", "4", "16", "64"]
 GridStatusLiteral = Literal["PLACEHOLDER", "ENGINE"]
@@ -142,7 +143,7 @@ class ManifestInputDigest(FrozenContractModel):
 class SiteManifest(FrozenContractModel):
     """Root manifest.json for a signed Martian site pack."""
 
-    contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
     pack_version: str = Field(default="1.0.1", min_length=3)
     site_id: str = Field(..., min_length=2)
     site_name: str = Field(..., min_length=2)
@@ -234,7 +235,7 @@ class WaypointFeatureCollection(FrozenContractModel):
     """GeoJSON FeatureCollection of all Perseverance waypoints in the site pack."""
 
     type: Literal["FeatureCollection"] = "FeatureCollection"
-    contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
     site_id: str = Field(..., min_length=2)
     features: list[Waypoint] = Field(..., min_length=1)
 
@@ -282,6 +283,26 @@ class HazardCell(FrozenContractModel):
     reason: str = Field(..., min_length=3, description="Clear human-readable verdict explanation.")
     nearest_waypoint_sol: int | None = Field(default=None)
     measured_rover_tilt_deg: Quantity | None = Field(default=None)
+    solar_shadow_fraction: Quantity | None = Field(default=None)
+    hurst_exponent_h: Quantity | None = Field(default=None)
+    step_scale_slope_075m_deg: Quantity | None = Field(default=None)
+    thermal_inertia_tiu: Quantity | None = Field(default=None)
+    crism_olindex3: Quantity | None = Field(default=None)
+    crism_d2300: Quantity | None = Field(default=None)
+    crism_bd1900_2: Quantity | None = Field(default=None)
+    spectral_smectite_caution: bool | None = Field(default=None)
+    geologic_unit: str | None = Field(default=None)
+    distance_to_contact_m: Quantity | None = Field(default=None)
+    aoa_inside: bool | None = Field(default=None)
+    calibrated_opinion: ConfidenceVector | None = Field(default=None)
+    sky_view_factor: Quantity | None = Field(default=None)
+    local_gcr_dose_mgy_per_day: Quantity | None = Field(default=None)
+    meda_dust_tau_880nm: Quantity | None = Field(default=None)
+    metabolic_rate_w: Quantity | None = Field(default=None)
+    walkback_o2_margin_min: Quantity | None = Field(default=None)
+    rf_bullington_nu: Quantity | None = Field(default=None)
+    rf_diffraction_loss_db: Quantity | None = Field(default=None)
+    rf_comms_verdict: VerdictLiteral | None = Field(default=None)
 
     @field_validator("slope_deg_by_baseline")
     @classmethod
@@ -294,7 +315,7 @@ class HazardCell(FrozenContractModel):
 class HazardGrid(FrozenContractModel):
     """Complete multi-scale hazard grid (`hazard_grid.json`) for a site pack."""
 
-    contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
     grid_status: GridStatusLiteral = Field(
         default="PLACEHOLDER",
         description="PLACEHOLDER in Pass 1 synthetic scaffold; ENGINE when built from HiRISE DTM.",
@@ -306,13 +327,14 @@ class HazardGrid(FrozenContractModel):
     cell_size_m: float = Field(..., gt=0.0)
     baselines_m: tuple[int, int, int, int] = Field(default=(1, 4, 16, 64))
     overlay_file: str = Field(default="hazard_overlay.png")
+    external_layers_status: dict[str, dict[str, str | float | bool]] | None = Field(default=None)
     cells: list[HazardCell] = Field(..., min_length=1)
 
 
 class EvaConstraints(FrozenContractModel):
     """Citable NASA xEVA, Apollo, JPL Rover, and Curiosity RAD safety thresholds."""
 
-    contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
     suit_max_slope_deg: Quantity
     apollo_practical_slope_deg: Quantity
     apollo_max_relief_m: Quantity
@@ -326,6 +348,14 @@ class EvaConstraints(FrozenContractModel):
     rock_cfa_caution_pct: Quantity
     gcr_dose_msv_per_day: Quantity
     radiation_environment_note: str = Field(..., min_length=10)
+    bfo_30d_limit_mgy_eq: Quantity | None = Field(default=None)
+    career_dose_limit_msv: Quantity | None = Field(default=None)
+    primary_o2_kg: Quantity | None = Field(default=None)
+    walkback_metabolic_w: Quantity | None = Field(default=None)
+    dust_ingress_decontam_min: Quantity | None = Field(default=None)
+    themis_sand_cut_tiu: Quantity | None = Field(default=None)
+    rf_freq_mhz: Quantity | None = Field(default=None)
+    rf_link_margin_db: Quantity | None = Field(default=None)
 
 
 class EvaRouteProperties(FrozenContractModel):
@@ -365,6 +395,6 @@ class EvaRoute(FrozenContractModel):
     """Complete `route.geojson` FeatureCollection combining measured traverse & simulated EVA."""
 
     type: Literal["FeatureCollection"] = "FeatureCollection"
-    contract_version: Literal["1.0.0"] = Field(default=CONTRACT_VERSION)
+    contract_version: Literal["1.0.0", "1.1.0"] = Field(default=CONTRACT_VERSION)
     site_id: str = Field(..., min_length=2)
     features: list[EvaRouteFeature] = Field(..., min_length=2)

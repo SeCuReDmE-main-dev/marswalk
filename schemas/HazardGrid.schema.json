@@ -146,6 +146,235 @@
             }
           ],
           "default": null
+        },
+        "solar_shadow_fraction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "hurst_exponent_h": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "step_scale_slope_075m_deg": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "thermal_inertia_tiu": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "crism_olindex3": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "crism_d2300": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "crism_bd1900_2": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "spectral_smectite_caution": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spectral Smectite Caution"
+        },
+        "geologic_unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Geologic Unit"
+        },
+        "distance_to_contact_m": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "aoa_inside": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aoa Inside"
+        },
+        "calibrated_opinion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConfidenceVector"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sky_view_factor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "local_gcr_dose_mgy_per_day": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "meda_dust_tau_880nm": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metabolic_rate_w": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "walkback_o2_margin_min": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rf_bullington_nu": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rf_diffraction_loss_db": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Quantity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rf_comms_verdict": {
+          "anyOf": [
+            {
+              "enum": [
+                "GO",
+                "CAUTION",
+                "NO_GO"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rf Comms Verdict"
         }
       },
       "required": [
@@ -185,7 +414,8 @@
           "enum": [
             "MEASURED",
             "DERIVED",
-            "SIMULATED"
+            "SIMULATED",
+            "UNAVAILABLE"
           ],
           "title": "Tag",
           "type": "string"
@@ -224,8 +454,11 @@
   "description": "Complete multi-scale hazard grid (`hazard_grid.json`) for a site pack.",
   "properties": {
     "contract_version": {
-      "const": "1.0.0",
-      "default": "1.0.0",
+      "default": "1.1.0",
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "title": "Contract Version",
       "type": "string"
     },
@@ -309,6 +542,34 @@
       "default": "hazard_overlay.png",
       "title": "Overlay File",
       "type": "string"
+    },
+    "external_layers_status": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            },
+            "type": "object"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "External Layers Status"
     },
     "cells": {
       "items": {

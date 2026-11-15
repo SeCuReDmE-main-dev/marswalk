@@ -1,5 +1,5 @@
 {
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "pack_version": "1.1.0",
   "site_id": "jezero",
   "site_name": "Jezero Crater & Western Fan (Mars 2020 Perseverance Traverse)",
@@ -144,37 +144,37 @@
   "files": [
     {
       "path": "waypoints.geojson",
-      "sha256": "c04699e333e26d71f8de85c8433aa88b183260949e69b369bbb1646fb237eb08",
+      "sha256": "f458c4827471be3161599c21662dd2864193296dd9d8bf7172fcb7fca7a106d4",
       "bytes": 1019513
     },
     {
       "path": "route.geojson",
-      "sha256": "076e937e0148ac3ba7fe311ec8c2d5ab1f99275f603eccf10ad26d5720880c2a",
-      "bytes": 28512
+      "sha256": "fd992e9ffd2bbd413af464f40b2d253572cc909c4deb500e7518556e1cb596e8",
+      "bytes": 29346
     },
     {
       "path": "hazard_grid.json",
-      "sha256": "32fd7e1692bf3bd9cc6463fb960289a6ed41116c72c038e9e6f3db134d1f2eb1",
-      "bytes": 645198
+      "sha256": "31a7b44a5ae5d70dabff6eb7a175d046a14543ee31b21d448a926981be09ec1a",
+      "bytes": 2544174
     },
     {
       "path": "hazard_overlay.png",
-      "sha256": "a2a2d149552a8c5e4620cccba0ed0cc44ec6fe15e6d582067c2a9f1d7c4b2438",
-      "bytes": 985
+      "sha256": "f37ab157781fbafb3d295d3d3b32ecff132cf6b907c902f6ea8d6bd6c74ef642",
+      "bytes": 2582
     },
     {
       "path": "eva_constraints.json",
-      "sha256": "afcb7eeca0608f2e4742af59a304886324303e687b5767d60f43e01017c1b161",
-      "bytes": 2114
+      "sha256": "7d81e6da78b68f2b26635c1a5525282d47a56aa474e3cd1b1378f6f273c718e7",
+      "bytes": 2356
     },
     {
       "path": "validation_report.json",
-      "sha256": "40ad8fb505f5f026629498ba86c2a86f5593638c9ba3973d9643bfcdbd1c2e86",
-      "bytes": 70331
+      "sha256": "2dd4585972fefce0153fc9ae61ce7804c96cfb68305c1e03c7b2b987896fe57d",
+      "bytes": 70325
     },
     {
       "path": "gate_log.jsonl",
-      "sha256": "d76f3fb6fafa17fb603be0c82325d555eeee06544419b9ab0b1419d6219b9f71",
+      "sha256": "41cdf8574ee5ab91d9de10a128eba4427ee385381f296d7118d64945018ce62f",
       "bytes": 1244
     },
     {

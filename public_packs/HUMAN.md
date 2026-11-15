@@ -40,10 +40,10 @@ Almost every number is wrapped like this:
 
 ## The hazard grid, honestly
 
-- Read `grid_status` first. **Today (pack v1.1.0, 2026-11-14 late evening) it is `"ENGINE"`: 16 × 24 cells of about 104 m, slopes DERIVED from the real HiRISE 1 m terrain model.**
+- Read `grid_status` first. **Today (pack v1.1.0, 2026-11-15) it is `"ENGINE"`: 40 × 40 cells (1,600 cells of about 48 m), slopes DERIVED from the real HiRISE 1 m terrain model with cos(φ) ground-meter scaling.**
   - `"PLACEHOLDER"`: values are **synthetic** (`source_id: "synthetic-v1"`), made so you can build the UI tonight. Cells are large (about 600 m). Show a "preview data" badge.
   - `"ENGINE"`: values come from my multi-scale engine reading the real HiRISE 1 m terrain model. Cells will be much smaller, so **never assume a cell size**.
-- Each cell: `cell_id`, `row`, `col`, `lon`, `lat`, `size_m`, `elev_m`, `slope_deg_by_baseline` (`"1"`, `"4"`, `"16"`, `"64"`), `scale_divergence`, `confidence {t, i, f}`, `verdict`, `reason`.
+- Each cell: `cell_id`, `row`, `col`, `lon`, `lat`, `size_m`, `elev_m`, `slope_deg_by_baseline` (`"1"`, `"4"`, `"16"`, `"64"`), `scale_divergence`, `rock_cfa_pct`, `confidence {t, i, f}`, `verdict`, `reason`, plus optional v1.1.0 fields (`solar_shadow_fraction`, `hurst_exponent_h`, `geologic_unit`, `aoa_inside`, `calibrated_opinion`, `sky_view_factor`, `rf_comms_verdict`).
 - A baseline can be marked unreliable in a future pack (for example the 1 m slope on a 1 m terrain model is mostly pixel noise). If that happens, it keeps its key but its `note` explains why. Show the note; do not hide it.
 
 ## Coordinates

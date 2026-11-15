@@ -25,8 +25,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_contract_version_and_mars_sphere_constant() -> None:
-    """Verify frozen contract version 1.0.0 and Mars sphere radius 3,396,190 m."""
-    assert CONTRACT_VERSION == "1.0.0"
+    """Verify additive contract version 1.1.0 and Mars sphere radius 3,396,190 m."""
+    assert CONTRACT_VERSION == "1.1.0"
     assert MARS_SPHERE_RADIUS_M == 3_396_190.0
     crs = MarsCrs()
     assert crs.sphere_radius_m == 3_396_190.0

@@ -15,7 +15,7 @@ EXPECTED_1M_NOTE = "below 2x DTM resolution: pixel-scale noise, excluded from th
 def test_baseline_1m_kept_with_note_and_excluded_from_funnel() -> None:
     """Claude CTO 22h sync (NB-001.a): '1' kept with note, excluded from funnel."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
-    assert len(pack.hazards.cells) == 384
+    assert len(pack.hazards.cells) == 1600
 
     for cell in pack.hazards.cells:
         assert set(cell.slope_deg_by_baseline.keys()) == {"1", "4", "16", "64"}

@@ -4,39 +4,39 @@
   "n_test": 72,
   "n_resamples": 5000,
   "seed": 7,
-  "sha256_pack": "13f56f530ccf125c51cd96fa289475277127b03a5fdb4be124bb6ced895575ff",
+  "sha256_pack": "b73ab201efed08bdbb728cefd960c77ee320b92b62cbf6a621a43879c64493f7",
   "results": {
     "vs_fixed_1m": {
-      "mean_diff_deg": -0.6604,
+      "mean_diff_deg": -0.9221,
       "ci95_deg": [
-        -0.9792,
-        -0.3777
+        -1.3708,
+        -0.538
       ],
       "reading": "funnel better (interval excludes 0)"
     },
     "vs_fixed_4m": {
-      "mean_diff_deg": -0.2334,
+      "mean_diff_deg": -0.4906,
       "ci95_deg": [
-        -0.434,
-        -0.0358
+        -0.7665,
+        -0.2239
       ],
       "reading": "funnel better (interval excludes 0)"
     },
     "vs_fixed_16m": {
-      "mean_diff_deg": 0.3356,
+      "mean_diff_deg": 0.1057,
       "ci95_deg": [
-        0.0719,
-        0.6439
-      ],
-      "reading": "funnel worse (interval excludes 0)"
-    },
-    "vs_fixed_64m": {
-      "mean_diff_deg": -0.3172,
-      "ci95_deg": [
-        -0.7484,
-        0.093
+        -0.0241,
+        0.33
       ],
       "reading": "not distinguishable (interval contains 0)"
+    },
+    "vs_fixed_64m": {
+      "mean_diff_deg": -0.5343,
+      "ci95_deg": [
+        -0.9515,
+        -0.1188
+      ],
+      "reading": "funnel better (interval excludes 0)"
     }
   }
 }

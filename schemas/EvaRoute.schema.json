@@ -60,7 +60,8 @@
           "enum": [
             "MEASURED",
             "DERIVED",
-            "SIMULATED"
+            "SIMULATED",
+            "UNAVAILABLE"
           ],
           "title": "Tag",
           "type": "string"
@@ -294,7 +295,8 @@
           "enum": [
             "MEASURED",
             "DERIVED",
-            "SIMULATED"
+            "SIMULATED",
+            "UNAVAILABLE"
           ],
           "title": "Tag",
           "type": "string"
@@ -339,8 +341,11 @@
       "type": "string"
     },
     "contract_version": {
-      "const": "1.0.0",
-      "default": "1.0.0",
+      "default": "1.1.0",
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "title": "Contract Version",
       "type": "string"
     },
