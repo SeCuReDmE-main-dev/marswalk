@@ -142,7 +142,7 @@ def test_derived_quantity_without_manifest_input_is_rejected() -> None:
 
 
 @pytest.mark.skipif(
-    not (REPO_ROOT / "datalake").exists(),
+    not (REPO_ROOT / "datalake" / "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif").exists(),
     reason="Requires gitignored local datalake/ cache for pack rebuild",
 )
 def test_hazard_grid_is_strictly_independent_of_rover_tilt_deg(tmp_path: Path) -> None:
@@ -179,7 +179,7 @@ def test_hazard_grid_is_strictly_independent_of_rover_tilt_deg(tmp_path: Path) -
 
 
 @pytest.mark.skipif(
-    not (REPO_ROOT / "datalake").exists(),
+    not (REPO_ROOT / "datalake" / "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif").exists(),
     reason="Requires gitignored local datalake/ cache for pack rebuild",
 )
 def test_committed_pack_matches_fresh_rebuild(tmp_path: Path) -> None:

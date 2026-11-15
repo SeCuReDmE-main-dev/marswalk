@@ -18,6 +18,7 @@ from marswalk.engine.dtm_ingest import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+HAS_LOCAL_DTM = (REPO_ROOT / "datalake" / "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif").exists()
 
 
 def test_crs_roundtrip_and_mixed_sphere_attack() -> None:
@@ -42,6 +43,10 @@ def test_crs_roundtrip_and_mixed_sphere_attack() -> None:
         assert abs(eqc_y_m_to_lat(y_m) - lat) < 1e-12
 
 
+@pytest.mark.skipif(
+    not HAS_LOCAL_DTM,
+    reason="Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif",
+)
 def test_b3_128_combo_sweep_selects_valid_odd_sol_sweet_spot(tmp_path: Path) -> None:
     """Verify 128-combination sweep across 8 shards selects odd-sol sweet spot with B3/B9 PASS."""
     out_json = tmp_path / "b3_sweep.json"
@@ -64,6 +69,10 @@ def test_b3_128_combo_sweep_selects_valid_odd_sol_sweet_spot(tmp_path: Path) -> 
     assert res1["sweet_spot"]["sha256"] == res2["sweet_spot"]["sha256"]
 
 
+@pytest.mark.skipif(
+    not HAS_LOCAL_DTM,
+    reason="Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif",
+)
 def test_b8_2x2km_window_timing_recorded_without_big_o(tmp_path: Path) -> None:
     """Verify B8 records empirical wall-clock runtime on the 2x2 km window with zero Big-O claim."""
     out_json = tmp_path / "b8_timing.json"

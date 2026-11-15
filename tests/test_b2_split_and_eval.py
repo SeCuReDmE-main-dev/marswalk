@@ -12,6 +12,7 @@ from marswalk.bench.split import assert_disjoint_sol_split, split_waypoints_odd_
 from marswalk.middleware.pack_loader import load_and_verify_pack
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+HAS_LOCAL_DTM = (REPO_ROOT / "datalake" / "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif").exists()
 
 
 def test_split_is_disjoint() -> None:
@@ -34,6 +35,10 @@ def test_split_is_disjoint() -> None:
         assert_disjoint_sol_split(tune_odd, [tune_odd[0], *test_even])
 
 
+@pytest.mark.skipif(
+    not HAS_LOCAL_DTM,
+    reason="Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif",
+)
 def test_b5_eval_writes_honest_even_sol_metrics(tmp_path: Path) -> None:
     """Verify B5 evaluates strictly on even TEST sols and records required JSON fields."""
     out_json = tmp_path / "b5_eval.json"

@@ -109,7 +109,7 @@ def test_x2_no_fabricated_cfa_threshold_11_or_10_pct() -> None:
 
 
 @pytest.mark.skipif(
-    not (REPO_ROOT / "datalake").exists(),
+    not (REPO_ROOT / "datalake" / "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif").exists(),
     reason="Requires gitignored local datalake/ DTM GeoTIFF",
 )
 def test_c1_m1_specificity_even_sols_and_recall_sim3464_and_sol700() -> None:
