@@ -74,12 +74,16 @@ def rf_verdict(
 def bullington_nu_max_profile(
     elev_profile_m: np.ndarray | list[float],
     distance_m: float,
-    h_tx_m: float = SUIT_ANTENNA_HEIGHT_M,
-    h_rx_m: float = ROVER_MAST_HEIGHT_M,
+    h_tx_m: float = ROVER_MAST_HEIGHT_M,
+    h_rx_m: float = SUIT_ANTENNA_HEIGHT_M,
     wavelength_m: float = UHF_WAVELENGTH_M,
     sphere_radius_m: float = MARS_SPHERE_RADIUS_M,
 ) -> float:
-    """Compute maximum Fresnel-Kirchhoff parameter nu_max along a 1m DTM profile with Mars bulge."""
+    """Compute maximum Fresnel-Kirchhoff parameter nu_max along a 1m DTM profile with Mars bulge.
+
+    Convention: `elev_profile_m[0]` is the rover (UHF mast, 3.0 m) and `elev_profile_m[-1]`
+    is the astronaut (suit antenna, 1.8 m). Both callers sample origin (rover) -> point.
+    """
     n = len(elev_profile_m)
     if distance_m <= 1.0 or n < 2:
         return -2.0

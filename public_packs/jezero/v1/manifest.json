@@ -154,8 +154,8 @@
     },
     {
       "path": "hazard_grid.json",
-      "sha256": "31a7b44a5ae5d70dabff6eb7a175d046a14543ee31b21d448a926981be09ec1a",
-      "bytes": 2544174
+      "sha256": "d9b310e96f807ecec8de27bc0502f217e904726f1560aabc34292362e0d612bf",
+      "bytes": 2544210
     },
     {
       "path": "hazard_overlay.png",

@@ -1,6 +1,6 @@
 """Spatial-Block Cross-Validation & AOA / Josang Calibration Benchmark (`H2.d`).
 
-Partitions the 146 in-window Perseverance stops into spatially separated blocks of side
+Partitions the 147 in-window Perseverance stops into spatially separated blocks of side
 `>= h_r` (empirical semivariogram range), executes leave-one-spatial-block-out cross-validation
 for both the multi-scale pruning funnel and the Meyer & Pebesma (2021) AOA + Josang Subjective
 Logic model, and writes `bench/results/aoa_cv.json`.
@@ -31,7 +31,7 @@ from marswalk.engine.funnel import run_cell_funnel
 
 
 def run_and_save_spatial_cv(repo_root: Path) -> dict[str, Any]:
-    """Run spatial-block CV on the 146 Jezero Delta stops and save `bench/results/aoa_cv.json`."""
+    """Run spatial-block CV on the 147 Jezero Delta stops and save `bench/results/aoa_cv.json`."""
     observations, sha_pack = extract_window_observations(repo_root)
     params = load_funnel_params(repo_root)
     carriers = load_retained_carriers(repo_root)
@@ -174,6 +174,16 @@ def run_and_save_spatial_cv(repo_root: Path) -> dict[str, Any]:
             "max_josang_i": round(max(heldout_josang_i) if heldout_josang_i else 1.0, 4),
         },
         "reliability_terciles": reliability_bins,
+        "reliability_error_increases_with_i": all(
+            reliability_bins[k]["mae_deg"] <= reliability_bins[k + 1]["mae_deg"]
+            for k in range(len(reliability_bins) - 1)
+        ),
+        "caveats": [
+            "Funnel parameters (p, tau_max, h_min, eps) are loaded frozen from the odd-sol tuning "
+            "run and are NOT refit per fold: only the AOA/Josang model is refit per held-out "
+            "block. The funnel MAE is a spatial-block evaluation, not a full nested CV.",
+            "Ground truth is measured rover tilt at stops the rover chose (presence-only).",
+        ],
         "sha256_pack": sha_pack,
     }
     out_path = repo_root / "bench" / "results" / "aoa_cv.json"

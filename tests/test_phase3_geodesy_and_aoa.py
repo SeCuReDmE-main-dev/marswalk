@@ -25,7 +25,9 @@ from marswalk.engine.meda_envelope import evaluate_dust_tau_verdict, filter_meda
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACK_DIR = REPO_ROOT / "public_packs" / "jezero" / "v1"
 
-SAMPLE_FRT47A3_LBL = """
+# Synthetic PDS3 label fixtures (NOT the real FRT47A3 / HRL40FF labels, which use a
+# 15 deg standard parallel). They only exercise dynamic CENTER_LATITUDE parsing.
+SYNTHETIC_LBL_A = """
 OBJECT = IMAGE_MAP_PROJECTION
   MAP_PROJECTION_TYPE = "EQUIRECTANGULAR"
   A_AXIS_RADIUS       = 3396.19 <km>
@@ -36,7 +38,7 @@ OBJECT = IMAGE_MAP_PROJECTION
 END_OBJECT = IMAGE_MAP_PROJECTION
 """
 
-SAMPLE_HRL40FF_LBL = """
+SYNTHETIC_LBL_B = """
 OBJECT = IMAGE_MAP_PROJECTION
   MAP_PROJECTION_TYPE = "EQUIRECTANGULAR"
   A_AXIS_RADIUS       = 3396.19 <km>
@@ -50,8 +52,8 @@ END_OBJECT = IMAGE_MAP_PROJECTION
 
 def test_p10_crism_lbl_parses_center_latitude_dynamically_and_proves_158km_shift() -> None:
     """Verify P10 dynamic CENTER_LATITUDE parsing + ~158 km shift vs <1 px warp."""
-    proj_47a3 = parse_crism_pds3_lbl(SAMPLE_FRT47A3_LBL)
-    proj_40ff = parse_crism_pds3_lbl(SAMPLE_HRL40FF_LBL)
+    proj_47a3 = parse_crism_pds3_lbl(SYNTHETIC_LBL_A)
+    proj_40ff = parse_crism_pds3_lbl(SYNTHETIC_LBL_B)
     assert proj_47a3.center_latitude_deg == pytest.approx(18.45)
     assert proj_40ff.center_latitude_deg == pytest.approx(18.375)
     assert proj_47a3.a_axis_radius_m == pytest.approx(3396190.0)
