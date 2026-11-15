@@ -140,22 +140,59 @@ def test_derived_quantity_without_manifest_input_is_rejected() -> None:
 
 
 def test_hazard_grid_is_strictly_independent_of_rover_tilt_deg(tmp_path: Path) -> None:
-    """Verify R2: mutating rover_tilt_deg in M20_waypoints.json keeps hazard_grid SHA-256."""
-    tmp_datalake = tmp_path / "datalake"
-    tmp_datalake.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(REPO_ROOT / "datalake" / "M20_traverse.json", tmp_datalake / "M20_traverse.json")
+    """Verify R2: mutating rover_tilt_deg in M20_waypoints.json keeps grid & overlay SHA-256."""
+    real_root = tmp_path / "real"
+    real_datalake = real_root / "datalake"
+    real_datalake.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(REPO_ROOT / "datalake" / "M20_traverse.json", real_datalake / "M20_traverse.json")
+    shutil.copy2(
+        REPO_ROOT / "datalake" / "M20_waypoints.json", real_datalake / "M20_waypoints.json"
+    )
+    build_jezero_pack(real_root)
 
+    mutated_root = tmp_path / "mutated"
+    mutated_datalake = mutated_root / "datalake"
+    mutated_datalake.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(
+        REPO_ROOT / "datalake" / "M20_traverse.json", mutated_datalake / "M20_traverse.json"
+    )
     raw_wp = json.loads((REPO_ROOT / "datalake" / "M20_waypoints.json").read_text(encoding="utf-8"))
     for feat in raw_wp["features"]:
         feat["properties"]["tilt"] = 88.8888
-    (tmp_datalake / "M20_waypoints.json").write_text(json.dumps(raw_wp), encoding="utf-8")
+    (mutated_datalake / "M20_waypoints.json").write_text(json.dumps(raw_wp), encoding="utf-8")
+    build_jezero_pack(mutated_root)
+
+    for rel_name in ("hazard_grid.json", "hazard_overlay.png"):
+        real_sha = hashlib.sha256(
+            (real_root / "public_packs" / "jezero" / "v1" / rel_name).read_bytes()
+        ).hexdigest()
+        mutated_sha = hashlib.sha256(
+            (mutated_root / "public_packs" / "jezero" / "v1" / rel_name).read_bytes()
+        ).hexdigest()
+        assert real_sha == mutated_sha, f"Tilt leak detected in {rel_name}"
+
+
+def test_committed_pack_matches_fresh_rebuild(tmp_path: Path) -> None:
+    """Verify committed public_packs/jezero/v1/ matches a fresh deterministic rebuild."""
+    tmp_datalake = tmp_path / "datalake"
+    tmp_datalake.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(REPO_ROOT / "datalake" / "M20_traverse.json", tmp_datalake / "M20_traverse.json")
+    shutil.copy2(REPO_ROOT / "datalake" / "M20_waypoints.json", tmp_datalake / "M20_waypoints.json")
 
     build_jezero_pack(tmp_path)
 
-    committed_grid_sha = hashlib.sha256(
-        (REPO_ROOT / "public_packs" / "jezero" / "v1" / "hazard_grid.json").read_bytes()
-    ).hexdigest()
-    mutated_grid_sha = hashlib.sha256(
-        (tmp_path / "public_packs" / "jezero" / "v1" / "hazard_grid.json").read_bytes()
-    ).hexdigest()
-    assert committed_grid_sha == mutated_grid_sha
+    committed_dir = REPO_ROOT / "public_packs" / "jezero" / "v1"
+    rebuilt_dir = tmp_path / "public_packs" / "jezero" / "v1"
+
+    committed_files = sorted(
+        p.relative_to(committed_dir).as_posix() for p in committed_dir.rglob("*") if p.is_file()
+    )
+    rebuilt_files = sorted(
+        p.relative_to(rebuilt_dir).as_posix() for p in rebuilt_dir.rglob("*") if p.is_file()
+    )
+    assert committed_files == rebuilt_files, "pack is stale: run build-pack"
+
+    for rel_path in committed_files:
+        committed_sha = hashlib.sha256((committed_dir / rel_path).read_bytes()).hexdigest()
+        rebuilt_sha = hashlib.sha256((rebuilt_dir / rel_path).read_bytes()).hexdigest()
+        assert committed_sha == rebuilt_sha, f"pack is stale: run build-pack ({rel_path})"
