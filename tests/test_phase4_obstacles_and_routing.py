@@ -108,6 +108,10 @@ def test_x2_no_fabricated_cfa_threshold_11_or_10_pct() -> None:
                             )
 
 
+@pytest.mark.skipif(
+    not (REPO_ROOT / "datalake").exists(),
+    reason="Requires gitignored local datalake/ DTM GeoTIFF",
+)
 def test_c1_m1_specificity_even_sols_and_recall_sim3464_and_sol700() -> None:
     """Verify `C1`: 147 stops, even-sol specificity, DTM self-consistency (not independent)."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")

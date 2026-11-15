@@ -202,6 +202,10 @@ def test_validation_report_quantifies_orbital_scale_gap() -> None:
     assert m64.steep_bias_deg < -1.5
 
 
+@pytest.mark.skipif(
+    not (REPO_ROOT / "datalake").exists(),
+    reason="Requires gitignored local datalake/ cache for full DTM rebuild",
+)
 def test_async_pipeline_determinism_and_astar_envelope(tmp_path: Path) -> None:
     """Verify two independent async runs produce identical SHA-256 hashes and safe A* path."""
     run1_dir = tmp_path / "run1"

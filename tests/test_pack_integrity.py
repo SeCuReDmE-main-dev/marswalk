@@ -141,6 +141,10 @@ def test_derived_quantity_without_manifest_input_is_rejected() -> None:
         )
 
 
+@pytest.mark.skipif(
+    not (REPO_ROOT / "datalake").exists(),
+    reason="Requires gitignored local datalake/ cache for pack rebuild",
+)
 def test_hazard_grid_is_strictly_independent_of_rover_tilt_deg(tmp_path: Path) -> None:
     """Verify R2: mutating rover_tilt_deg in M20_waypoints.json keeps grid & overlay SHA-256."""
     real_root = tmp_path / "real"
@@ -174,6 +178,10 @@ def test_hazard_grid_is_strictly_independent_of_rover_tilt_deg(tmp_path: Path) -
         assert real_sha == mutated_sha, f"Tilt leak detected in {rel_name}"
 
 
+@pytest.mark.skipif(
+    not (REPO_ROOT / "datalake").exists(),
+    reason="Requires gitignored local datalake/ cache for pack rebuild",
+)
 def test_committed_pack_matches_fresh_rebuild(tmp_path: Path) -> None:
     """Verify committed public_packs/jezero/v1/ matches a fresh deterministic rebuild."""
     tmp_datalake = tmp_path / "datalake"
