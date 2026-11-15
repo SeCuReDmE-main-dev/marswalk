@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 from datetime import datetime, timezone
@@ -32,6 +33,29 @@ def _repo_shared_dir() -> Path:
 
 def _home_local_vault() -> Path:
     return Path.home() / "spaceapps-vault"
+
+
+_HANDOFF_ID_RE = re.compile(r"^HO-[0-9]{3,6}$")
+
+
+def _validate_safe_vault_token(raw: str, label: str = "identifier") -> str:
+    """Reject any path traversal, slash, backslash, NUL byte, or drive-letter separator."""
+    cleaned = str(raw).strip()
+    if not cleaned:
+        raise ValueError(f"Empty {label} is not allowed")
+    if ".." in cleaned or "/" in cleaned or "\\" in cleaned or ":" in cleaned or "\x00" in cleaned:
+        raise ValueError(f"Unsafe path traversal characters rejected in {label}")
+    return cleaned
+
+
+def _safe_child_path(parent_dir: Path, child_name: str, label: str = "filename") -> Path:
+    """Resolve `parent_dir / child_name` and verify it stays strictly inside `parent_dir`."""
+    safe_name = _validate_safe_vault_token(child_name, label=label)
+    resolved_parent = parent_dir.resolve()
+    candidate = (resolved_parent / safe_name).resolve()
+    if candidate.parent != resolved_parent:
+        raise ValueError(f"Path escapes shared vault directory in {label}")
+    return candidate
 
 
 def _ensure_vault_layout(base: Path) -> None:
@@ -132,10 +156,12 @@ def pivot_append(
     vault_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Append a timestamped status line to `00_PIVOT.md`."""
+    safe_section = _validate_safe_vault_token(section, label="section")
+    _validate_safe_vault_token(author, label="author")
     vault = resolve_vault_dir(vault_dir)
-    pivot_path = vault / "00_PIVOT.md"
+    pivot_path = _safe_child_path(vault, "00_PIVOT.md", label="pivot_file")
     current = pivot_path.read_text(encoding="utf-8")
-    norm_section = section.strip().upper()
+    norm_section = safe_section.upper()
     if norm_section in ("FRONT", "UI"):
         norm_section = "FRONTEND"
     header = f"## [{norm_section}]"
@@ -161,6 +187,8 @@ def handoff_create(
     vault_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Create a new handoff JSON ticket inside `10_HANDOFFS/`."""
+    _validate_safe_vault_token(sender, label="sender")
+    _validate_safe_vault_token(to, label="to")
     vault = resolve_vault_dir(vault_dir)
     handoffs_dir = vault / "10_HANDOFFS"
     existing = sorted(handoffs_dir.glob("HO-*.json"))
@@ -185,7 +213,7 @@ def handoff_create(
         "title": effective_title,
         "body": effective_body,
     }
-    out_path = handoffs_dir / f"{ho_id}.json"
+    out_path = _safe_child_path(handoffs_dir, f"{ho_id}.json", label="handoff_file")
     out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     if vault.resolve() == _repo_shared_dir().resolve():
         sync_with_home_vault(vault)
@@ -229,11 +257,17 @@ def handoff_ack(
     vault_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Acknowledge an open handoff ticket in `10_HANDOFFS/`."""
-    vault = resolve_vault_dir(vault_dir)
-    norm_id = handoff_id.strip().upper()
+    safe_raw = _validate_safe_vault_token(handoff_id, label="handoff_id")
+    _validate_safe_vault_token(by_agent, label="by_agent")
+    if safe_raw.lower().endswith(".json"):
+        safe_raw = safe_raw[:-5]
+    norm_id = safe_raw.upper()
     if not norm_id.startswith("HO-"):
         norm_id = f"HO-{int(norm_id):03d}" if norm_id.isdigit() else norm_id
-    target = vault / "10_HANDOFFS" / f"{norm_id}.json"
+    if not _HANDOFF_ID_RE.fullmatch(norm_id):
+        raise ValueError(f"Invalid handoff identifier '{handoff_id}': expected HO-NNN")
+    vault = resolve_vault_dir(vault_dir)
+    target = _safe_child_path(vault / "10_HANDOFFS", f"{norm_id}.json", label="handoff_id")
     if not target.exists():
         raise FileNotFoundError(f"Handoff '{handoff_id}' not found in {target.parent}")
     data = json.loads(target.read_text(encoding="utf-8"))
