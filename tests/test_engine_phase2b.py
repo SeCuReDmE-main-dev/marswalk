@@ -205,7 +205,7 @@ def test_validation_report_quantifies_orbital_scale_gap() -> None:
 
 
 @pytest.mark.skipif(
-    not (REPO_ROOT / "datalake").exists(),
+    not (REPO_ROOT / "datalake" / "JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif").exists(),
     reason="Requires gitignored local datalake/ cache for full DTM rebuild",
 )
 def test_async_pipeline_determinism_and_astar_envelope(tmp_path: Path) -> None:
