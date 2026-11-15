@@ -110,15 +110,15 @@
       "id": "SRC-APOLLO-SLOPE",
       "title": "Historical Apollo Lunar EVA Slope and Elevation Envelope",
       "mission": "Apollo Program / Comparative Planetary EVA Literature",
-      "url": "https://ntrs.nasa.gov/citations/19730016106",
-      "license": "Open Scientific Reference Value (NASA Technical Reports Server)",
-      "citation": "NASA NTRS 19730016106; Iqbal, Z., et al. (2024), Acta Astronautica, doi:10.1016/j.actaastro.2024.06.038 (<15 deg practical slope, 150 m max elevation change)."
+      "url": "https://doi.org/10.1016/j.actaastro.2024.07.006",
+      "license": "Open Scientific Reference Value",
+      "citation": "Iqbal, W., Head, J. W., van der Bogert, C. H., et al. (2024), Slopes along Apollo EVAs: Astronaut experience as input for future mission planning, Acta Astronautica 223, 184-196, doi:10.1016/j.actaastro.2024.07.006 (<15 deg practical slope, 150 m max elevation change)."
     },
     {
       "id": "synthetic-v1",
       "title": "MarsWalk Pass 1 Synthetic Placeholder Surface (UI Scaffold)",
       "mission": "MarsWalk Synthetic Placeholder Generator",
-      "url": "https://github.com/nasa/spaceapps",
+      "url": "https://github.com/SeCuReDmE-main-dev/marswalk",
       "license": "Apache-2.0",
       "citation": "Synthetic multi-scale terrain placeholder surface (grid_status=PLACEHOLDER, source_id=synthetic-v1) generated without reading rover tilt or USGS DTM."
     }
