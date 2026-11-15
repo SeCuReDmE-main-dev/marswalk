@@ -1,0 +1,42 @@
+{
+  "benchmark_id": "B5_PAIRED_BOOTSTRAP",
+  "split": "even_sols_only",
+  "n_test": 72,
+  "n_resamples": 5000,
+  "seed": 7,
+  "sha256_pack": "13f56f530ccf125c51cd96fa289475277127b03a5fdb4be124bb6ced895575ff",
+  "results": {
+    "vs_fixed_1m": {
+      "mean_diff_deg": -0.6604,
+      "ci95_deg": [
+        -0.9792,
+        -0.3777
+      ],
+      "reading": "funnel better (interval excludes 0)"
+    },
+    "vs_fixed_4m": {
+      "mean_diff_deg": -0.2334,
+      "ci95_deg": [
+        -0.434,
+        -0.0358
+      ],
+      "reading": "funnel better (interval excludes 0)"
+    },
+    "vs_fixed_16m": {
+      "mean_diff_deg": 0.3356,
+      "ci95_deg": [
+        0.0719,
+        0.6439
+      ],
+      "reading": "funnel worse (interval excludes 0)"
+    },
+    "vs_fixed_64m": {
+      "mean_diff_deg": -0.3172,
+      "ci95_deg": [
+        -0.7484,
+        0.093
+      ],
+      "reading": "not distinguishable (interval contains 0)"
+    }
+  }
+}

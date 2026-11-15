@@ -1,14 +1,16 @@
 # Contributing to MarsWalk (`CONTRIBUTING.md`)
 
-Thank you for contributing to **MarsWalk**! To keep parallel frontend (`feat/ui`) and backend/engine (`feat/engine`) development fast and conflict-free, please follow this workflow.
+Thank you for contributing to **MarsWalk**! We are a team of two, so I keep it simple: everyone works on `main`, in separate folders.
 
 ---
 
-## 1. Branch Workflow
+## 1. One Branch, Separate Folders
 
-- **`main`:** Protected baseline containing the frozen `v1.0.0` data contract (`src/marswalk/contracts/`, `schemas/`, `public_packs/jezero/v1/`) and verified releases.
-- **`feat/ui`:** Owned by **Frontend (teammate)** for all work under `frontend/`.
-- **`feat/engine`:** Owned by **Engine (jean)** for middleware and multi-scale terrain engine upgrades under `src/marswalk/` and `tests/`.
+- **`main`** is the only long-lived branch. Pull before you start, push small commits often.
+- **`frontend/`** belongs to the frontend lead (teammate). The engine never edits it.
+- **`src/marswalk/`, `tests/`, `bench/`, `public_packs/`, `schemas/`** belong to the engine (jean). The frontend reads them and never edits them.
+- **`shared/`** is common ground: handoffs and journal, through `tools/spaceapps_bridge.py`.
+- Because the folders do not overlap, two people pushing to `main` almost never conflict. If a short experiment needs a branch, it is merged back and deleted the same day.
 
 ---
 

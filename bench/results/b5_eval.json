@@ -14,7 +14,7 @@
     "h_min": 0.7,
     "eps": 0.005
   },
-  "comparison_vs_4m_and_64m": "beats_4m_and_64m_fixed_baselines",
-  "honest_16m_disclosure": "Honest disclosure: fixed 16m baseline has lower point MAE (1.1437 deg) than funnel (1.4792 deg) because rover chassis tilt (~3m wheelbase + stop localization) aligns with 16m smoothing on benign stops, whereas funnel conservatively retains higher 4m slopes when persistent hazards trigger.",
+  "comparison_vs_fixed_baselines": "funnel point MAE below fixed baselines ['1m', '4m', '64m']; best fixed baseline is 16m (1.1437 deg). B5 verdict: FAIL against the best fixed baseline. Significance: see bench/results/b5_bootstrap.json.",
+  "hypothesis_16m": "I propose (hypothesis, not tested): the rover chassis (~3 m wheelbase) plus stop localization error may average the ground over a footprint closer to the 16 m baseline, while the funnel keeps steeper 4 m slopes when hazards persist.",
   "sha256_pack": "13f56f530ccf125c51cd96fa289475277127b03a5fdb4be124bb6ced895575ff"
 }

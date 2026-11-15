@@ -1,4 +1,17 @@
-"""In-memory spatial query and EVA route evaluation service over a verified site pack."""
+"""Answers the two questions the map asks: "what is under my click?" and "can I walk this?".
+
+- `lookup_cell(lon, lat)`: the nearest hazard cell AND the nearest real
+  Perseverance stop, so the interface can show the orbital prediction next
+  to what the rover actually measured on the ground.
+- `evaluate_route(request)`: for 2 to 500 [lon, lat] points, the total
+  distance, the farthest walk-back distance from the start (limit: 2 km), the worst
+  slope at the 1 m and 64 m baselines, the largest scale divergence, the
+  duration, a radiation estimate, a GO / CAUTION / NO_GO verdict and the
+  human-readable reasons behind it.
+
+Everything is read from an already verified pack, in memory. Nothing here
+downloads data or changes the pack.
+"""
 
 from __future__ import annotations
 

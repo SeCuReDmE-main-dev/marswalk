@@ -2,6 +2,22 @@
 
 All coordinates use planetocentric East longitude and latitude on the
 IAU 2015 / NASA Mars Trek / USGS Astrogeology sphere of radius R = 3,396,190 m.
+
+Read this file as a dictionary
+    Every field the frontend receives is defined below, with its unit and
+    its allowed values. The JSON Schemas in `schemas/` are exported from
+    these classes, so the two never disagree.
+
+The three ideas that run through every class
+    1. `Quantity`: a number never travels alone. It carries its unit, its
+       provenance tag and the id of its source in `manifest.sources[]`.
+    2. `ProvenanceTag`: MEASURED (a real instrument), DERIVED (computed from
+       real data), SIMULATED (placeholder or model, never shown as real).
+    3. `VerdictLiteral`: GO / CAUTION / NO_GO, the only verdict words the
+       astronaut ever sees.
+
+The one rule
+    v1.0.0 only grows. Fields may be added; none is ever renamed or removed.
 """
 
 from __future__ import annotations

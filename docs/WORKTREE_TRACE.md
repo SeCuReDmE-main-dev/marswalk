@@ -4,15 +4,14 @@ This document maps the exact directory structure, branch topology, and data flow
 
 ---
 
-## 1. Branch Topology (Zero-Collision Parallel Development)
+## 1. Branch Topology (single `main`, separate folders)
 
 ```text
-main  (Frozen Data Contract v1.0.0 + Signed Pack public_packs/jezero/v1/ + FastAPI Middleware)
- ├──► feat/ui      (Philippe Pierre / teammate — Full ownership of frontend/**)
- └──► feat/engine  (Jean-Sebastien Beaulieu / jean — Multi-scale DTM engine & Pass 2 analytics)
+main   (contract v1.0.0 + signed pack public_packs/jezero/v1/ + middleware + multi-scale engine + frontend/)
 ```
 
-- **Why this structure works:** Because `public_packs/jezero/v1/` is committed and SHA-256 verified on `main`, `feat/ui` can build and deploy the complete interactive web application immediately using static JSON/GeoJSON/PNG fetches, while `feat/engine` upgrades the multi-scale terrain engine in parallel without touching `frontend/`.
+- **History:** the first evening used three branches (`feat/ui`, `feat/engine`, `docs/philippe-onboarding`). For a team of two, they were merged into `main` on 2026-11-14 at about 22h30 EST and deleted. The full history stays in `git log`.
+- **Why one branch is enough:** the frontend works only in `frontend/`, the engine only in `src/`, `tests/`, `bench/`, `public_packs/` and `schemas/`. The folders never overlap, so two people can push to `main` without stepping on each other.
 
 ---
 

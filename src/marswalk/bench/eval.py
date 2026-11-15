@@ -246,22 +246,24 @@ def run_and_save_b5_eval(
 ) -> dict[str, Any]:
     """Run B5 on held-out EVEN sols (`test_even`) and write `bench/results/b5_eval.json`."""
     res = evaluate_window_b5(repo_root, split="test_even", params=params)
-    best_fixed_4_64 = min(res["mae_fixed_4m"], res["mae_fixed_64m"])
+    fixed = {
+        "1m": res["mae_fixed_1m"],
+        "4m": res["mae_fixed_4m"],
+        "16m": res["mae_fixed_16m"],
+        "64m": res["mae_fixed_64m"],
+    }
+    best_name = min(fixed, key=fixed.get)
+    beaten = sorted(k for k, v in fixed.items() if res["mae_funnel"] < v)
     comparison_note = (
-        "beats_4m_and_64m_fixed_baselines"
-        if res["mae_funnel"] < best_fixed_4_64
-        else "worse_or_equal_to_best_fixed_baseline_reported_honestly"
+        f"funnel point MAE below fixed baselines {beaten}; best fixed baseline is "
+        f"{best_name} ({fixed[best_name]} deg). B5 verdict: "
+        + ("PASS" if res["mae_funnel"] < fixed[best_name] else "FAIL")
+        + " against the best fixed baseline. Significance: see bench/results/b5_bootstrap.json."
     )
     honest_16m_note = (
-        "mae_funnel < mae_fixed_16m"
-        if res["mae_funnel"] < res["mae_fixed_16m"]
-        else (
-            f"Honest disclosure: fixed 16m baseline has lower point MAE "
-            f"({res['mae_fixed_16m']} deg) than funnel ({res['mae_funnel']} deg) because "
-            "rover chassis tilt (~3m wheelbase + stop localization) aligns with 16m "
-            "smoothing on benign stops, whereas funnel conservatively retains higher 4m "
-            "slopes when persistent hazards trigger."
-        )
+        "I propose (hypothesis, not tested): the rover chassis (~3 m wheelbase) plus stop "
+        "localization error may average the ground over a footprint closer to the 16 m "
+        "baseline, while the funnel keeps steeper 4 m slopes when hazards persist."
     )
     payload: dict[str, Any] = {
         "mae_funnel": res["mae_funnel"],
@@ -274,8 +276,8 @@ def run_and_save_b5_eval(
         "n_test": res["n_samples"],
         "split": "even_sols_only",
         "params": res["params"],
-        "comparison_vs_4m_and_64m": comparison_note,
-        "honest_16m_disclosure": honest_16m_note,
+        "comparison_vs_fixed_baselines": comparison_note,
+        "hypothesis_16m": honest_16m_note,
         "sha256_pack": res["sha256_pack"],
     }
     target = output_path or (repo_root / "bench" / "results" / "b5_eval.json")

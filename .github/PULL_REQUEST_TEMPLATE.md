@@ -1,6 +1,6 @@
 ## Summary
 
-- **Branch / Track:** `feat/ui` | `feat/engine`
+- **Track (folder):** `frontend/` | engine (`src/`, `tests/`, `bench/`, `public_packs/`)
 - **Contract Impact:** None (`v1.0.0` preserved) | Additive bump
 
 ## Verification Checklist

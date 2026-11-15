@@ -92,7 +92,7 @@ pytest -q --tb=short
 
 - **Data Contract (`v1.0.0` Frozen):** [`docs/contracts/10_CONTRAT_DONNEES.md`](docs/contracts/10_CONTRAT_DONNEES.md)
 - **Frontend Integration Guide:** [`frontend/README.md`](frontend/README.md)
-- **Branch & Worktree Topology (`feat/ui` vs `feat/engine`):** [`docs/WORKTREE_TRACE.md`](docs/WORKTREE_TRACE.md)
+- **Branch history (now a single `main`):** [`docs/WORKTREE_TRACE.md`](docs/WORKTREE_TRACE.md)
 - **Human-AI Collaboration & AI Disclosure:** [`HUMAN.md`](HUMAN.md) & [`docs/AI_USAGE.md`](docs/AI_USAGE.md)
 - **Multi-Agent Rules:** [`AGENTS.md`](AGENTS.md) (`.claude/`, `.antigravity/`, `.antigravity-ide/`, `.gemini/`)
 - **Data Licenses & Canadian Open Government Licence Attribution:** [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)
