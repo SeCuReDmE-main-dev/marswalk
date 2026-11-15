@@ -192,6 +192,18 @@ def load_funnel_params(repo_root: Path) -> FunnelParams:
     )
 
 
+def load_retained_carriers(repo_root: Path) -> tuple[str, ...] | None:
+    """Load `retained_carriers` from `profiles/funnel_v1.json` if present."""
+    prof_path = repo_root / "profiles" / "funnel_v1.json"
+    if not prof_path.exists():
+        return None
+    data = json.loads(prof_path.read_text(encoding="utf-8"))
+    retained = data.get("retained_carriers")
+    if isinstance(retained, list) and retained:
+        return tuple(str(x) for x in retained)
+    return None
+
+
 def evaluate_window_b5(
     repo_root: Path,
     *,
@@ -211,7 +223,8 @@ def evaluate_window_b5(
     all_obs, sha_pack = extract_window_observations(repo_root)
     subset_obs = [o for o in all_obs if o.waypoint_id in allowed_ids]
     cfg = params if params is not None else load_funnel_params(repo_root)
-    metrics = evaluate_observations_with_params(subset_obs, cfg)
+    retained = load_retained_carriers(repo_root)
+    metrics = evaluate_observations_with_params(subset_obs, cfg, active_carriers=retained)
     return {
         **metrics,
         "split": split,
@@ -221,6 +234,7 @@ def evaluate_window_b5(
             "h_min": cfg.h_min,
             "eps": cfg.eps,
         },
+        "retained_carriers": list(retained) if retained is not None else None,
         "sha256_pack": sha_pack,
     }
 

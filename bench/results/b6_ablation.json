@@ -1,0 +1,135 @@
+{
+  "benchmark_id": "B6_CARRIER_ABLATION",
+  "split": "odd_sols_only_tune",
+  "n_tune_odd": 75,
+  "params_used": {
+    "p": 3,
+    "tau_max": 0.2,
+    "h_min": 0.7,
+    "eps": 0.005
+  },
+  "initial_carrier_count": 10,
+  "baseline_mae_tune_all_10": 1.3293,
+  "leave_one_out": [
+    {
+      "carrier": "I_source",
+      "variance_index": 0.0,
+      "mae_tune_without_carrier": 1.3299,
+      "delta_mae_deg": 0.0006,
+      "mean_i_star_without": 0.1967,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "REMOVE_CANDIDATE (index < 0.05 and |delta_mae| <= 0.10 deg)"
+    },
+    {
+      "carrier": "I_scale",
+      "variance_index": 0.0504,
+      "mae_tune_without_carrier": 1.3246,
+      "delta_mae_deg": -0.0047,
+      "mean_i_star_without": 0.1917,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "KEEP (variance_index >= 0.05 or |delta_mae| > 0.10 deg)"
+    },
+    {
+      "carrier": "I_slope",
+      "variance_index": 0.226,
+      "mae_tune_without_carrier": 1.3676,
+      "delta_mae_deg": 0.0383,
+      "mean_i_star_without": 0.1771,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "KEEP (variance_index >= 0.05 or |delta_mae| > 0.10 deg)"
+    },
+    {
+      "carrier": "I_rough",
+      "variance_index": 0.2641,
+      "mae_tune_without_carrier": 1.3107,
+      "delta_mae_deg": -0.0186,
+      "mean_i_star_without": 0.1613,
+      "b3_pass_without": false,
+      "b9_pass_without": true,
+      "decision": "KEEP (variance_index >= 0.05 or |delta_mae| > 0.10 deg)"
+    },
+    {
+      "carrier": "I_fractal",
+      "variance_index": 0.0442,
+      "mae_tune_without_carrier": 1.3304,
+      "delta_mae_deg": 0.0011,
+      "mean_i_star_without": 0.1927,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "REMOVE_CANDIDATE (index < 0.05 and |delta_mae| <= 0.10 deg)"
+    },
+    {
+      "carrier": "I_diverge",
+      "variance_index": 0.1075,
+      "mae_tune_without_carrier": 1.3359,
+      "delta_mae_deg": 0.0066,
+      "mean_i_star_without": 0.1934,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "KEEP (variance_index >= 0.05 or |delta_mae| > 0.10 deg)"
+    },
+    {
+      "carrier": "I_texture",
+      "variance_index": 0.015,
+      "mae_tune_without_carrier": 1.3299,
+      "delta_mae_deg": 0.0006,
+      "mean_i_star_without": 0.1982,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "REMOVE_CANDIDATE (index < 0.05 and |delta_mae| <= 0.10 deg)"
+    },
+    {
+      "carrier": "I_constraint",
+      "variance_index": 0.2617,
+      "mae_tune_without_carrier": 1.2419,
+      "delta_mae_deg": -0.0874,
+      "mean_i_star_without": 0.1857,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "KEEP (variance_index >= 0.05 or |delta_mae| > 0.10 deg)"
+    },
+    {
+      "carrier": "I_coverage",
+      "variance_index": 0.0,
+      "mae_tune_without_carrier": 1.3299,
+      "delta_mae_deg": 0.0006,
+      "mean_i_star_without": 0.1922,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "REMOVE_CANDIDATE (index < 0.05 and |delta_mae| <= 0.10 deg)"
+    },
+    {
+      "carrier": "I_uncertainty",
+      "variance_index": 0.0312,
+      "mae_tune_without_carrier": 1.3326,
+      "delta_mae_deg": 0.0033,
+      "mean_i_star_without": 0.1973,
+      "b3_pass_without": true,
+      "b9_pass_without": true,
+      "decision": "REMOVE_CANDIDATE (index < 0.05 and |delta_mae| <= 0.10 deg)"
+    }
+  ],
+  "retained_carrier_count": 5,
+  "retained_carriers": [
+    "I_scale",
+    "I_slope",
+    "I_rough",
+    "I_diverge",
+    "I_constraint"
+  ],
+  "removed_carriers": [
+    "I_source",
+    "I_coverage",
+    "I_texture",
+    "I_uncertainty",
+    "I_fractal"
+  ],
+  "mae_tune_after_reduction": 1.3324,
+  "mean_i_star_after_reduction": 0.2238,
+  "b3_pass_after_reduction": true,
+  "b9_pass_after_reduction": true,
+  "decision_summary": "I keep 5 of 10 carriers (I_scale, I_slope, I_rough, I_diverge, I_constraint) and prune 5 negligible carriers (I_source, I_coverage, I_texture, I_uncertainty, I_fractal) whose variance index < 0.05 and whose joint removal changes odd-sol MAE by <= 0.10 deg while preserving B3 (100% persistent scarp survival) and B9 (I* > 0 everywhere)."
+}

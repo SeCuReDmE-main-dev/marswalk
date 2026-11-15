@@ -1,0 +1,51 @@
+{
+  "benchmark_id": "B7_SALIB_SOBOL_SENSITIVITY",
+  "split": "odd_sols_only_tune",
+  "n_tune_odd": 75,
+  "n_base": 64,
+  "evaluations_per_seed": 384,
+  "parameter_names": [
+    "p",
+    "tau_max",
+    "h_min",
+    "eps"
+  ],
+  "S1": {
+    "p": 0.9988,
+    "tau_max": 0.0008,
+    "h_min": 0.0,
+    "eps": 0.0
+  },
+  "S1_conf": {
+    "p": 0.2272,
+    "tau_max": 0.0028,
+    "h_min": 0.0073,
+    "eps": 0.0
+  },
+  "ST": {
+    "p": 0.9987,
+    "tau_max": 0.0001,
+    "h_min": 0.0004,
+    "eps": 0.0
+  },
+  "ST_conf": {
+    "p": 0.2274,
+    "tau_max": 0.0,
+    "h_min": 0.0001,
+    "eps": 0.0
+  },
+  "seed_137_ST": {
+    "p": 0.9988,
+    "tau_max": 0.0,
+    "h_min": 0.0004,
+    "eps": 0.0
+  },
+  "st_drift_by_param": {
+    "p": 0.0001,
+    "tau_max": 0.0001,
+    "h_min": 0.0,
+    "eps": 0.0
+  },
+  "max_st_drift_between_seeds": 0.0001,
+  "dominant_parameter": "p"
+}

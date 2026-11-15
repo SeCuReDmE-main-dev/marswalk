@@ -88,3 +88,12 @@ $$\text{cost}(u \to v) = d(u, v) \cdot \left(1 + \alpha \cdot \theta_{1\text{m}}
 where $(\alpha, \beta, \gamma) = (0.12, 1.50, 1.20)$ and any cell with verdict `NO_GO` has $\text{cost} = +\infty$.
 1. **Scout Rover Pass:** Validates a continuous traversable corridor obeying JPL rover limits ($\le 20^\circ$ bedrock, $\le 10^\circ$ sand/aeolian).
 2. **Astronaut EVA Pass:** Computes the optimal crewed footpath within the rover-validated corridor obeying $d_{\text{walkback}} \le 2000\text{ m}$ and $\theta_{1\text{m}} \le 20^\circ$.
+
+---
+
+## 6. Hyperparameter Sensitivity (B7) and Carrier Ablation Decision (B6)
+
+- **Sobol Global Sensitivity (`bench/results/b7_sobol.json`, SALib Saltelli-Sobol across seeds `42` and `137` on `n_tune = 75` odd sols):**
+  - Persistence scale count $p$ dominates total-order variance ($S_T(p) = 0.9987$, seed drift $0.0001$), followed by entropy floor $H_{\min}$ ($S_T(H_{\min}) = 0.0004$) and maximum pruned share $\tau_{\max}$ ($S_T(\tau_{\max}) = 0.0001$).
+- **Leave-One-Out Carrier Reduction Decision (`bench/results/b6_ablation.json`):**
+  - **I keep 5 carriers (`I_scale`, `I_slope`, `I_rough`, `I_diverge`, `I_constraint`) because** each contributes $\ge 0.05$ of normalized determination variance across odd tuning sols (`I_slope`, `I_scale`, `I_rough`, `I_diverge`, `I_constraint`), whereas the 5 pruned carriers (`I_source`, `I_coverage`, `I_texture`, `I_uncertainty`, `I_fractal`) each have variance index $< 0.05$ (binary `source` and `nodata` checks are already enforced upstream by `prefilter.py` Layer 1) and their joint removal changes odd-sol tuning MAE by only $+0.0031^\circ$ ($1.3293^\circ \to 1.3324^\circ \le 0.10^\circ$) while keeping `B3` ($100\%$ persistent scarp survival) and `B9` ($I^* > 0$ everywhere) at `PASS`.
