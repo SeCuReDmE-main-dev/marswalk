@@ -10,6 +10,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from marswalk.engine.gates import (
     gate_g0_ingest,
     gate_g1_classify,
