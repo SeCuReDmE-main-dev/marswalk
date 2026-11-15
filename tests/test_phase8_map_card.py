@@ -158,6 +158,60 @@ def test_svg_telemetry_numbers_recomputed_from_pack_geometry_and_cells(tmp_path:
     assert f"64 m orbital shows {cell_64m:.2f}° vs {tilt_700:.2f}° ground!" in svg_text
 
 
+def _segments_cross(p1, p2, q1, q2) -> bool:
+    def orient(a, b, c) -> float:
+        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
+
+    d1, d2 = orient(q1, q2, p1), orient(q1, q2, p2)
+    d3, d4 = orient(p1, p2, q1), orient(p1, p2, q2)
+    return (d1 > 0) != (d2 > 0) and (d3 > 0) != (d4 > 0)
+
+
+def _inside(pt, ring) -> bool:
+    x, y = pt
+    inside = False
+    for (x1, y1), (x2, y2) in zip(ring, ring[1:] + ring[:1], strict=False):
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+            inside = not inside
+    return inside
+
+
+def test_svg_makes_no_unverified_avoidance_or_layer_claims(tmp_path: Path) -> None:
+    """Audit H2/H3: obstacle contacts and UNAVAILABLE layers come from the pack, not literals."""
+    pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
+    out_svg = tmp_path / "claims.svg"
+    assert main(["generate-map-card", "--site", "jezero", "--output", str(out_svg)]) == 0
+    svg_text = out_svg.read_text(encoding="utf-8")
+
+    # Independent oracle: exact segment/edge crossing or vertex containment.
+    obs_feat = next(
+        f for f in pack.route.features if f.properties.segment_type == "DERIVED_OBSTACLE_AWARE_EVA"
+    )
+    assert isinstance(obs_feat.geometry, GeoJsonLineGeometry)
+    line = [tuple(map(float, c)) for c in obs_feat.geometry.coordinates]
+    touched = 0
+    for o in pack.obstacles.features:
+        ring = [tuple(map(float, c)) for c in o.geometry.coordinates[0]]
+        edges = list(zip(ring, ring[1:] + ring[:1], strict=False))
+        if any(_inside(p, ring) for p in line) or any(
+            _segments_cross(a, b, e1, e2)
+            for a, b in zip(line, line[1:], strict=False)
+            for e1, e2 in edges
+        ):
+            touched += 1
+    n_obs = len(pack.obstacles.features)
+    assert f"Touches {touched}/{n_obs} obstacle polygons (vector check)" in svg_text
+    assert "Avoids" not in svg_text
+
+    unavailable = sorted(
+        k for k, v in pack.hazards.external_layers_status.items() if v.get("tag") == "UNAVAILABLE"
+    )
+    assert unavailable, "pack must declare its UNAVAILABLE layers"
+    assert f"never fabricated): {', '.join(unavailable)}." in svg_text
+    hz = pack.hazards
+    assert f"({hz.rows}x{hz.cols} · {hz.cell_size_m:.1f} m)" in svg_text
+
+
 def test_committed_jezero_survival_map_asset_matches_generator(tmp_path: Path) -> None:
     """Verify `docs/assets/jezero_eva_survival_map.svg` exists and matches fresh CLI output."""
     committed_svg = REPO_ROOT / "docs" / "assets" / "jezero_eva_survival_map.svg"

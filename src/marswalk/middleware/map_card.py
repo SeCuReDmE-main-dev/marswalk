@@ -61,6 +61,34 @@ def _find_route_feature(pack: LoadedSitePack, segment_type: str) -> EvaRouteFeat
     return None
 
 
+def _point_in_ring(x: float, y: float, ring: list[list[float]]) -> bool:
+    """Even-odd ray-casting test in (lon, lat) degrees (window is ~2 km, planar is adequate)."""
+    inside = False
+    n = len(ring)
+    for i in range(n):
+        x1, y1 = float(ring[i][0]), float(ring[i][1])
+        x2, y2 = float(ring[(i + 1) % n][0]), float(ring[(i + 1) % n][1])
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+            inside = not inside
+    return inside
+
+
+def _count_obstacles_crossed(
+    coords: list[list[float]], rings: list[list[list[float]]], samples_per_segment: int = 40
+) -> int:
+    """Count obstacle polygons touched by a densified polyline (vector check, no claim inferred)."""
+    hit: set[int] = set()
+    for (lon_a, lat_a), (lon_b, lat_b) in zip(coords, coords[1:], strict=False):
+        for k in range(samples_per_segment + 1):
+            t = k / samples_per_segment
+            x = lon_a + (lon_b - lon_a) * t
+            y = lat_a + (lat_b - lat_a) * t
+            for idx, ring in enumerate(rings):
+                if idx not in hit and _point_in_ring(x, y, ring):
+                    hit.add(idx)
+    return len(hit)
+
+
 def _render_badge(x: float, y: float, text: str, bg: str, fg: str = "#0b1822") -> str:
     width = max(56.0, round(len(text) * 6.4 + 14.0, 1))
     return (
@@ -169,9 +197,10 @@ def generate_survival_map_svg(
     unavailable_layers = sorted(
         name
         for name, meta in (pack.hazards.external_layers_status or {}).items()
-        if meta.get("status") == "UNAVAILABLE"
+        if meta.get("tag") == "UNAVAILABLE" or meta.get("available") is False
     )
-    unavailable_str = ", ".join(unavailable_layers) if unavailable_layers else "THEMIS, CRISM, MEDA"
+    unavailable_str = ", ".join(unavailable_layers) if unavailable_layers else "none"
+    obstacle_rings = [f.geometry.coordinates[0] for f in obstacle_features]
 
     parts: list[str] = []
     a = parts.append
@@ -185,7 +214,8 @@ def generate_survival_map_svg(
     )
     a(
         '<title id="marswalk-map-title">'
-        "MarsWalk Jezero Western Delta EVA Survival Map Card (v1.1.0)"
+        "MarsWalk Jezero Western Delta EVA Survival Map Card "
+        f"(v{_esc(pack.manifest.contract_version)})"
         "</title>"
     )
     a(
@@ -240,7 +270,8 @@ def generate_survival_map_svg(
     )
     a(
         '<text x="36" y="102" font-size="12" font-weight="700" fill="#e8f2f8">'
-        "GEOREFERENCED MULTI-SCALE HAZARD GRID (40x40 · 48.7 m) &amp; OBSTACLE-AWARE EVA CORRIDORS"
+        f"GEOREFERENCED MULTI-SCALE HAZARD GRID ({pack.hazards.rows}x{pack.hazards.cols} · "
+        f"{pack.hazards.cell_size_m:.1f} m) &amp; OBSTACLE-AWARE EVA CORRIDORS"
         "</text>"
     )
 
@@ -371,7 +402,8 @@ def generate_survival_map_svg(
         a(f'<g id="{_esc(stop.properties.feature_id)}">')
         a(
             f'<circle cx="{sx:.2f}" cy="{sy:.2f}" r="6.2" '
-            'fill="#4fb87a" stroke="#ffffff" stroke-width="1.8" />'
+            f'fill="{_verdict_color(stop.properties.verdict)}" '
+            'stroke="#ffffff" stroke-width="1.8" />'
         )
         a(f'<circle cx="{sx:.2f}" cy="{sy:.2f}" r="2.2" fill="#0b1822" />')
         a(
@@ -402,7 +434,7 @@ def generate_survival_map_svg(
                 f"{bx:.2f},{by + 7.0:.2f} {bx - 7.0:.2f},{by:.2f}"
             )
             a(f'<polygon points="{pts_d}" fill="#df6658" stroke="#ffffff" stroke-width="1.5" />')
-            lbl = f"Benchmark · Sol {sol} ({tilt:.2f}° NO_GO)"
+            lbl = f"Benchmark · Sol {sol} ({tilt:.2f}° {bm.properties.verdict})"
             bw = len(lbl) * 5.6 + 10.0
             lx = bx - 11.0
             a(
@@ -419,7 +451,7 @@ def generate_survival_map_svg(
             bx = map_x + 8.0
             lbl = (
                 f"◄ Rim Benchmark · Sol {sol} "
-                f"({lon:.3f}°E, ~{dist_w_km:.1f} km W · {tilt:.2f}° NO_GO)"
+                f"({lon:.3f}°E, ~{dist_w_km:.1f} km W · {tilt:.2f}° {bm.properties.verdict})"
             )
             bw = len(lbl) * 5.35 + 12.0
             a(
@@ -544,6 +576,11 @@ def generate_survival_map_svg(
         o_dur = op.estimated_duration_h.value if op.estimated_duration_h else 0.0
         o_rad = op.estimated_radiation_msv.value if op.estimated_radiation_msv else 0.0
         o_wb = _max_walkback_from_origin(obs_route)
+        o_crossed = (
+            _count_obstacles_crossed(obs_route.geometry.coordinates, obstacle_rings)
+            if isinstance(obs_route.geometry, GeoJsonLineGeometry)
+            else 0
+        )
         a(
             f'<rect x="{rx + 14:.1f}" y="180" width="{rw - 28:.1f}" height="62" rx="5" '
             'fill="#102331" stroke="#5b452c" stroke-width="1" />'
@@ -563,7 +600,7 @@ def generate_survival_map_svg(
         a(
             f'<text x="{rx + 22:.1f}" y="233" font-size="9.5" fill="#9fc0d6">'
             f"Walkback: {o_wb:,.1f} m | "
-            f"Avoids {len(obstacle_features)} &gt;= 4 m scarps/formations | "
+            f"Touches {o_crossed}/{len(obstacle_features)} obstacle polygons (vector check) | "
             f"Dose: {o_rad:.4f} mSv (proxy Curiosity RAD, Gale)"
             "</text>"
         )
