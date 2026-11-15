@@ -11,6 +11,7 @@ IGNORED_DIRS = {
     "datalake",
     ".pytest_cache",
     ".ruff_cache",
+    ".hypothesis",
     "__pycache__",
     ".venv",
     "venv",

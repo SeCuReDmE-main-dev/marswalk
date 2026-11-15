@@ -63,18 +63,20 @@ class PackQueryService:
 
     def __init__(self, pack: LoadedSitePack) -> None:
         self.pack = pack
+        self._cell_coords = [(c.lon, c.lat, c) for c in pack.hazards.cells]
+        self._wp_coords = [(w.properties.lon, w.properties.lat, w) for w in pack.waypoints.features]
 
     def lookup_cell(self, lon: float, lat: float) -> CellLookupResult:
         """Return the nearest HazardCell and nearest Perseverance Waypoint to (lon, lat)."""
-        best_cell = min(
-            self.pack.hazards.cells,
-            key=lambda c: (c.lon - lon) ** 2 + (c.lat - lat) ** 2,
+        _, _, best_cell = min(
+            self._cell_coords,
+            key=lambda item: (item[0] - lon) ** 2 + (item[1] - lat) ** 2,
         )
         dist_cell = round(spherical_distance_m(lon, lat, best_cell.lon, best_cell.lat), 2)
 
-        best_wp = min(
-            self.pack.waypoints.features,
-            key=lambda w: (w.properties.lon - lon) ** 2 + (w.properties.lat - lat) ** 2,
+        _, _, best_wp = min(
+            self._wp_coords,
+            key=lambda item: (item[0] - lon) ** 2 + (item[1] - lat) ** 2,
         )
         dist_wp = round(
             spherical_distance_m(lon, lat, best_wp.properties.lon, best_wp.properties.lat), 2

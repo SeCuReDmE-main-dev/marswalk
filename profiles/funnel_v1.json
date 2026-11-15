@@ -1,0 +1,9 @@
+{
+  "profile_id": "funnel_v1",
+  "version": "1.0.0",
+  "proposition_note": "Initial multi-scale fractal pruning funnel parameters before odd-sol tuning (Section 4 of MOTEUR_PLITHOGENIQUE_SWEET_SPOT_MARTIAN_MAP_14_11_26.md).",
+  "p": 2,
+  "tau_max": 0.25,
+  "h_min": 0.50,
+  "eps": 0.01
+}
