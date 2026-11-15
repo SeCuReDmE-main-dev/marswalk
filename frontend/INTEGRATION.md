@@ -129,6 +129,14 @@ Checks: 25 frontend tests pass, including the actual supplied path, Mars distanc
 
 Repository gate on this change: Ruff and verification of all 17 pack files pass. The Python suite needs local socket permissions for Windows asyncio/TestClient; after rerunning outside the sandbox, `pytest -x` reaches `test_async_pipeline_determinism_and_astar_envelope` and fails because the local ignored `datalake/SIM3464_metadata.xml` is absent. The full gate is not green. No backend tests, thresholds or data-pack files were changed to mask it.
 
+## Terrain scale and rover comparison
+
+The existing **Inspect the terrain** step now compares the 64 m orbital slope with the selected 64/16/4 m baseline using angle diagrams, original Quantities with source links, and one sentence stating whether the selected slope is steeper, gentler or the same to one decimal place. These are angle illustrations, not reconstructed terrain cross-sections or new satellite photographs. The baseline selection does not change map zoom, cell verdict, confidence or planner inputs. Invalid, missing, unavailable or non-degree readings display as unavailable; 1 m remains diagnostic only. The previous slope bars and duplicate selected-value readout were replaced, and the cell selector and engine reason are collapsible.
+
+**See a real rover example** opens an in-grid benchmark in the existing **Check the evidence** step. **Orbit vs ground** places the containing cell's 64 m slope beside the measured rover tilt and its verified Navcam frame. Reference and cell verdicts remain separate. At Sol 700 the current pack gives 13.31° for the containing cell and 20.33° measured rover tilt; the point-sampled slope cited in the pack notes has different spatial support. At out-of-grid Sol 1578 the orbital value stays unavailable and the cell comparison link is absent. **Compare this cell at 64 / 16 / 4 m** returns to the actual containing cell. Both navigation links focus and scroll to the destination step. These two steps now use the guide's single scrolling area rather than a nested content scroller.
+
+Validation: 27 frontend tests pass, including comparison of all 1,600 cells without mutating their data, missing/non-finite angle handling and out-of-grid reference coverage. Production build, Ruff and pack verification pass. Browser checks covered 64/16/4 m selection, unchanged verdicts, both evidence-navigation links, source links, photo decoding, missing outside-grid orbital data, mobile width, keyboard focus and guide collapse with tips off. No JavaScript errors or horizontal overflow were observed. Screenshots: `scale-comparison-desktop.png`, `scale-comparison-mobile.png`, `orbit-ground-desktop.png` and `orbit-ground-mobile.png` under `frontend/screenshots/`. The Python gate was rerun with local socket permissions and stopped at the same missing `datalake/SIM3464_metadata.xml`; no full-repository green claim is made.
+
 ## Build and validate
 
 ```powershell

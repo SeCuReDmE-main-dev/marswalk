@@ -1,17 +1,25 @@
 import type { ReactNode } from "react";
-import type { MarswalkData, EvaRouteFeature, Quantity } from "./data/types";
+import type {
+  MarswalkData,
+  EvaRouteFeature,
+  HazardCell,
+  Quantity,
+} from "./data/types";
 import { cellAt, routeParts, type LonLat } from "./domain";
 import RoverImage from "./RoverImage";
+import { AngleReading } from "./ScaleComparison";
 
 export default function BenchmarkPanel({
   data,
   selected,
   onSelect,
+  onInspect,
   q,
 }: {
   data: MarswalkData;
   selected?: EvaRouteFeature;
   onSelect: (f?: EvaRouteFeature) => void;
+  onInspect: (cell: HazardCell) => void;
   q: (v?: Quantity | null, digits?: number) => ReactNode;
 }) {
   const { benchmarks } = routeParts(data);
@@ -26,10 +34,10 @@ export default function BenchmarkPanel({
       className="benchmark-panel"
       aria-label="Measured hazard benchmarks"
     >
-      <div className="section-label">MEASURED HAZARD BENCHMARKS</div>
+      <h3>Orbit vs ground</h3>
       <p className="intro">
-        Compare orbital terrain with real rover tilt. These reference points are
-        separate from the proposed walk and science stops.
+        One place, two kinds of evidence. These rover references are separate
+        from the proposed walk and science stops.
       </p>
       <label className="field-label">
         Hazard benchmark
@@ -65,14 +73,26 @@ export default function BenchmarkPanel({
               {selected.properties.verdict}
             </span>
           </div>
-          <div className="readout">
-            <span>Rover tilt at this reference point</span>
-            {q(selected.properties.rover_tilt_deg, 2)}
+          <div className="angle-pair">
+            <AngleReading
+              label="64 m orbital slope"
+              value={cell?.slope_deg_by_baseline["64"]}
+              tone="orbit"
+              q={q}
+            />
+            <AngleReading
+              label="Measured rover tilt"
+              value={selected.properties.rover_tilt_deg}
+              tone="detail"
+              q={q}
+            />
           </div>
-          <div className="readout">
-            <span>Orbital slope · containing cell, 64 m baseline</span>
-            {q(cell?.slope_deg_by_baseline["64"], 2)}
-          </div>
+          <p className="scale-caption">
+            Orbital slope summarizes the containing terrain cell; rover tilt is
+            a point observation. They cover different areas. Lines illustrate
+            angles, not a terrain cross-section.
+          </p>
+          <RoverImage data={data} url={selected.properties.panorama_url} />
           <div className="readout">
             <span>Suit slope reference limit</span>
             {q(data.constraints.suit_max_slope_deg, 1)}
@@ -83,16 +103,32 @@ export default function BenchmarkPanel({
               here; the measured reference remains available.
             </p>
           )}
-          <p className="footnote">
-            Rover tilt is a point observation; orbital slope summarizes terrain
-            over a different area. They are different quantities. The 1 m
-            baseline is diagnostic only.
-          </p>
+          {cell && (
+            <>
+              <div className="cell-assessment">
+                <span>Containing cell · {cell.cell_id}</span>
+                <span
+                  className={`badge ${cell.verdict.toLowerCase().replace("_", "-")}`}
+                >
+                  {cell.verdict}
+                </span>
+              </div>
+              <button
+                className="scale-evidence-link"
+                onClick={() => onInspect(cell)}
+              >
+                Compare this cell at 64 / 16 / 4 m →
+              </button>
+            </>
+          )}
           <details>
             <summary>Benchmark explanation from the pack</summary>
+            <p>
+              The comparison above uses the containing cell. A point-sampled
+              slope in these notes has different spatial support.
+            </p>
             <p>{selected.properties.notes}</p>
           </details>
-          <RoverImage data={data} url={selected.properties.panorama_url} />
         </>
       )}
     </section>

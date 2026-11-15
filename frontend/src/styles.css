@@ -1709,69 +1709,149 @@ input[type="search"] {
   color: #61727b;
   overflow-wrap: anywhere;
 }
-.baseline-buttons {
+.scale-comparison h3,
+.benchmark-panel h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #203d4d;
+  margin: 17px 0 5px;
+}
+.scale-intro {
+  margin: 0 0 12px;
+  color: #60717a;
+  font-size: 12px;
+}
+.cell-picker {
+  margin: 0 0 10px;
+}
+.step-content:has(.scale-comparison),
+.step-content:has(.benchmark-panel) {
+  max-height: none;
+  overflow: visible;
+}
+.scale-buttons {
   display: flex;
   gap: 6px;
+  margin: 12px 0;
 }
-.baseline-buttons button {
+.scale-buttons button {
   flex: 1;
-  min-height: 34px;
+  flex-direction: column;
+  gap: 3px;
   background: #eeece7;
-  border: 1px solid #c4ccc9;
-  color: #49606d;
-  border-radius: 4px;
-  font-size: 11px;
+  border: 1px solid #bdc8cc;
+  color: #294c60;
+  padding: 8px 6px;
+  font-size: 13px;
   font-weight: 600;
 }
-.baseline-buttons .chosen {
-  color: #fff;
+.scale-buttons button span {
+  font-size: 10px;
+  font-weight: 400;
+}
+.scale-buttons button[aria-pressed="true"] {
+  color: white;
   background: #23536b;
   border-color: #23536b;
 }
-.slope-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-  margin: 20px 0;
+.angle-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+  margin: 12px 0;
 }
-.slope-chart > div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 10px;
-  color: #6b7981;
+.angle-reading {
+  --angle-color: #286780;
+  --angle-fill: #d5e8ee;
+  background: #fffefa;
+  padding: 10px;
+  border: 1px solid #cad5d7;
+  border-radius: 6px;
+  min-width: 0;
 }
-.slope-chart > div.focused {
-  color: #1f475a;
-  font-weight: 600;
+.angle-reading.detail {
+  --angle-color: #a84b26;
+  --angle-fill: #f3dfd1;
 }
-.slope-chart > div > span {
-  width: 30px;
-}
-.slope-chart b {
-  min-width: 34px;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.bar-track {
-  flex: 1;
-  background: #ddded7;
-  height: 8px;
-  border-radius: 2px;
-  overflow: hidden;
-}
-.bar-track i {
+.angle-reading > b {
   display: block;
-  height: 100%;
-  background: #a75936;
-  min-width: 1px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #425b68;
 }
-.focused .bar-track i {
-  background: #205b75;
+.angle-reading > svg {
+  display: block;
+  width: 100%;
+  height: 88px;
+  margin: 2px 0;
 }
-.selected-reading {
+.angle-reading .angle-axis {
+  stroke: #adbdc4;
+  stroke-width: 1;
+  fill: none;
+}
+.angle-reading .angle-grid {
+  stroke: #e5e8e6;
+  stroke-width: 1;
+  fill: none;
+}
+.angle-reading .angle-fill {
+  fill: var(--angle-fill);
+}
+.angle-reading .angle-line {
+  fill: none;
+  stroke: var(--angle-color);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.angle-reading .angle-tip {
+  fill: var(--angle-color);
+}
+.angle-reading text {
+  fill: #637783;
+  font-size: 12px;
+}
+.angle-reading .quantity {
+  align-items: flex-start;
+  width: 100%;
+}
+.angle-reading .quantity strong {
+  font-size: 20px;
+  color: var(--angle-color);
+}
+.angle-reading .quantity-note {
+  text-align: left;
+}
+.angle-reading .provenance {
+  white-space: normal;
+  text-align: left;
+}
+.scale-finding {
+  border-left: 3px solid #a95831;
+  padding: 9px 11px;
+  background: #f1e7dc;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #62442f;
+}
+.scale-caption {
+  color: #5b6c77;
+  font-size: 11px;
+  line-height: 1.65;
+  margin: 10px 0;
+}
+.scale-evidence-link {
   display: flex;
-  justify-content: flex-end;
+  width: 100%;
+  gap: 8px;
+  justify-content: space-between;
+  background: #e1ecf0;
+  border: 1px solid #b8cbd3;
+  color: #23536b;
+  font-size: 12px;
+  padding: 11px;
+  margin: 12px 0;
+  text-align: left;
 }
 .notice {
   display: flex;

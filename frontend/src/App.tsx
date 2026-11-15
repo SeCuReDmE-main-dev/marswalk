@@ -32,6 +32,7 @@ import BenchmarkPanel from "./BenchmarkPanel";
 import DataAvailability from "./DataAvailability";
 import WalkPreview from "./WalkPreview";
 import type { PreviewPosition } from "./routePreview";
+import ScaleComparison from "./ScaleComparison";
 const Terrain3D = lazy(() => import("./Terrain3D"));
 import {
   EngineTools,
@@ -55,6 +56,7 @@ import {
   routeParts,
   safeUrl,
   stopLabel,
+  cellAt,
   type LonLat,
 } from "./domain";
 
@@ -75,6 +77,15 @@ const defaultLayers: LayerState = {
   benchmarks: false,
   opacity: 0.22,
 };
+function focusGuideStep(index: number) {
+  requestAnimationFrame(() => {
+    const header = document.querySelector<HTMLButtonElement>(
+      `.step-header[aria-controls="step-${index}"]`,
+    );
+    header?.focus({ preventScroll: true });
+    header?.scrollIntoView({ block: "start", behavior: "instant" });
+  });
+}
 function Badge({ value }: { value: string }) {
   return (
     <span className={`badge ${value.toLowerCase().replace("_", "-")}`}>
@@ -127,7 +138,12 @@ function Workspace({
   data: MarswalkData;
   onRetry: () => void;
 }) {
-  const { candidate, stops } = routeParts(data);
+  const { candidate, stops, benchmarks } = routeParts(data);
+  const roverExample = benchmarks.find(
+    (b) =>
+      b.geometry.type === "Point" &&
+      cellAt(data.hazards, b.geometry.coordinates.map(Number) as LonLat),
+  );
   const [plannerOpen, setPlannerOpen] = useState(false),
     [picking, setPicking] = useState(false);
   const [planningPoints, setPlanningPoints] = useState<LonLat[]>([]);
@@ -675,30 +691,30 @@ function Workspace({
                         )}
                         {i === 1 && (
                           <>
-                            <p className="intro">
-                              Select a terrain cell to inspect its assessment.
-                            </p>
-                            <label className="field-label">
-                              Terrain cell
-                              <select
-                                aria-label="Terrain cell"
-                                value={cell?.cell_id || ""}
-                                onChange={(e) =>
-                                  chooseCell(
-                                    data.hazards.cells.find(
-                                      (c) => c.cell_id === e.target.value,
-                                    ),
-                                  )
-                                }
-                              >
-                                <option value="">Choose a cell…</option>
-                                {data.hazards.cells.map((c) => (
-                                  <option key={c.cell_id} value={c.cell_id}>
-                                    {c.cell_id} · {c.verdict}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
+                            <details className="cell-picker" open={!cell}>
+                              <summary>Choose a terrain cell</summary>
+                              <label className="field-label">
+                                Terrain cell
+                                <select
+                                  aria-label="Terrain cell"
+                                  value={cell?.cell_id || ""}
+                                  onChange={(e) =>
+                                    chooseCell(
+                                      data.hazards.cells.find(
+                                        (c) => c.cell_id === e.target.value,
+                                      ),
+                                    )
+                                  }
+                                >
+                                  <option value="">Choose a cell…</option>
+                                  {data.hazards.cells.map((c) => (
+                                    <option key={c.cell_id} value={c.cell_id}>
+                                      {c.cell_id} · {c.verdict}
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+                            </details>
                             {outside ? (
                               <div className="notice">
                                 <ShieldAlert size={19} />
@@ -722,87 +738,29 @@ function Workspace({
                                     </div>
                                     <Badge value={cell.verdict} />
                                   </div>
-                                  <div className="reason-box">
-                                    <b>Assessment reason</b>
-                                    <p>
-                                      {cell.reason.includes("persistent hazard")
-                                        ? "The model identifies a persistent hazard across neighboring analysis scales."
-                                        : cell.reason}
-                                    </p>
-                                    <details>
-                                      <summary>Full engine explanation</summary>
-                                      <p>{cell.reason}</p>
-                                    </details>
-                                  </div>
-                                  <div className="section-label">
-                                    SLOPE BY BASELINE <span>DERIVED</span>
-                                  </div>
-                                  <div
-                                    className="baseline-buttons"
-                                    role="group"
-                                    aria-label="Terrain analysis baseline"
-                                  >
-                                    {["64", "16", "4"]
-                                      .filter(
-                                        (b) => cell.slope_deg_by_baseline[b],
-                                      )
-                                      .map((b) => (
-                                        <button
-                                          key={b}
-                                          className={
-                                            baseline === b ? "chosen" : ""
-                                          }
-                                          onClick={() => setBaseline(b)}
-                                        >
-                                          {b} m
-                                        </button>
-                                      ))}
-                                  </div>
-                                  {tips && (
-                                    <div className="context-tip">
-                                      <HelpCircle size={15} />
-                                      <span>
-                                        Baseline is the distance over which
-                                        slope is computed. It changes the
-                                        comparison, not map zoom or the cell
-                                        verdict.
-                                      </span>
-                                    </div>
+                                  <ScaleComparison
+                                    cell={cell}
+                                    baseline={baseline}
+                                    onBaseline={setBaseline}
+                                    q={q}
+                                  />
+                                  {roverExample && (
+                                    <button
+                                      className="scale-evidence-link"
+                                      onClick={() => {
+                                        chooseBenchmark(roverExample);
+                                        focusGuideStep(2);
+                                      }}
+                                    >
+                                      See a real rover example · Sol{" "}
+                                      {roverExample.properties.sol}{" "}
+                                      <ArrowRight size={14} />
+                                    </button>
                                   )}
-                                  <div className="slope-chart">
-                                    {["64", "16", "4"].map((b) => {
-                                      const value =
-                                        cell.slope_deg_by_baseline[b];
-                                      return (
-                                        value && (
-                                          <div
-                                            key={b}
-                                            className={
-                                              baseline === b ? "focused" : ""
-                                            }
-                                          >
-                                            <span>{b} m</span>
-                                            <div className="bar-track">
-                                              <i
-                                                style={{
-                                                  width: `${Math.min(100, (value.value / 45) * 100)}%`,
-                                                }}
-                                              />
-                                            </div>
-                                            <b>{value.value.toFixed(1)}°</b>
-                                          </div>
-                                        )
-                                      );
-                                    })}
-                                  </div>
-                                  <div className="selected-reading">
-                                    {q(cell.slope_deg_by_baseline[baseline])}
-                                  </div>
-                                  <p className="footnote">
-                                    1 m is diagnostic only and excluded from the
-                                    current decision logic.{" "}
-                                    {cell.slope_deg_by_baseline["1"]?.note}
-                                  </p>
+                                  <details className="reason-box">
+                                    <summary>Why this verdict?</summary>
+                                    <p>{cell.reason}</p>
+                                  </details>
                                   <TerrainExtras
                                     data={data}
                                     cell={cell}
@@ -850,6 +808,11 @@ function Workspace({
                               data={data}
                               selected={selectedBenchmark}
                               onSelect={chooseBenchmark}
+                              onInspect={(value) => {
+                                setBaseline("64");
+                                chooseCell(value);
+                                focusGuideStep(1);
+                              }}
                               q={q}
                             />
                             <p className="intro">
