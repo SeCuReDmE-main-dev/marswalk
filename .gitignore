@@ -29,3 +29,8 @@ datalake/*
 .DS_Store
 Thumbs.db
 *.swp
+
+# Local secrets and private keys (never tracked)
+.env
+.env.*
+*.pem

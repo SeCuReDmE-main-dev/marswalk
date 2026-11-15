@@ -3,7 +3,7 @@
 > *The contract is my promise to you: the shape of the data will not move under your feet.*
 > — Jean-Sébastien
 
-These JSON Schema files (Draft 2020-12) are **exported automatically** from the Python contract in `src/marswalk/contracts/models.py`. They describe exactly what each pack file looks like. Do not edit them by hand: run `marswalk export-schemas` (or ask me) and they are regenerated.
+These JSON Schema files (Draft 2020-12) are **exported automatically** from the Python contract in `src/marswalk/contracts/models.py`. They describe exactly what each pack file looks like. Do not edit them by hand: run `marswalk-cli export-schemas` (or ask me) and they are regenerated.
 
 | Schema | Describes |
 |---|---|
@@ -24,4 +24,6 @@ These JSON Schema files (Draft 2020-12) are **exported automatically** from the 
 
 ## The one rule of the contract
 
-Version `1.0.0` only **grows**: new optional fields can appear, but no existing field is ever removed or renamed. If your code works today, it keeps working tomorrow.
+The contract only **grows**: new optional fields can appear, but no existing field is ever removed or renamed. If your code works today, it keeps working tomorrow.
+
+The current version is `1.1.0`. It added optional fields to the hazard grid (rock cover, radio verdict, sky view, geology, applicability; see [`public_packs/HUMAN.md`](../public_packs/HUMAN.md)). Every schema still accepts `contract_version: "1.0.0"`, so a `1.0.0` file stays valid. Mark these fields as optional in your types.

@@ -27,24 +27,43 @@ Almost every number is wrapped like this:
 
 ---
 
-## The six files
+## The files
+
+`manifest.json` signs ten files. The six you draw:
 
 | File | What it is | Key fields for the UI | Real or simulated today |
 |---|---|---|---|
-| `manifest.json` | The pack's identity card and signature | `bbox`, `crs`, `basemaps[0]` (Mars Trek tiles), `sources[]`, `files[]` | Real |
+| `manifest.json` | The pack's identity card and signature | `bbox` (the whole Jezero region), `crs`, `basemaps[0]` (Mars Trek tiles), `sources[]`, `files[]` | Real |
 | `waypoints.geojson` | The **708 real Perseverance stops** (sol 13 → 2022) | `properties.sol`, `lon`, `lat`, `rover_tilt_deg`, `rover_pitch_deg`, `rover_roll_deg`, `elev_geoid_m`, `dist_total_m`, `panorama_url` | **MEASURED** |
 | `route.geojson` | The rover's real traverse + a candidate astronaut walk + science stops | `properties.segment_type`, `tag`, `verdict`, `distance_m`, `max_slope_deg` | Traverse **MEASURED**, astronaut walk **SIMULATED** |
 | `hazard_grid.json` | The multi-scale hazard grid | `grid_status`, `cell_size_m`, `rows`, `cols`, `baselines_m`, `cells[]` | See below |
 | `hazard_overlay.png` | Transparent color image of the grid, aligned to `hazard_grid.bbox` | Drop it on the map as one image layer | Same status as the grid |
-| `eva_constraints.json` | Human and rover limits, each with its source | `suit_max_slope_deg` (20°), `walkback_max_km` (2), `eva_duration_min_h` / `max_h`, `gcr_dose_msv_per_day` | Sourced thresholds |
+| `eva_constraints.json` | Human and rover limits, each with its source | `suit_max_slope_deg` (20°), `walkback_max_km` (2), `eva_duration_min_h` / `max_h` (4 / 8 h), `rock_cfa_ok_pct` / `rock_cfa_caution_pct` (7 / 15 %, rover), `gcr_dose_msv_per_day` | Sourced thresholds |
+
+The other four are for audit, not for drawing: `validation_report.json` and `gate_log.jsonl` (how the engine decided), and `profiles/*.json` (the engine's frozen parameters).
 
 ## The hazard grid, honestly
 
-- Read `grid_status` first. **Today (pack v1.1.0, 2026-11-15) it is `"ENGINE"`: 40 × 40 cells (1,600 cells of about 48 m), slopes DERIVED from the real HiRISE 1 m terrain model with cos(φ) ground-meter scaling.**
-  - `"PLACEHOLDER"`: values are **synthetic** (`source_id: "synthetic-v1"`), made so you can build the UI tonight. Cells are large (about 600 m). Show a "preview data" badge.
-  - `"ENGINE"`: values come from my multi-scale engine reading the real HiRISE 1 m terrain model. Cells will be much smaller, so **never assume a cell size**.
-- Each cell: `cell_id`, `row`, `col`, `lon`, `lat`, `size_m`, `elev_m`, `slope_deg_by_baseline` (`"1"`, `"4"`, `"16"`, `"64"`), `scale_divergence`, `rock_cfa_pct`, `confidence {t, i, f}`, `verdict`, `reason`, plus optional v1.1.0 fields (`solar_shadow_fraction`, `hurst_exponent_h`, `geologic_unit`, `aoa_inside`, `calibrated_opinion`, `sky_view_factor`, `rf_comms_verdict`).
-- A baseline can be marked unreliable in a future pack (for example the 1 m slope on a 1 m terrain model is mostly pixel noise). If that happens, it keeps its key but its `note` explains why. Show the note; do not hide it.
+- Read `grid_status` first. **Today (pack v1.1.0) it is `"ENGINE"`: 40 × 40 cells (1,600 cells of about 48 m) over a 2 × 2 km window of the delta front, slopes DERIVED from the real HiRISE 1 m terrain model with cos(φ) ground-metre scaling.**
+  - The grid covers only `hazard_grid.bbox` (`77.3767–77.4105° E`, `18.4478–18.4815° N`), much smaller than `manifest.bbox`. Outside it there is **no** hazard information: show the area as "not analysed", never as safe.
+  - `"PLACEHOLDER"` (older packs only): synthetic values. If you ever see it, show a "preview data" badge. **Never assume a cell size**: read `cell_size_m`.
+- Verdicts today: 332 `GO`, 1,104 `CAUTION`, 164 `NO_GO`.
+- Each cell: `cell_id`, `row`, `col`, `lon`, `lat`, `size_m`, `elev_m`, `slope_deg_by_baseline` (`"1"`, `"4"`, `"16"`, `"64"`), `scale_divergence`, `rock_cfa_pct`, `confidence {t, i, f}`, `verdict`, `reason`.
+- The `"1"` slope baseline carries a `note`: on a 1 m terrain model it is mostly pixel noise, so the engine does not use it. Show the note; do not hide it.
+
+### The v1.1.0 fields (optional, read the caveats)
+
+| Field | What it means | Caveat to show |
+|---|---|---|
+| `rock_cfa_pct` | Rough estimate of the ground covered by rocks | A **heuristic** from the 1 m terrain model, not a rock count. It only raises uncertainty `i`; it never decides the verdict. 5 % means "below what orbit can detect", not "no rocks". |
+| `rf_comms_verdict` | Can a suit radio (1.8 m) reach the rover mast (3.0 m) at 414.2 MHz from this cell? | Computed from the rover at the first science stop (Sol 413). Conservative: most cells behind the delta scarp are `NO_GO`. Separate from the terrain `verdict`. |
+| `sky_view_factor` | Fraction of open sky above the cell | Terrain blocks only a few % of radiation dose. It is **not** a shelter for a solar storm. |
+| `hurst_exponent_h`, `solar_shadow_fraction` | Roughness texture, shadowed fraction | Derived values, for experts. |
+| `geologic_unit` | Approximate USGS SIM 3464 unit name | **Approximation** from elevation and position thresholds, not the published map polygons (not ingested yet). Contacts can be off by tens to hundreds of metres. |
+| `aoa_inside`, `calibrated_opinion` | Is this cell similar to places the rover actually visited, and the confidence learned from them | `aoa_inside = false` means the engine is extrapolating. Show it. |
+| `external_layers_status` (grid level) | Which extra data layers were used | THEMIS, CRISM and MEDA are `UNAVAILABLE` today (uncertainty 1.0): no value is invented for them. |
+
+Since Phase 4 the pack also signs `obstacles.geojson` (82 outlines: 45 scarps, 37 rock formations of about 4 m and more, `DERIVED`) and `planner_grid_10m.png` (the planner's 10 m grid). `route.geojson` gains a separate `ROUTE-EVA-M2-OBSTACLE-AWARE` line (`DERIVED`); the measured rover traverse is unchanged. Rocks smaller than a few metres are **not** visible to the 1 m terrain model.
 
 ## Coordinates
 

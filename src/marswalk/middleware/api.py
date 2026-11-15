@@ -22,6 +22,7 @@ What it promises
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -34,6 +35,7 @@ from marswalk.contracts.models import (
     EvaConstraints,
     EvaRoute,
     HazardGrid,
+    ObstacleFeatureCollection,
     SiteManifest,
     WaypointFeatureCollection,
 )
@@ -41,8 +43,12 @@ from marswalk.middleware.pack_loader import PackIntegrityError, load_and_verify_
 from marswalk.middleware.query_service import (
     CellLookupResult,
     PackQueryService,
+    PlanRouteRequest,
+    PlanRouteResult,
     RouteEvaluationRequest,
     RouteEvaluationResult,
+    RoverCamerasResponse,
+    is_safe_mode_enabled,
 )
 
 
@@ -79,9 +85,13 @@ app.add_middleware(
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    """Return service health and frozen contract version."""
-    return {"status": "ok", "contract_version": CONTRACT_VERSION}
+def health() -> dict[str, str | bool]:
+    """Return service health, frozen contract version, and live safe-mode flag."""
+    return {
+        "status": "ok",
+        "contract_version": CONTRACT_VERSION,
+        "safe_mode": is_safe_mode_enabled(),
+    }
 
 
 @app.get("/v1/sites")
@@ -142,3 +152,55 @@ def lookup_cell(
 def evaluate_route(site_id: str, request: RouteEvaluationRequest) -> RouteEvaluationResult:
     """Evaluate a candidate [lon, lat] EVA route against multi-scale hazards & xEVA limits."""
     return get_query_service(site_id).evaluate_route(request)
+
+
+@app.post("/v1/sites/{site_id}/plan-route", response_model=PlanRouteResult)
+def plan_route(site_id: str, request: PlanRouteRequest) -> PlanRouteResult:
+    """Plan an obstacle-avoiding EVA route on `planner_grid_10m.png` (`M2` + `M4` + `M6`)."""
+    return get_query_service(site_id).plan_route(request)
+
+
+@app.get("/v1/sites/{site_id}/obstacles", response_model=ObstacleFeatureCollection)
+def get_obstacles(site_id: str) -> ObstacleFeatureCollection:
+    """Return vectorized `>= ~4 m` boulder/scarp obstacle polygons (`obstacles.geojson`, `M1`)."""
+    svc = get_query_service(site_id)
+    if svc.pack.obstacles is None:
+        raise HTTPException(status_code=404, detail="obstacles.geojson not present in site pack")
+    return svc.pack.obstacles
+
+
+@app.get("/v1/sites/{site_id}/planner-grid-10m.png")
+def get_planner_grid_10m_png(site_id: str) -> FileResponse:
+    """Return the lossless 8-bit RGBA `planner_grid_10m.png` (`M1`/`M2`)."""
+    svc = get_query_service(site_id)
+    fname = svc.pack.hazards.planner_grid_file or "planner_grid_10m.png"
+    png_path = svc.pack.pack_dir / fname
+    if not png_path.exists():
+        raise HTTPException(status_code=404, detail="planner_grid_10m.png not present in site pack")
+    return FileResponse(png_path, media_type="image/png")
+
+
+@app.get("/v1/sites/{site_id}/waypoints/{sol}/cameras", response_model=RoverCamerasResponse)
+def get_waypoint_cameras(
+    site_id: str,
+    sol: int,
+    azimuth_deg: float | None = Query(default=None, ge=0.0, le=360.0),
+    max_azimuth_delta_deg: float = Query(default=90.0, ge=5.0, le=180.0),
+    page: int = Query(default=1, ge=1, le=200),
+    page_size: int = Query(default=12, ge=1, le=100),
+    allow_network: bool = Query(default=False),
+) -> RoverCamerasResponse:
+    """Return paginated Mars 2020 `raw_images` camera frames for `sol` (`M5` dedicated endpoint).
+
+    A live fetch (outbound call + cache write in `datalake/`) needs BOTH the client flag and the
+    operator switch `MARSWALK_ALLOW_CAMERA_FETCH=1`. Without it the endpoint is read-only.
+    """
+    operator_allows_fetch = os.environ.get("MARSWALK_ALLOW_CAMERA_FETCH", "").strip() == "1"
+    return get_query_service(site_id).get_waypoint_cameras(
+        sol=sol,
+        azimuth_deg=azimuth_deg,
+        max_azimuth_delta_deg=max_azimuth_delta_deg,
+        page=page,
+        page_size=page_size,
+        allow_network=allow_network and operator_allows_fetch,
+    )

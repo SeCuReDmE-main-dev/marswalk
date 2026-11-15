@@ -149,18 +149,28 @@
     },
     {
       "path": "route.geojson",
-      "sha256": "fd992e9ffd2bbd413af464f40b2d253572cc909c4deb500e7518556e1cb596e8",
-      "bytes": 29346
+      "sha256": "cb67705919bbc13211a45c2506f05cf5741b1ef4b5e9583f2a933a14dac682ba",
+      "bytes": 34599
     },
     {
       "path": "hazard_grid.json",
-      "sha256": "d9b310e96f807ecec8de27bc0502f217e904726f1560aabc34292362e0d612bf",
-      "bytes": 2544210
+      "sha256": "b9bcf5105dbdd4deb893166e45567771a5ecee95d1f20cbafc1c524d95f45475",
+      "bytes": 3056127
     },
     {
       "path": "hazard_overlay.png",
       "sha256": "f37ab157781fbafb3d295d3d3b32ecff132cf6b907c902f6ea8d6bd6c74ef642",
       "bytes": 2582
+    },
+    {
+      "path": "planner_grid_10m.png",
+      "sha256": "2e4a37331556fb293b3c130221eb4e683633ac4809b5b0bb11b541d5c62d4121",
+      "bytes": 94164
+    },
+    {
+      "path": "obstacles.geojson",
+      "sha256": "2f8a8a8bafef3975db98b4487eed008acb3d9cd2ec5fd5e2aef97fcafcfbc1bd",
+      "bytes": 81011
     },
     {
       "path": "eva_constraints.json",

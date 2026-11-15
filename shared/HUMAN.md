@@ -1,6 +1,6 @@
 # shared/ — how we talk to each other through the code
 
-> *We work on two machines, in two heads, with several agents. This folder is where the work changes hands without getting lost.*
+> *Philippe and I work on two machines, in two heads, with several agents. This folder is where the work changes hands without getting lost.*
 > — Jean-Sébastien
 
 ## Be clear about what "shared" means

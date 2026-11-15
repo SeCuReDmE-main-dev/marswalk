@@ -17,7 +17,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
     """Verify all GET and POST endpoints on /v1/sites/jezero/*."""
     r_health = client.get("/health")
     assert r_health.status_code == 200
-    assert r_health.json() == {"status": "ok", "contract_version": "1.1.0"}
+    assert r_health.json() == {"status": "ok", "contract_version": "1.1.0", "safe_mode": False}
 
     r_sites = client.get("/v1/sites")
     assert r_sites.status_code == 200
@@ -34,7 +34,7 @@ def test_all_rest_endpoints_return_200_and_valid_schemas() -> None:
 
     r_route = client.get("/v1/sites/jezero/route")
     assert r_route.status_code == 200
-    assert len(r_route.json()["features"]) == 7
+    assert len(r_route.json()["features"]) == 8
 
     r_haz = client.get("/v1/sites/jezero/hazards")
     assert r_haz.status_code == 200
