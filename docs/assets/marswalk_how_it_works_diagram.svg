@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090D16"/>
+      <stop offset="50%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#131C31"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="accentCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="accentAmber" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+    <linearGradient id="accentGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#38BDF8"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#F59E0B"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#10B981"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="470" rx="14" fill="url(#bgGrad)" stroke="#334155" stroke-width="2"/>
+
+  <!-- Top Header Bar -->
+  <rect x="20" y="16" width="1160" height="50" rx="8" fill="#111827" stroke="#1E293B" stroke-width="1.5"/>
+  <circle cx="44" cy="41" r="7" fill="#38BDF8"/>
+  <text x="62" y="37" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC" letter-spacing="0.5">HOW MARSWALK WORKS — END-TO-END MULTI-SCALE GEODESY &amp; xEVA SURVIVAL PIPELINE</text>
+  <text x="62" y="55" font-family="Consolas, monospace" font-size="11.5" fill="#94A3B8">Jezero Crater Western Delta Fan (18.38° N, 77.58° E) · Mars Sphere R = 3,396,190 m · Contract v1.1.0 SHA-256 Sealed</text>
+  <rect x="1015" y="27" width="150" height="28" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1.2"/>
+  <text x="1090" y="45" text-anchor="middle" font-family="Consolas, monospace" font-size="11.5" font-weight="700" fill="#34D399">0% FABRICATED DATA</text>
+
+  <!-- ==================== STAGE 1: NASA / USGS RAW INPUTS ==================== -->
+  <g transform="translate(22, 82)">
+    <rect width="260" height="364" rx="10" fill="url(#cardGrad)" stroke="#0284C7" stroke-width="2"/>
+    <rect width="260" height="34" rx="10" fill="url(#accentCyan)"/>
+    <text x="130" y="22" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">1. 5 NASA / USGS DATASETS</text>
+
+    <!-- Dataset boxes -->
+    <rect x="14" y="46" width="232" height="52" rx="6" fill="#0B1325" stroke="#1E3A8A" stroke-width="1.2"/>
+    <text x="24" y="64" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#38BDF8">MRO HiRISE 1 m/px DTM</text>
+    <text x="24" y="80" font-family="Consolas, monospace" font-size="10.5" fill="#CBD5E1">USGS TRN Blended w/ MOLA</text>
+    <text x="24" y="92" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">[MEASURED · 2x2 km Window]</text>
+
+    <rect x="14" y="106" width="232" height="52" rx="6" fill="#0B1325" stroke="#1E3A8A" stroke-width="1.2"/>
+    <text x="24" y="124" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#38BDF8">Perseverance M20 Telemetry</text>
+    <text x="24" y="140" font-family="Consolas, monospace" font-size="10.5" fill="#CBD5E1">708 Stops (Sol 13→2022) + Tilt</text>
+    <text x="24" y="152" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">[MEASURED · 45.2 km Traverse]</text>
+
+    <rect x="14" y="166" width="232" height="52" rx="6" fill="#0B1325" stroke="#1E3A8A" stroke-width="1.2"/>
+    <text x="24" y="184" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#38BDF8">USGS SIM 3464 Geologic Map</text>
+    <text x="24" y="200" font-family="Consolas, monospace" font-size="10.5" fill="#CBD5E1">Sun &amp; Stack (2020) Jezero Units</text>
+    <text x="24" y="212" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">[MEASURED · Delta / Floor Units]</text>
+
+    <rect x="14" y="226" width="232" height="52" rx="6" fill="#0B1325" stroke="#1E3A8A" stroke-width="1.2"/>
+    <text x="24" y="244" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#38BDF8">HiRISE 25 cm WMTS &amp; Navcam</text>
+    <text x="24" y="260" font-family="Consolas, monospace" font-size="10.5" fill="#CBD5E1">Solar System Treks + Raw POVs</text>
+    <text x="24" y="272" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">[MEASURED · 5 Ground Panoramas]</text>
+
+    <rect x="14" y="286" width="232" height="64" rx="6" fill="#0B1325" stroke="#1E3A8A" stroke-width="1.2"/>
+    <text x="24" y="304" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#FBBF24">NASA xEVA &amp; MSL RAD Physics</text>
+    <text x="24" y="320" font-family="Consolas, monospace" font-size="10.5" fill="#CBD5E1">EVA-EXP-0042 (≤20° Slope, ≤2km)</text>
+    <text x="24" y="334" font-family="Consolas, monospace" font-size="10.5" fill="#CBD5E1">Hassler RAD: 0.64 mSv/d GCR</text>
+    <text x="24" y="346" font-family="Consolas, monospace" font-size="9.5" fill="#F59E0B">[CITABLE NASA CONSTRAINTS]</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="282" y1="264" x2="312" y2="264" stroke="#38BDF8" stroke-width="3" marker-end="url(#arrowCyan)"/>
+
+  <!-- ==================== STAGE 2: MULTI-SCALE CONCORDANCE FUNNEL ==================== -->
+  <g transform="translate(316, 82)">
+    <rect width="275" height="364" rx="10" fill="url(#cardGrad)" stroke="#F59E0B" stroke-width="2"/>
+    <rect width="275" height="34" rx="10" fill="url(#accentAmber)"/>
+    <text x="137" y="22" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">2. MULTI-SCALE FUNNEL (B1–B3)</text>
+
+    <text x="16" y="54" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" font-weight="700" fill="#FDE68A">Horn (1981) 3×3 Geodesic Kernels:</text>
+
+    <!-- 4 Scale Bars -->
+    <rect x="16" y="64" width="243" height="38" rx="6" fill="#18181B" stroke="#EF4444" stroke-width="1.4"/>
+    <text x="26" y="81" font-family="Consolas, monospace" font-size="11.5" font-weight="700" fill="#FCA5A5">1 m Scale (Stereo Pixel)</text>
+    <text x="26" y="95" font-family="Consolas, monospace" font-size="10" fill="#E2E8F0">Extracts ≥4m Boulders/Scarps (M1)</text>
+
+    <rect x="16" y="108" width="243" height="38" rx="6" fill="#18181B" stroke="#F97316" stroke-width="1.4"/>
+    <text x="26" y="125" font-family="Consolas, monospace" font-size="11.5" font-weight="700" fill="#FDBA74">4 m Scale (Suit/Rover Footprint)</text>
+    <text x="26" y="139" font-family="Consolas, monospace" font-size="10" fill="#E2E8F0">Primary Safety Veto (Sol 700: 22.1°)</text>
+
+    <rect x="16" y="152" width="243" height="38" rx="6" fill="#18181B" stroke="#EAB308" stroke-width="1.4"/>
+    <text x="26" y="169" font-family="Consolas, monospace" font-size="11.5" font-weight="700" fill="#FDE047">16 m Scale (Local Landform)</text>
+    <text x="26" y="183" font-family="Consolas, monospace" font-size="10" fill="#E2E8F0">Concordance Neighbor (Sol 700: 17.8°)</text>
+
+    <rect x="16" y="196" width="243" height="38" rx="6" fill="#18181B" stroke="#38BDF8" stroke-width="1.4"/>
+    <text x="26" y="213" font-family="Consolas, monospace" font-size="11.5" font-weight="700" fill="#7DD3FC">64 m Scale (Coarse Orbital)</text>
+    <text x="26" y="227" font-family="Consolas, monospace" font-size="10" fill="#FCA5A5">Smooths Scarp to 11.2° (-5.05° Bias!)</text>
+
+    <!-- Persistent Hazard Override Box -->
+    <rect x="16" y="244" width="243" height="106" rx="7" fill="#2A1215" stroke="#EF4444" stroke-width="1.5"/>
+    <text x="137" y="263" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#FCA5A5">⚡ PERSISTENT-HAZARD OVERRIDE</text>
+    <text x="26" y="282" font-family="Consolas, monospace" font-size="10.5" fill="#FECACA">If 4m &amp; 16m agree on steep scarp</text>
+    <text x="26" y="297" font-family="Consolas, monospace" font-size="10.5" fill="#FECACA">while 64m smooths it away:</text>
+    <text x="26" y="315" font-family="Consolas, monospace" font-size="10.5" font-weight="700" fill="#34D399">→ FORBIDS pruning 4m hazard</text>
+    <text x="26" y="331" font-family="Consolas, monospace" font-size="10.5" font-weight="700" fill="#38BDF8">→ Validated on 708 Rover Stops</text>
+    <text x="26" y="344" font-family="Consolas, monospace" font-size="10" fill="#FDE68A">  (97.7% Even-Sol Specificity)</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="591" y1="264" x2="621" y2="264" stroke="#F59E0B" stroke-width="3" marker-end="url(#arrowAmber)"/>
+
+  <!-- ==================== STAGE 3: PLITHOGENIC <T, I, F> & A* ROUTING ==================== -->
+  <g transform="translate(625, 82)">
+    <rect width="275" height="364" rx="10" fill="url(#cardGrad)" stroke="#10B981" stroke-width="2"/>
+    <rect width="275" height="34" rx="10" fill="url(#accentGreen)"/>
+    <text x="137" y="22" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">3. PLITHOGENIC &lt;T, I, F&gt; &amp; A*</text>
+
+    <!-- <T, I, F> Box -->
+    <rect x="14" y="46" width="247" height="82" rx="6" fill="#0B1325" stroke="#10B981" stroke-width="1.2"/>
+    <text x="24" y="64" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#34D399">Neutrosophic State per Cell</text>
+    <text x="24" y="81" font-family="Consolas, monospace" font-size="10.5" fill="#A7F3D0">• T (Traversable Truth) ∈ [0,1]</text>
+    <text x="24" y="96" font-family="Consolas, monospace" font-size="10.5" fill="#FDE68A">• I (Scale Indeterminacy) ∈ [0,1]</text>
+    <text x="24" y="111" font-family="Consolas, monospace" font-size="10.5" fill="#FCA5A5">• F (Hazard Falsity) ∈ [0,1]</text>
+    <text x="24" y="123" font-family="Consolas, monospace" font-size="9.5" fill="#94A3B8">10 Terrain Carriers + Sobol Indices</text>
+
+    <!-- Non-Compensatory Safety Vetoes -->
+    <rect x="14" y="136" width="247" height="88" rx="6" fill="#2A1215" stroke="#EF4444" stroke-width="1.4"/>
+    <text x="24" y="154" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#FCA5A5">🛑 Lexicographic Safety Vetoes</text>
+    <text x="24" y="171" font-family="Consolas, monospace" font-size="10.5" fill="#FECACA">1. slope_4m &gt; 20.0°  → NO_GO</text>
+    <text x="24" y="186" font-family="Consolas, monospace" font-size="10.5" fill="#FECACA">2. walkback &gt; 2,000m → NO_GO</text>
+    <text x="24" y="201" font-family="Consolas, monospace" font-size="10.5" fill="#FECACA">3. spe_alert == True → ABORT</text>
+    <text x="24" y="216" font-family="Consolas, monospace" font-size="9.5" fill="#FDE68A">Science value NEVER overrides safety</text>
+
+    <!-- M1-M6 Physical Modules -->
+    <rect x="14" y="232" width="247" height="118" rx="6" fill="#0B1325" stroke="#3B82F6" stroke-width="1.2"/>
+    <text x="24" y="250" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#60A5FA">xEVA Physics &amp; Routing (M1–M6)</text>
+    <text x="24" y="267" font-family="Consolas, monospace" font-size="10.2" fill="#E2E8F0">• M1: ≥4m Rock Dilation (+0.85m)</text>
+    <text x="24" y="282" font-family="Consolas, monospace" font-size="10.2" fill="#E2E8F0">• M2: 16-Neighbor Anisotropic A*</text>
+    <text x="24" y="297" font-family="Consolas, monospace" font-size="10.2" fill="#E2E8F0">• M3: Scarp Sky-View GCR Occlusion</text>
+    <text x="24" y="312" font-family="Consolas, monospace" font-size="10.2" fill="#E2E8F0">• M4: Minetti/Pandolf O2 &amp; Crew Pair</text>
+    <text x="24" y="327" font-family="Consolas, monospace" font-size="10.2" fill="#E2E8F0">• M6: UHF 414.2MHz Bullington RF</text>
+    <text x="24" y="342" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">Route: 1,669.9 m · Max Slope 13.3°</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="900" y1="264" x2="930" y2="264" stroke="#10B981" stroke-width="3" marker-end="url(#arrowGreen)"/>
+
+  <!-- ==================== STAGE 4: DUAL DELIVERABLES ==================== -->
+  <g transform="translate(934, 82)">
+    <rect width="244" height="364" rx="10" fill="url(#cardGrad)" stroke="#38BDF8" stroke-width="2"/>
+    <rect width="244" height="34" rx="10" fill="url(#accentCyan)"/>
+    <text x="122" y="22" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">4. MISSION DELIVERABLES</text>
+
+    <!-- Static Pack -->
+    <rect x="14" y="46" width="216" height="92" rx="6" fill="#0B1325" stroke="#0284C7" stroke-width="1.2"/>
+    <text x="24" y="64" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#38BDF8">SHA-256 Static Site Pack</text>
+    <text x="24" y="80" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">public_packs/jezero/v1/</text>
+    <text x="24" y="95" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">17 Files (&lt;5 MB) · GeoJSONs</text>
+    <text x="24" y="110" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">1600-Cell Grid + 10m Cost PNG</text>
+    <text x="24" y="126" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">[Offline-First + FastAPI :8000]</text>
+
+    <!-- Interactive Web App -->
+    <rect x="14" y="148" width="216" height="96" rx="6" fill="#0B1325" stroke="#10B981" stroke-width="1.2"/>
+    <text x="24" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#34D399">2D / 3D Interactive Web App</text>
+    <text x="24" y="182" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">React 19 + MapLibre GL + Three</text>
+    <text x="24" y="197" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">• Multi-Scale Hazard Toggle</text>
+    <text x="24" y="212" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">• Live Click-to-Route A*</text>
+    <text x="24" y="227" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">• Navcam Panorama Modal</text>
+
+    <!-- Standalone Map Card -->
+    <rect x="14" y="254" width="216" height="96" rx="6" fill="#0B1325" stroke="#F59E0B" stroke-width="1.2"/>
+    <text x="24" y="272" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#FBBF24">xEVA Survival Map Card</text>
+    <text x="24" y="288" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">Deterministic Vector SVG</text>
+    <text x="24" y="303" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">• GO / CAUTION / NO_GO Map</text>
+    <text x="24" y="318" font-family="Consolas, monospace" font-size="10.2" fill="#CBD5E1">• Elevation &amp; O2 Profiles</text>
+    <text x="24" y="335" font-family="Consolas, monospace" font-size="9.5" fill="#34D399">110 Pytest + 22 Vitest PASS</text>
+  </g>
+</svg>

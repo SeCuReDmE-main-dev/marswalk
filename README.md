@@ -26,7 +26,7 @@
 2. [How MarsWalk Answers Every Challenge Requirement](#2-how-marswalk-answers-every-challenge-requirement)
 3. [Multi-Scale Hazard Verification & Plithogenic `<T, I, F>` Engine](#3-multi-scale-hazard-verification--plithogenic-t-i-f-engine)
 4. [Two-Track Architecture (Static Cryptographic Pack + FastAPI)](#4-two-track-architecture-static-cryptographic-pack--fastapi)
-5. [Quickstart (Frontend Web App & Python Engine)](#5-quickstart-frontend-web-app--python-engine)
+5. [Quickstart & Interactive 2D/3D UI Preview](#5-quickstart--interactive-2d3d-ui-preview-frontend--srcmarswalk)
 6. [References & Data Sources](#6-references--data-sources)
 7. [Thoughtful Use of AI (AI Usage Disclosure)](#7-thoughtful-use-of-ai-ai-usage-disclosure)
 
@@ -45,6 +45,21 @@ Most planetary mapping portals treat an orbital Digital Terrain Model (DTM) as g
 | **Benchmark Sol 700 Scarp Trap** | Coarse `64 m` map reads **`11.2°` (`CAUTION`)**, whereas local `4 m` slope is **`22.1°` (`NO_GO` Veto)** and Perseverance measured **`20.5°` tilt** | `waypoints.geojson` / `hazard_grid.json` |
 | **Even-Sol Ground-Truth Specificity** | **`97.7%` (`43 / 44` gentle even-sol Perseverance stops classified traversable)** | Disjoint Odd/Even Sol Split (`test_b2_split_and_eval.py`) |
 | **xEVA Obstacle-Aware Corridor (`M2`)** | `1,669.9 m` path connecting `Sol 413 → Sol 609 → Sol 753`, max `4 m` slope **`13.3° ≤ 20.0°`**, max walkback **`1,430 m ≤ 2,000 m`** | `route.geojson` (`ROUTE-EVA-M2-OBSTACLE-AWARE`) |
+
+<br/>
+
+<div align="center">
+
+<img src="docs/assets/marswalk_scale_gap_visual.svg" alt="Visual Proof of the Sol 700 Scarp Scale Gap (64m vs 4m vs Perseverance Ground Truth)" width="100%"/>
+
+</div>
+
+<br/>
+
+| **NASA Perseverance Navcam Ground Truth — `Sol 700` Scarp Trap (`20.5°` Tilt · `4 m` Slope `22.1°` $\rightarrow$ `NO_GO` Veto)** | **NASA Perseverance Navcam Ground Truth — `Sol 609` Safe Corridor (`4 m` Slope `6.4°` $\rightarrow$ `GO`)** |
+| :---: | :---: |
+| <img src="public_packs/jezero/v1/panoramas/sol_0700_ncam.jpg" alt="Perseverance Navcam Sol 700 Steep Delta Scarp" width="100%"/> | <img src="public_packs/jezero/v1/panoramas/sol_0609_ncam.jpg" alt="Perseverance Navcam Sol 609 Traversable Corridor" width="100%"/> |
+| *Coarse `64 m` orbital DTM smooths this `Sol 700` delta wall down to `11.2°` (`CAUTION`). MarsWalk's `4 m` kernel catches `22.1° > 20.0°` (`NO_GO` Safety Veto).* | *MarsWalk's obstacle-aware `M2` route (`1,669.9 m`) routes astronauts safely around the `Sol 700` scarp through `Sol 609` (`max slope 13.3° ≤ 20.0°`).* |
 
 ---
 
@@ -80,31 +95,51 @@ Instead of collapsing terrain risk into an opaque single number, MarsWalk evalua
 
 To guarantee zero frontend blocking and instant static deployment alongside full dynamic route planning, MarsWalk ships a **SHA-256-verified static site pack** (`< 5 MB` total) under [`public_packs/jezero/v1/`](public_packs/jezero/v1/manifest.json) paired with a FastAPI query and custom route-planning service:
 
-```text
-NASA M20 / HiRISE 1m DTM / USGS SIM 3464 Raw Data (datalake/ — gitignored)
-       │
-       ▼  python -m marswalk.middleware.cli build-pack --site jezero
-┌──────────────────────────────────────────────────────────────────────────┐
-│ public_packs/jezero/v1/  (17 Committed Files, < 5 MB, SHA-256 Verified)  │
-│  ├─ manifest.json            (CRS: Mars Sphere R=3,396,190 m + SHA-256)  │
-│  ├─ waypoints.geojson        (708 Perseverance stops + tilt + Navcam)    │
-│  ├─ route.geojson            (MEASURED traverse + DERIVED M2 EVA route)  │
-│  ├─ obstacles.geojson        (>= 4 m rock/scarp formations + 0.85m buf)  │
-│  ├─ planner_grid_10m.png     (Lossless 200x190 10m routing cost/mask)    │
-│  ├─ hazard_grid.json         (1600 cells: 1m/4m/16m/64m + <T,I,F> + RF)  │
-│  ├─ hazard_overlay.png       (Transparent RGBA hazard heatmap overlay)   │
-│  ├─ validation_report.json   (Scale-gap bias & even-sol metrics)         │
-│  ├─ eva_constraints.json     (Citable NASA xEVA + JPL + RAD thresholds)  │
-│  └─ panoramas/sol_*.jpg      (5 bundled NASA M20 Navcam JPEGs)           │
-└──────────────┬───────────────────────────────────────────┬───────────────┘
-               │ Direct static fetch() / Offline Fallback  │ Dynamic API (:8000)
-               ▼                                           ▼
-   [frontend/ React + MapLibre + 3D Mesh]     [FastAPI /v1/sites/jezero/plan-route]
+<div align="center">
+
+<img src="docs/assets/marswalk_how_it_works_diagram.svg" alt="How MarsWalk Works — End-to-End Multi-Scale Geodesy & xEVA Survival Pipeline" width="100%"/>
+
+</div>
+
+```mermaid
+flowchart LR
+    subgraph DATA["1. 5 Primary NASA / USGS Datasets"]
+        D1["MRO HiRISE 1 m/px DTM\n(USGS TRN Blended w/ MOLA)"]
+        D2["Perseverance M20 Telemetry\n(708 Stops + Tilt + 45.2 km Path)"]
+        D3["USGS SIM 3464 Geologic Map\n+ HiRISE 25 cm WMTS + Navcam POVs"]
+        D4["Citable Safety Constraints\n(NASA xEVA <=20 deg, <=2km, RAD 0.64 mSv/d)"]
+    end
+
+    subgraph ENGINE["2. Multi-Scale Funnel & Plithogenic <T,I,F> Engine"]
+        B1["Horn 3x3 Multi-Baseline Slopes\n(1 m / 4 m / 16 m / 64 m)"]
+        B3["Persistent-Hazard Override (B3)\n(Prevents 64 m Smoothing of 4 m Scarps)"]
+        TIF["Plithogenic Triplet <T, I, F>\n+ Lexicographic Safety Vetoes (NO_GO)"]
+        M2["M1 >=4 m Obstacle Dilation (+0.85 m)\n+ M2 16-Neighbor Anisotropic A*\n+ M4 Crew Pair O2 + M6 UHF 414.2 MHz"]
+    end
+
+    subgraph PACK["3. SHA-256 Sealed Site Pack (< 5 MB)"]
+        P1["public_packs/jezero/v1/\n• manifest.json (SHA-256)\n• hazard_grid.json + planner_grid_10m.png\n• waypoints / route / obstacles.geojson"]
+    end
+
+    subgraph UI["4. Dual Mission Deliverables"]
+        U1["Interactive 2D/3D Web App\n(React 19 + MapLibre GL + Three.js)"]
+        U2["FastAPI Dynamic Planner (:8000)\n(/v1/sites/jezero/plan-route)"]
+        U3["Standalone Vector Map Card\n(jezero_eva_survival_map.svg)"]
+    end
+
+    DATA --> B1 --> B3 --> TIF --> M2 --> P1
+    P1 --> U1
+    P1 --> U2
+    P1 --> U3
 ```
 
 ---
 
-## 5. Quickstart (Frontend Web App & Python Engine)
+## 5. Quickstart & Interactive 2D/3D UI Preview (`frontend/` & `src/marswalk/`)
+
+| **Desktop 2D/3D Tactical xEVA HUD (`frontend/screenshots/desktop.png`)** | **Collapsed Terrain & Corridor View (`frontend/screenshots/guide-collapsed.png`)** | **Mobile / Wrist-Tablet HUD (`frontend/screenshots/mobile.png`)** |
+| :---: | :---: | :---: |
+| <img src="frontend/screenshots/desktop.png" alt="MarsWalk Desktop 2D/3D Tactical xEVA HUD" width="100%"/> | <img src="frontend/screenshots/guide-collapsed.png" alt="MarsWalk Collapsed Terrain & Corridor View" width="100%"/> | <img src="frontend/screenshots/mobile.png" alt="MarsWalk Mobile Wrist-Tablet HUD" width="220"/> |
 
 ### A. Launch the Interactive Frontend (`frontend/`)
 

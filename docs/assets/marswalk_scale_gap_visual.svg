@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 390" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090D16"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="dangerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+    <linearGradient id="warnGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <linearGradient id="safeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="390" rx="14" fill="url(#bg2)" stroke="#334155" stroke-width="2"/>
+
+  <!-- Header -->
+  <rect x="20" y="16" width="1160" height="48" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.2"/>
+  <text x="38" y="37" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC">THE SCALE-GAP DISCOVERY — WHY 64 m ORBITAL MAPS HIDE LETHAL 4 m DELTA SCARPS (SOL 700 BENCHMARK)</text>
+  <text x="38" y="54" font-family="Consolas, monospace" font-size="11.5" fill="#94A3B8">Empirical confrontation of USGS HiRISE 1 m/px DTM multi-scale Horn kernels against 708 NASA Perseverance ground-truth rover tilt stops</text>
+
+  <!-- LEFT PANEL: Geometric Terrain Profile Comparison -->
+  <g transform="translate(22, 78)">
+    <rect width="560" height="292" rx="10" fill="#0B1325" stroke="#1E3A8A" stroke-width="1.5"/>
+    <text x="20" y="28" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#38BDF8">A. Geometric Cross-Section at Jezero Western Delta Scarp (Sol 700)</text>
+    <text x="20" y="46" font-family="Consolas, monospace" font-size="11" fill="#94A3B8">64 m regional smoothing vs. true 4 m human-scale cliff wall (NASA xEVA Limit = 20.0°)</text>
+
+    <!-- Grid lines -->
+    <line x1="40" y1="80" x2="530" y2="80" stroke="#1E293B" stroke-dasharray="4,4"/>
+    <line x1="40" y1="130" x2="530" y2="130" stroke="#1E293B" stroke-dasharray="4,4"/>
+    <line x1="40" y1="180" x2="530" y2="180" stroke="#1E293B" stroke-dasharray="4,4"/>
+    <line x1="40" y1="230" x2="530" y2="230" stroke="#334155" stroke-width="1.5"/>
+
+    <!-- True 1m/4m Terrain Profile (Steep Scarp) -->
+    <path d="M 40 225 L 170 220 L 235 212 L 295 102 L 370 92 L 520 86 L 520 230 L 40 230 Z" fill="#7F1D1D" fill-opacity="0.35"/>
+    <path d="M 40 225 L 170 220 L 235 212 L 295 102 L 370 92 L 520 86" fill="none" stroke="#EF4444" stroke-width="3.5"/>
+
+    <!-- Coarse 64m Smoothed Orbital Profile -->
+    <path d="M 40 222 C 160 215, 340 120, 520 90" fill="none" stroke="#38BDF8" stroke-width="3" stroke-dasharray="8,5"/>
+
+    <!-- Danger Zone Callout at Scarp Wall -->
+    <circle cx="265" cy="157" r="7" fill="#EF4444" stroke="#FFFFFF" stroke-width="2"/>
+    <rect x="285" y="138" width="232" height="54" rx="6" fill="#2A1215" stroke="#EF4444" stroke-width="1.5"/>
+    <text x="295" y="156" font-family="Consolas, monospace" font-size="11.5" font-weight="700" fill="#FCA5A5">4m Local Slope: 22.1° (NO_GO!)</text>
+    <text x="295" y="172" font-family="Consolas, monospace" font-size="11" fill="#FDE68A">Perseverance Rover Tilt: 20.5°</text>
+    <text x="295" y="185" font-family="Consolas, monospace" font-size="10.5" fill="#7DD3FC">64m Orbital Readout: 11.2° (False Safe)</text>
+
+    <!-- Legend -->
+    <line x1="45" y1="258" x2="80" y2="258" stroke="#EF4444" stroke-width="3.5"/>
+    <text x="88" y="262" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" fill="#F8FAFC">True 4 m Scarp Profile (Catches &gt;20° Suit Veto)</text>
+    <line x1="335" y1="258" x2="370" y2="258" stroke="#38BDF8" stroke-width="3" stroke-dasharray="6,4"/>
+    <text x="378" y="262" font-family="Segoe UI, Arial, sans-serif" font-size="11.5" fill="#7DD3FC">64 m Smoothed Profile (-5.05° Bias)</text>
+  </g>
+
+  <!-- RIGHT PANEL: Quantitative Scale Bar Comparison -->
+  <g transform="translate(600, 78)">
+    <rect width="578" height="292" rx="10" fill="#0B1325" stroke="#334155" stroke-width="1.5"/>
+    <text x="20" y="28" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#F8FAFC">B. Multi-Scale Slope Readout vs. NASA xEVA 20.0° Suit Safety Limit</text>
+    <text x="20" y="46" font-family="Consolas, monospace" font-size="11" fill="#94A3B8">Sol 700 Scarp Benchmark &amp; 147 In-Window Perseverance Ground-Truth Stops</text>
+
+    <!-- 20 deg Limit Vertical Line (x = 180 + 20 * 14 = 460) -->
+    <line x1="460" y1="62" x2="460" y2="232" stroke="#EF4444" stroke-width="2.5" stroke-dasharray="5,4"/>
+    <rect x="388" y="54" width="144" height="20" rx="4" fill="#7F1D1D"/>
+    <text x="460" y="68" text-anchor="middle" font-family="Consolas, monospace" font-size="10.5" font-weight="700" fill="#FCA5A5">20.0° NASA xEVA VETO</text>
+
+    <!-- Row 1: 64m Orbital -->
+    <text x="20" y="98" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#7DD3FC">64 m Orbital Grid</text>
+    <text x="20" y="112" font-family="Consolas, monospace" font-size="10" fill="#94A3B8">(Coarse Regional Map)</text>
+    <rect x="180" y="84" width="157" height="26" rx="5" fill="url(#warnGrad)"/>
+    <text x="345" y="102" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#FDE68A">11.2° — False CAUTION (Hides Cliff!)</text>
+
+    <!-- Row 2: 16m Landform -->
+    <text x="20" y="142" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#FDE047">16 m Baseline</text>
+    <text x="20" y="156" font-family="Consolas, monospace" font-size="10" fill="#94A3B8">(Persistent Neighbor)</text>
+    <rect x="180" y="128" width="249" height="26" rx="5" fill="url(#warnGrad)"/>
+    <text x="436" y="146" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#FDBA74">17.8° — Steep Scarp Flagged</text>
+
+    <!-- Row 3: 4m Footprint -->
+    <text x="20" y="186" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#FCA5A5">4 m Suit Footprint</text>
+    <text x="20" y="200" font-family="Consolas, monospace" font-size="10" fill="#94A3B8">(MarsWalk Veto Scale)</text>
+    <rect x="180" y="172" width="309" height="26" rx="5" fill="url(#dangerGrad)"/>
+    <text x="496" y="190" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#FCA5A5">22.1° → NO_GO</text>
+
+    <!-- Row 4: Rover Ground Truth -->
+    <text x="20" y="230" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" fill="#34D399">Perseverance Rover</text>
+    <text x="20" y="244" font-family="Consolas, monospace" font-size="10" fill="#94A3B8">(MEASURED IMU Tilt)</text>
+    <rect x="180" y="216" width="287" height="26" rx="5" fill="url(#safeGrad)" stroke="#34D399" stroke-width="1.2"/>
+    <text x="475" y="234" font-family="Consolas, monospace" font-size="12" font-weight="700" fill="#6EE7B7">20.5° Ground Truth</text>
+
+    <!-- Bottom Summary Banner -->
+    <rect x="20" y="252" width="538" height="30" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1.2"/>
+    <text x="289" y="271" text-anchor="middle" font-family="Consolas, monospace" font-size="11.2" font-weight="700" fill="#A7F3D0">MarsWalk M2 Corridor Re-Routes Around Scarp → Max 4 m Route Slope = 13.3° ≤ 20.0° (GO)</text>
+  </g>
+</svg>
