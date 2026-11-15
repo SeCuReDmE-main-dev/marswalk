@@ -23,6 +23,7 @@ from marswalk.contracts.models import (
     GeoJsonLineGeometry,
     GeoJsonPointGeometry,
 )
+from marswalk.middleware.build_pack import spherical_distance_m
 from marswalk.middleware.pack_loader import (
     LoadedSitePack,
     load_and_verify_pack,
@@ -136,6 +137,34 @@ def generate_survival_map_svg(
         (f for f in pack.route.features if f.properties.segment_type == "BENCHMARK"),
         key=lambda f: f.properties.sol or 0,
     )
+
+    suit_max_slope_deg = pack.constraints.suit_max_slope_deg.value
+    walkback_max_m = pack.constraints.walkback_max_km.value * 1000.0
+    total_waypoints = len(pack.waypoints.features)
+
+    if stops and isinstance(stops[0].geometry, GeoJsonPointGeometry):
+        origin_lon = float(stops[0].geometry.coordinates[0])
+        origin_lat = float(stops[0].geometry.coordinates[1])
+    elif sim_route is not None and isinstance(sim_route.geometry, GeoJsonLineGeometry):
+        origin_lon = float(sim_route.geometry.coordinates[0][0])
+        origin_lat = float(sim_route.geometry.coordinates[0][1])
+    else:
+        origin_lon, origin_lat = min_lon, min_lat
+
+    def _max_walkback_from_origin(feat: EvaRouteFeature | None) -> float:
+        if feat is None or not isinstance(feat.geometry, GeoJsonLineGeometry):
+            return 0.0
+        return max(
+            spherical_distance_m(origin_lon, origin_lat, float(lon), float(lat))
+            for lon, lat in feat.geometry.coordinates
+        )
+
+    def _nearest_cell_64m_slope_deg(lon: float, lat: float) -> float:
+        nearest = min(
+            cells,
+            key=lambda cell: spherical_distance_m(lon, lat, cell.lon, cell.lat),
+        )
+        return nearest.slope_deg_by_baseline["64"].value
 
     unavailable_layers = sorted(
         name
@@ -457,7 +486,7 @@ def generate_survival_map_svg(
         '<text x="352" y="28.5">Science Stop (GO)</text>'
         '<polygon points="462,20 467,25 462,30 457,25" fill="#df6658" '
         'stroke="#ffffff" stroke-width="1.1" />'
-        '<text x="473" y="28.5">Benchmark (NO_GO &gt; 20°)</text>'
+        f'<text x="473" y="28.5">Benchmark (NO_GO &gt; {suit_max_slope_deg:.0f}°)</text>'
         "</g>"
     )
 
@@ -483,6 +512,7 @@ def generate_survival_map_svg(
         s_slope = sp.max_slope_deg.value if sp.max_slope_deg else 0.0
         s_dur = sp.estimated_duration_h.value if sp.estimated_duration_h else 0.0
         s_rad = sp.estimated_radiation_msv.value if sp.estimated_radiation_msv else 0.0
+        s_wb = _max_walkback_from_origin(sim_route)
         a(
             f'<rect x="{rx + 14:.1f}" y="112" width="{rw - 28:.1f}" height="62" rx="5" '
             'fill="#102331" stroke="#29526b" stroke-width="1" />'
@@ -495,13 +525,14 @@ def generate_survival_map_svg(
         )
         a(
             f'<text x="{rx + 22:.1f}" y="149" font-size="10" fill="#e2eef6">'
-            f"One-way: {s_dist:,.1f} m | Max 1 m DTM slope: {s_slope:.2f}° (&lt;= 20.0°) | "
+            f"One-way: {s_dist:,.1f} m | "
+            f"Max 1 m DTM slope: {s_slope:.2f}° (&lt;= {suit_max_slope_deg:.1f}°) | "
             f"Duration: {s_dur:.2f} h"
             "</text>"
         )
         a(
             f'<text x="{rx + 22:.1f}" y="165" font-size="9.5" fill="#9fc0d6">'
-            f"Walkback tether: 1,925.7 m (&lt;= 2,000 m) | "
+            f"Walkback tether: {s_wb:,.1f} m (&lt;= {walkback_max_m:,.0f} m) | "
             f"Dose: {s_rad:.4f} mSv (proxy Curiosity RAD, Gale)"
             "</text>"
         )
@@ -512,6 +543,7 @@ def generate_survival_map_svg(
         o_slope = op.max_slope_deg.value if op.max_slope_deg else 0.0
         o_dur = op.estimated_duration_h.value if op.estimated_duration_h else 0.0
         o_rad = op.estimated_radiation_msv.value if op.estimated_radiation_msv else 0.0
+        o_wb = _max_walkback_from_origin(obs_route)
         a(
             f'<rect x="{rx + 14:.1f}" y="180" width="{rw - 28:.1f}" height="62" rx="5" '
             'fill="#102331" stroke="#5b452c" stroke-width="1" />'
@@ -524,13 +556,14 @@ def generate_survival_map_svg(
         )
         a(
             f'<text x="{rx + 22:.1f}" y="217" font-size="10" fill="#e2eef6">'
-            f"One-way: {o_dist:,.1f} m | Max cross-slope: {o_slope:.2f}° | "
+            f"One-way: {o_dist:,.1f} m | Max slope: {o_slope:.2f}° | "
             f"Duration: {o_dur:.2f} h (10 m HiRISE grid)"
             "</text>"
         )
         a(
             f'<text x="{rx + 22:.1f}" y="233" font-size="9.5" fill="#9fc0d6">'
-            f"Detours around {len(obstacle_features)} mapped &gt;= 4 m scarps/formations | "
+            f"Walkback: {o_wb:,.1f} m | "
+            f"Avoids {len(obstacle_features)} &gt;= 4 m scarps/formations | "
             f"Dose: {o_rad:.4f} mSv (proxy Curiosity RAD, Gale)"
             "</text>"
         )
@@ -554,16 +587,22 @@ def generate_survival_map_svg(
         kind_lbl = "STOP" if fp.segment_type == "SCIENCE_STOP" else "BENCHMARK"
         short_unit = (fp.geologic_unit or "").split("(")[0].strip()
         extra = ""
-        if sol == 413:
-            extra = "EVA Origin &amp; Rover 3.0 m UHF Mast"
-        elif sol == 609:
-            extra = "Walkback 555 m · Sedimentary Bench"
-        elif sol == 753:
-            extra = "Walkback 1,926 m · Upper Fan Turnaround"
-        elif sol == 700:
-            extra = "64 m orbital shows 12.65° vs 20.33° ground!"
-        elif sol == 1578:
-            extra = "Max rover tilt across all 708 mission stops"
+        if isinstance(feat.geometry, GeoJsonPointGeometry):
+            pt_lon = float(feat.geometry.coordinates[0])
+            pt_lat = float(feat.geometry.coordinates[1])
+            if fp.segment_type == "SCIENCE_STOP":
+                wb_stop_m = spherical_distance_m(origin_lon, origin_lat, pt_lon, pt_lat)
+                if wb_stop_m < 1.0:
+                    extra = f"Walkback {wb_stop_m:.1f} m · EVA Origin &amp; Rover 3.0 m UHF Mast"
+                elif sol == 609:
+                    extra = f"Walkback {wb_stop_m:,.1f} m · Sedimentary Bench"
+                else:
+                    extra = f"Walkback {wb_stop_m:,.1f} m · Upper Fan Turnaround"
+            elif inside_bbox(pt_lon, pt_lat):
+                cell_64m_deg = _nearest_cell_64m_slope_deg(pt_lon, pt_lat)
+                extra = f"64 m orbital shows {cell_64m_deg:.2f}° vs {tilt:.2f}° ground!"
+            else:
+                extra = f"Max rover tilt across all {total_waypoints} mission stops"
         a(
             f'<rect x="{rx + 14:.1f}" y="{row_y - 12:.1f}" width="{rw - 28:.1f}" height="24" '
             'rx="4" fill="#102331" />'
@@ -683,7 +722,7 @@ def generate_survival_map_svg(
     )
     a(
         f'<text x="{rx + 24:.1f}" y="730" font-size="9.3" fill="#edaa4d">'
-        f"NO_GO on {rf_nogo:,}/{rf_total:,} cells ({rf_nogo_pct}%) occluded behind scarp "
+        f"NO_GO on {rf_nogo:,}/{rf_total:,} cells ({rf_nogo_pct}%) with no direct line of sight "
         "(direct rover LOS, not orbital relay)."
         "</text>"
     )

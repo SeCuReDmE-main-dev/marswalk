@@ -173,26 +173,26 @@
 <rect x="690.0" y="180" width="476.0" height="62" rx="5" fill="#102331" stroke="#5b452c" stroke-width="1" />
 <g transform="translate(698.0,187.0)"><rect x="0" y="0" width="58.8" height="17" rx="4" fill="#4fd7eb" /><text x="29.4" y="12.2" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0b1822">DERIVED</text></g>
 <text x="780.0" y="199" font-size="10.5" font-weight="700" fill="#ff9e44">ROUTE-EVA-M2-OBSTACLE-AWARE (CAUTION)</text>
-<text x="698.0" y="217" font-size="10" fill="#e2eef6">One-way: 2,290.4 m | Max cross-slope: 11.41° | Duration: 4.19 h (10 m HiRISE grid)</text>
-<text x="698.0" y="233" font-size="9.5" fill="#9fc0d6">Detours around 82 mapped &gt;= 4 m scarps/formations | Dose: 0.1170 mSv (proxy Curiosity RAD, Gale)</text>
+<text x="698.0" y="217" font-size="10" fill="#e2eef6">One-way: 2,290.4 m | Max slope: 11.41° | Duration: 4.19 h (10 m HiRISE grid)</text>
+<text x="698.0" y="233" font-size="9.5" fill="#9fc0d6">Walkback: 1,927.7 m | Avoids 82 &gt;= 4 m scarps/formations | Dose: 0.1170 mSv (proxy Curiosity RAD, Gale)</text>
 <rect x="676.0" y="262" width="504.0" height="176" rx="8" fill="#162d3e" stroke="#2b4b63" stroke-width="1.2" />
 <text x="692.0" y="283" font-size="12" font-weight="700" fill="#e8f2f8">2. MEASURED SCIENCE STOPS (GO) &amp; SCALE-GAP BENCHMARKS (NO_GO)</text>
 <rect x="690.0" y="291.0" width="476.0" height="24" rx="4" fill="#102331" />
 <text x="698.0" y="307.0" font-size="9.8" font-weight="700" fill="#4fb87a">STOP · Sol 413</text>
 <text x="814.0" y="307.0" font-size="9.8" fill="#f2f7fb">Tilt  0.63° [GO]</text>
-<text x="928.0" y="307.0" font-size="9.2" fill="#9fc0d6">EVA Origin &amp; Rover 3.0 m UHF Mast</text>
+<text x="928.0" y="307.0" font-size="9.2" fill="#9fc0d6">Walkback 0.0 m · EVA Origin &amp; Rover 3.0 m UHF Mast</text>
 <rect x="690.0" y="319.0" width="476.0" height="24" rx="4" fill="#102331" />
 <text x="698.0" y="335.0" font-size="9.8" font-weight="700" fill="#4fb87a">STOP · Sol 609</text>
 <text x="814.0" y="335.0" font-size="9.8" fill="#f2f7fb">Tilt  5.37° [GO]</text>
-<text x="928.0" y="335.0" font-size="9.2" fill="#9fc0d6">Walkback 555 m · Sedimentary Bench</text>
+<text x="928.0" y="335.0" font-size="9.2" fill="#9fc0d6">Walkback 555.1 m · Sedimentary Bench</text>
 <rect x="690.0" y="347.0" width="476.0" height="24" rx="4" fill="#102331" />
 <text x="698.0" y="363.0" font-size="9.8" font-weight="700" fill="#4fb87a">STOP · Sol 753</text>
 <text x="814.0" y="363.0" font-size="9.8" fill="#f2f7fb">Tilt  7.49° [GO]</text>
-<text x="928.0" y="363.0" font-size="9.2" fill="#9fc0d6">Walkback 1,926 m · Upper Fan Turnaround</text>
+<text x="928.0" y="363.0" font-size="9.2" fill="#9fc0d6">Walkback 1,925.7 m · Upper Fan Turnaround</text>
 <rect x="690.0" y="375.0" width="476.0" height="24" rx="4" fill="#102331" />
 <text x="698.0" y="391.0" font-size="9.8" font-weight="700" fill="#df6658">BENCHMARK · Sol 700</text>
 <text x="814.0" y="391.0" font-size="9.8" fill="#f2f7fb">Tilt 20.33° [NO_GO]</text>
-<text x="928.0" y="391.0" font-size="9.2" fill="#9fc0d6">64 m orbital shows 12.65° vs 20.33° ground!</text>
+<text x="928.0" y="391.0" font-size="9.2" fill="#9fc0d6">64 m orbital shows 11.19° vs 20.33° ground!</text>
 <rect x="690.0" y="403.0" width="476.0" height="24" rx="4" fill="#102331" />
 <text x="698.0" y="419.0" font-size="9.8" font-weight="700" fill="#df6658">BENCHMARK · Sol 1578</text>
 <text x="814.0" y="419.0" font-size="9.8" fill="#f2f7fb">Tilt 20.68° [NO_GO]</text>
@@ -225,7 +225,7 @@
 <text x="692.0" y="684" font-size="9.3" fill="#ffd7d2">• Solar Storm Caveat: Local terrain blocks only a few percent of galactic cosmic rays;</text>
 <text x="700.0" y="698" font-size="9.3" fill="#ffd7d2">it is not a shelter for a solar storm.</text>
 <text x="692.0" y="716" font-size="9.3" fill="#edaa4d">• Direct UHF Link (414.2 MHz, 1.8 m suit to 3.0 m Perseverance mast at Sol 413):</text>
-<text x="700.0" y="730" font-size="9.3" fill="#edaa4d">NO_GO on 1,347/1,600 cells (84%) occluded behind scarp (direct rover LOS, not orbital relay).</text>
+<text x="700.0" y="730" font-size="9.3" fill="#edaa4d">NO_GO on 1,347/1,600 cells (84%) with no direct line of sight (direct rover LOS, not orbital relay).</text>
 <text x="692.0" y="748" font-size="9.3" fill="#9fc0d6">• Unavailable Layers (indeterminacy I = 1.0, never fabricated): THEMIS, CRISM, MEDA.</text>
 <line x1="692.0" y1="760" x2="1164.0" y2="760" stroke="#2b4b63" stroke-width="1" />
 <text x="692.0" y="776" font-size="9.0" fill="#9fc0d6" font-family="Consolas, monospace">manifest.json sha256: d93d3c3951359935f886c3029c67c71c… (17 signed files)</text>
