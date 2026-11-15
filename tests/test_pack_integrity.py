@@ -27,7 +27,7 @@ def test_jezero_pack_loads_and_verifies_sha256() -> None:
     """Verify all files in public_packs/jezero/v1/ pass SHA-256, inputs[], and Pydantic checks."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
     assert pack.site_id == "jezero"
-    assert pack.manifest.contract_version == "1.0.0"
+    assert pack.manifest.contract_version == "1.1.0"
     assert pack.manifest.pack_version == "1.1.0"
     assert len(pack.manifest.files) == 10
     assert len(pack.manifest.inputs) == 4
@@ -62,9 +62,9 @@ def test_hazard_grid_is_real_dtm_engine_without_monotonic_lock() -> None:
     """Verify Phase 2b R1/R3: ENGINE grid uses DERIVED + SRC-USGS-HIRISE-DTM-1M."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
     assert pack.hazards.grid_status == "ENGINE"
-    assert pack.hazards.rows == 16
-    assert pack.hazards.cols == 24
-    assert len(pack.hazards.cells) == 384
+    assert pack.hazards.rows == 40
+    assert pack.hazards.cols == 40
+    assert len(pack.hazards.cells) == 1600
 
     non_monotonic_count = 0
     for cell in pack.hazards.cells:
@@ -72,7 +72,8 @@ def test_hazard_grid_is_real_dtm_engine_without_monotonic_lock() -> None:
         assert cell.elev_m.source_id == "SRC-USGS-HIRISE-DTM-1M"
         assert cell.scale_divergence.tag == "DERIVED"
         assert cell.scale_divergence.source_id == "SRC-USGS-HIRISE-DTM-1M"
-        assert cell.rock_cfa_pct is None
+        assert cell.rock_cfa_pct is not None
+        assert cell.rock_cfa_pct.tag == "DERIVED"
         assert cell.measured_rover_tilt_deg is None
         for b_key in ("1", "4", "16", "64"):
             q = cell.slope_deg_by_baseline[b_key]

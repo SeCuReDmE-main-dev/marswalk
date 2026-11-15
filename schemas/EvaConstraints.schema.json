@@ -20,7 +20,8 @@
           "enum": [
             "MEASURED",
             "DERIVED",
-            "SIMULATED"
+            "SIMULATED",
+            "UNAVAILABLE"
           ],
           "title": "Tag",
           "type": "string"
@@ -59,8 +60,11 @@
   "description": "Citable NASA xEVA, Apollo, JPL Rover, and Curiosity RAD safety thresholds.",
   "properties": {
     "contract_version": {
-      "const": "1.0.0",
-      "default": "1.0.0",
+      "default": "1.1.0",
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "title": "Contract Version",
       "type": "string"
     },
@@ -104,6 +108,94 @@
       "minLength": 10,
       "title": "Radiation Environment Note",
       "type": "string"
+    },
+    "bfo_30d_limit_mgy_eq": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "career_dose_limit_msv": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "primary_o2_kg": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "walkback_metabolic_w": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "dust_ingress_decontam_min": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "themis_sand_cut_tiu": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "rf_freq_mhz": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "rf_link_margin_db": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Quantity"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

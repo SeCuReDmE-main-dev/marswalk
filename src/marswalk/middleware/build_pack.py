@@ -739,7 +739,20 @@ def build_eva_route(
 def _write_deterministic_json(path: Path, payload: dict[str, Any]) -> None:
     """Write UTF-8 JSON with LF newlines and deterministic key ordering."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    if (
+        isinstance(payload, dict)
+        and isinstance(payload.get("cells"), list)
+        and len(payload["cells"]) > 500
+    ):
+        header = {k: v for k, v in payload.items() if k != "cells"}
+        header_str = json.dumps(header, indent=2, ensure_ascii=False)[:-2]
+        cell_lines = [
+            "    " + json.dumps(c, separators=(",", ":"), ensure_ascii=False)
+            for c in payload["cells"]
+        ]
+        text = header_str + ',\n  "cells": [\n' + ",\n".join(cell_lines) + "\n  ]\n}\n"
+    else:
+        text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
     path.write_bytes(text.encode("utf-8"))
 
 

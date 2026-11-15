@@ -107,6 +107,11 @@ def eqc_y_m_to_lat(y_m: float) -> float:
     return math.degrees(y_m / MARS_SPHERE_RADIUS_M)
 
 
+def ground_step_x_m(lat: float, proj_step_m: float = 1.0) -> float:
+    """Convert equirectangular projected E-W step (lat_ts=0) to ground metres via cos(phi)."""
+    return float(proj_step_m) * math.cos(math.radians(float(lat)))
+
+
 def verify_mars_crs_roundtrip(
     lon_deg: float,
     lat_deg: float,
@@ -351,13 +356,14 @@ def sample_point_multiscale_slopes(
     col = max(64, min(w - 65, col))
     row = max(64, min(h - 65, row))
 
+    dx_ground_m = ground_step_x_m(lat, 1.0)
     out: dict[str, float] = {"elev_m": round(float(arr[row, col]), 3)}
     for b_int in (1, 4, 16, 64):
         half = max(1, b_int // 2)
         if b_int == 1:
             # 1m baseline over local 3x3 pixel patch (captures rover wheel / suit step hazard)
             patch = arr[row - 1 : row + 2, col - 1 : col + 2]
-            gy, gx = np.gradient(patch, 1.0)
+            gy, gx = np.gradient(patch, 1.0, dx_ground_m)
             s_deg = float(np.mean(np.degrees(np.arctan(np.hypot(gx, gy)))))
         else:
             # Average over 3x3 neighborhood around (row, col) at step `2 * half`
@@ -366,7 +372,9 @@ def sample_point_multiscale_slopes(
                 for dc in (-1, 0, 1):
                     rr = row + dr
                     cc = col + dc
-                    dz_dx = (arr[rr, cc + half] - arr[rr, cc - half]) / float(2 * half)
+                    dz_dx = (arr[rr, cc + half] - arr[rr, cc - half]) / (
+                        float(2 * half) * dx_ground_m
+                    )
                     dz_dy = (arr[rr - half, cc] - arr[rr + half, cc]) / float(2 * half)
                     vals.append(math.degrees(math.atan(math.hypot(dz_dx, dz_dy))))
             s_deg = float(np.mean(vals))
@@ -407,6 +415,8 @@ def _compute_row_samples_sync(
         y_center_m = dtm.transform_y_max_m - (r_center + 0.5)
         lon = round(eqc_x_m_to_lon(x_center_m), 6)
         lat = round(eqc_y_m_to_lat(y_center_m), 6)
+        dx_ground_m = ground_step_x_m(lat, 1.0)
+        cell_size_m = round(0.5 * (cell_h_m + cell_w_m * dx_ground_m), 2)
 
         patch = arr[r_start:r_end, c_start:c_end]
         elev_val = round(float(np.mean(patch)), 2)
@@ -414,23 +424,30 @@ def _compute_row_samples_sync(
         # 1m slope: 90th-percentile 1m gradient inside the cell (captures sub-cell scarps
         # so a 1m boulder/ledge inside a cell is never hidden by cell averaging!)
         if patch.shape[0] >= 3 and patch.shape[1] >= 3:
-            gy_1m, gx_1m = np.gradient(patch, 1.0)
+            gy_1m, gx_1m = np.gradient(patch, 1.0, dx_ground_m)
             s1_grid = np.degrees(np.arctan(np.hypot(gx_1m, gy_1m)))
             s1_deg = round(float(np.percentile(s1_grid, 90)), 2)
             roughness_deg = round(float(np.std(s1_grid)), 2)
         else:
-            dz_dx1 = (arr[r_center, c_center + 1] - arr[r_center, c_center - 1]) / 2.0
+            dz_dx1 = (arr[r_center, c_center + 1] - arr[r_center, c_center - 1]) / (
+                2.0 * dx_ground_m
+            )
             dz_dy1 = (arr[r_center - 1, c_center] - arr[r_center + 1, c_center]) / 2.0
             s1_deg = round(math.degrees(math.atan(math.hypot(dz_dx1, dz_dy1))), 2)
             roughness_deg = 0.5
 
-        def _baseline_slope(b_m: int, c0: int = c_start, c1: int = c_end) -> float:
+        def _baseline_slope(
+            b_m: int,
+            c0: int = c_start,
+            c1: int = c_end,
+            dx_m: float = dx_ground_m,
+        ) -> float:
             half = max(1, b_m // 2)
             # Sample a 3x3 grid across the cell at baseline `b_m`
             rs = np.linspace(r_start + 1, max(r_start + 1, r_end - 2), 3, dtype=int)
             cs = np.linspace(c0 + 1, max(c0 + 1, c1 - 2), 3, dtype=int)
             rr, cc = np.meshgrid(rs, cs, indexing="ij")
-            dz_dx = (arr[rr, cc + half] - arr[rr, cc - half]) / float(2 * half)
+            dz_dx = (arr[rr, cc + half] - arr[rr, cc - half]) / (float(2 * half) * dx_m)
             dz_dy = (arr[rr - half, cc] - arr[rr + half, cc]) / float(2 * half)
             slopes_b = np.degrees(np.arctan(np.hypot(dz_dx, dz_dy)))
             return round(float(np.mean(slopes_b)), 2)

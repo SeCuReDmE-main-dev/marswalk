@@ -8,11 +8,13 @@ Pipeline architecture:
 from __future__ import annotations
 
 import json
+import math
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 from PIL import Image
 
 from marswalk.contracts.models import (
@@ -33,20 +35,34 @@ from marswalk.contracts.models import (
     Waypoint,
     WaypointFeatureCollection,
 )
+from marswalk.engine.boulder_cfa import estimate_cell_cfa_and_shadow
+from marswalk.engine.calibration_aoa import (
+    evaluate_cell_aoa_and_opinion,
+    fit_spatial_aoa_model,
+)
 from marswalk.engine.carriers import (
     build_cell_carrier_triplets,
+    compute_hurst_and_step_slope_3_48m,
     compute_patch_roughness_fractal_texture,
 )
+from marswalk.engine.crism_ingest import load_cached_crism_summary
 from marswalk.engine.dtm_ingest import (
     CACHED_WINDOW_TIF_NAME,
     SIM3464_METADATA_NAME,
     IngestedDtmWindow,
     MultiScaleCellSample,
     compute_multiscale_grid_async,
+    ground_step_x_m,
     ingest_dtm_window_async,
     lat_to_eqc_y_m,
     lon_to_eqc_x_m,
+    sample_point_multiscale_slopes,
     select_optimal_delta_window_2x2km,
+)
+from marswalk.engine.eva_human_rf import (
+    bullington_nu_max_profile,
+    rf_verdict,
+    sample_dtm_los_profile,
 )
 from marswalk.engine.funnel import FunnelParams, run_cell_funnel
 from marswalk.engine.gates import (
@@ -57,8 +73,17 @@ from marswalk.engine.gates import (
     gate_g3_plan,
     run_gate_with_hold_loop,
 )
+from marswalk.engine.meda_envelope import load_cached_meda_summary
 from marswalk.engine.prefilter import prefilter_cell
+from marswalk.engine.radiation_svf import (
+    compute_sky_view_factor_32az,
+)
 from marswalk.engine.search_astar import AStarRouteResult, run_two_agent_eva_astar
+from marswalk.engine.sim3464_ingest import (
+    SIM3464_SOURCE_ID,
+    classify_sim3464_unit_context,
+)
+from marswalk.engine.themis_ingest import load_cached_themis_summary
 from marswalk.engine.validation import ValidationReport, build_validation_report
 from marswalk.middleware.build_pack import (
     JEZERO_SITE_BBOX,
@@ -153,6 +178,80 @@ def _classify_grid_from_samples(
     arr = dtm.elevation_m
     h_px, w_px = arr.shape
 
+    orig_x_m = lon_to_eqc_x_m(origin_lon)
+    orig_y_m = lat_to_eqc_y_m(origin_lat)
+    orig_col_px = max(64, min(w_px - 65, int(round((orig_x_m - dtm.transform_x_min_m) - 0.5))))
+    orig_row_px = max(64, min(h_px - 65, int(round((dtm.transform_y_max_m - orig_y_m) - 0.5))))
+
+    # Check external layer caches in datalake (`H1`: unavailable layers set tag="UNAVAILABLE",
+    # indeterminacy_i=1.0, and raise cell uncertainty I)
+    datalake_dir = dtm.tif_path.parent
+    themis_sum = load_cached_themis_summary(datalake_dir)
+    crism_sum = load_cached_crism_summary(datalake_dir)
+    meda_sum = load_cached_meda_summary(datalake_dir)
+    external_layers_status: dict[str, dict[str, str | float | bool]] = {
+        "themis_ti_100m": {
+            "available": themis_sum.available,
+            "tag": "DERIVED" if themis_sum.available else "UNAVAILABLE",
+            "source_id": themis_sum.source_id,
+            "indeterminacy_i": themis_sum.indeterminacy_i,
+            "note": themis_sum.note,
+        },
+        "crism_mtrdr_18m": crism_sum,
+        "meda_pds4_env": meda_sum,
+        "sim3464_geology": {
+            "available": True,
+            "tag": "DERIVED",
+            "source_id": SIM3464_SOURCE_ID,
+            "indeterminacy_i": 0.08,
+            "note": "USGS SIM 3464 geologic units and 150 m contact buffer",
+        },
+    }
+    missing_layers_count = sum(
+        1 for st in external_layers_status.values() if not bool(st.get("available"))
+    )
+    missing_layer_i_boost = round(0.002 * float(missing_layers_count), 4)
+
+    # Fit orbital AOA model on in-window waypoint coordinates with independent non-tilt
+    # step-spacing / geologic indicators (strictly R2-compliant: never reads rover_tilt_deg!)
+    wp_feats_list: list[tuple[float, float, float, float]] = []
+    wp_xy_list: list[tuple[float, float]] = []
+    wp_s16_list: list[float] = []
+    wp_indep_labels: list[float] = []
+    prev_xy: tuple[float, float] | None = None
+    for wp in waypoints.features:
+        wx = lon_to_eqc_x_m(wp.properties.lon)
+        wy = lat_to_eqc_y_m(wp.properties.lat)
+        if win.x_min_m <= wx <= win.x_max_m and win.y_min_m <= wy <= win.y_max_m:
+            ps = sample_point_multiscale_slopes(dtm, wp.properties.lon, wp.properties.lat)
+            xy_cur = (wx * ground_step_x_m(wp.properties.lat, 1.0), wy)
+            step_dist_m = (
+                math.hypot(xy_cur[0] - prev_xy[0], xy_cur[1] - prev_xy[1])
+                if prev_xy is not None
+                else 25.0
+            )
+            prev_xy = xy_cur
+            # Independent non-slope label: short cautious drives (< 12 m) indicate complex outcrop
+            wp_indep_labels.append(1.0 if step_dist_m < 12.0 else 0.12)
+            wp_feats_list.append((ps["4"], ps["16"], ps["64"], ps["divergence_deg"]))
+            wp_xy_list.append(xy_cur)
+            wp_s16_list.append(ps["16"])
+
+    aoa_model = fit_spatial_aoa_model(
+        orbital_features=np.asarray(wp_feats_list, dtype=np.float64)
+        if wp_feats_list
+        else np.zeros((1, 4), dtype=np.float64),
+        coords_xy_m=np.asarray(wp_xy_list, dtype=np.float64)
+        if wp_xy_list
+        else np.zeros((1, 2), dtype=np.float64),
+        variogram_response=np.asarray(wp_s16_list, dtype=np.float64)
+        if wp_s16_list
+        else np.zeros((1,), dtype=np.float64),
+        independent_hazard_labels=np.asarray(wp_indep_labels, dtype=np.float64)
+        if wp_indep_labels
+        else None,
+    )
+
     cells: list[HazardCell] = []
     scale_px = 10
     img = Image.new("RGBA", (cols * scale_px, rows * scale_px), (0, 0, 0, 0))
@@ -162,6 +261,51 @@ def _classify_grid_from_samples(
     for s in sorted(samples, key=lambda x: (x.row, x.col)):
         walkback_m = spherical_distance_m(origin_lon, origin_lat, s.lon, s.lat)
         wb_clamped = min(1950.0, walkback_m * 0.75)
+        dx_ground = ground_step_x_m(s.lat, 1.0)
+
+        x_m = lon_to_eqc_x_m(s.lon)
+        y_m = lat_to_eqc_y_m(s.lat)
+        col_px = max(64, min(w_px - 65, int(round((x_m - dtm.transform_x_min_m) - 0.5))))
+        row_px = max(64, min(h_px - 65, int(round((dtm.transform_y_max_m - y_m) - 0.5))))
+        patch = arr[row_px - 4 : row_px + 5, col_px - 4 : col_px + 5]
+        hurst_patch = arr[
+            max(0, row_px - 50) : min(h_px, row_px + 51),
+            max(0, col_px - 50) : min(w_px, col_px + 51),
+        ]
+        # True 3 m baseline slope at cell center (half-step = 1 px -> 2m, 2 px -> 4m; 3m via 1.5 px)
+        dz_dx_3m = 0.5 * (
+            (arr[row_px, col_px + 1] - arr[row_px, col_px - 1]) / (2.0 * dx_ground)
+            + (arr[row_px, col_px + 2] - arr[row_px, col_px - 2]) / (4.0 * dx_ground)
+        )
+        dz_dy_3m = 0.5 * (
+            (arr[row_px - 1, col_px] - arr[row_px + 1, col_px]) / 2.0
+            + (arr[row_px - 2, col_px] - arr[row_px + 2, col_px]) / 4.0
+        )
+        s_3m_deg = math.degrees(math.atan(math.hypot(float(dz_dx_3m), float(dz_dy_3m))))
+
+        rough_m, frac_d, curv = compute_patch_roughness_fractal_texture(
+            patch, pixel_size_m=dx_ground
+        )
+        hurst_h, _, _, i_submeter = compute_hurst_and_step_slope_3_48m(
+            hurst_patch,
+            slope_3m_deg=s_3m_deg,
+            step_x_m=dx_ground,
+        )
+        cfa_est = estimate_cell_cfa_and_shadow(
+            patch,
+            roughness_rms_m=rough_m,
+            curvature_m_inv=curv,
+            slope_4m_deg=s.slope_4m_deg,
+            step_x_m=dx_ground,
+        )
+        sim_ctx = classify_sim3464_unit_context(s.geologic_unit)
+        svf_val = compute_sky_view_factor_32az(
+            arr,
+            row=row_px,
+            col=col_px,
+            step_x_m=dx_ground,
+            max_radius_px=36,
+        )
 
         pf = prefilter_cell(
             lon=s.lon,
@@ -176,12 +320,6 @@ def _classify_grid_from_samples(
             conf = ConfidenceVector(t=0.02, i=0.04, f=0.94)
             reason_str = f"[{s.geologic_unit}] Boolean prefilter: {pf['reason']}"
         else:
-            x_m = lon_to_eqc_x_m(s.lon)
-            y_m = lat_to_eqc_y_m(s.lat)
-            col_px = max(64, min(w_px - 65, int(round((x_m - dtm.transform_x_min_m) - 0.5))))
-            row_px = max(64, min(h_px - 65, int(round((dtm.transform_y_max_m - y_m) - 0.5))))
-            patch = arr[row_px - 4 : row_px + 5, col_px - 4 : col_px + 5]
-            rough_m, frac_d, curv = compute_patch_roughness_fractal_texture(patch, pixel_size_m=1.0)
             slopes_map = {
                 1: s.slope_1m_deg,
                 4: s.slope_4m_deg,
@@ -205,8 +343,22 @@ def _classify_grid_from_samples(
                 slopes_by_scale=slopes_map,
                 walkback_m=wb_clamped,
             )
-            conf = f_out.confidence
             verdict = f_out.verdict
+
+            # R1, P5, P6 & H1: route sub-meter Hurst extrapolation, heuristic CFA proxy,
+            # SIM 3464 contact uncertainty, and missing external layer penalty strictly into I
+            # (CFA never overrides `verdict`)
+            extra_i = min(
+                0.26,
+                i_submeter
+                + cfa_est.i_cfa_boost
+                + sim_ctx.contact_indeterminacy_boost
+                + missing_layer_i_boost,
+            )
+            new_i = round(min(0.92, max(0.02, f_out.confidence.i + extra_i)), 4)
+            new_t = round(max(0.02, f_out.confidence.t - 0.5 * extra_i), 4)
+            conf = ConfidenceVector(t=new_t, i=new_i, f=f_out.confidence.f)
+
             reason_str = _format_funnel_reason(
                 s.geologic_unit,
                 f_out.retained_scale_m,
@@ -214,6 +366,25 @@ def _classify_grid_from_samples(
                 f_out.persistent_hazard_detected,
                 f_out.trace,
             )
+
+        aoa_in, cal_op = evaluate_cell_aoa_and_opinion(
+            aoa_model,
+            (s.slope_4m_deg, s.slope_16m_deg, s.slope_64m_deg, s.scale_divergence_deg),
+        )
+        los_profile_m = sample_dtm_los_profile(
+            arr,
+            r0=orig_row_px,
+            c0=orig_col_px,
+            r1=row_px,
+            c1=col_px,
+            distance_m=max(15.0, walkback_m),
+            step_m=8.0,
+        )
+        nu_val = round(
+            bullington_nu_max_profile(los_profile_m, max(15.0, walkback_m)),
+            3,
+        )
+        rf_v = rf_verdict(nu_val, link_margin_db=6.0)
 
         i_scores.append(conf.i)
 
@@ -276,12 +447,40 @@ def _classify_grid_from_samples(
                     tag="DERIVED",
                     source_id=DTM_SOURCE_ID,
                 ),
-                rock_cfa_pct=None,
+                rock_cfa_pct=Quantity(
+                    value=cfa_est.rock_cfa_pct,
+                    unit="%",
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                    note=cfa_est.note,
+                ),
                 confidence=conf,
                 verdict=verdict,
                 reason=reason_str,
                 nearest_waypoint_sol=None,
                 measured_rover_tilt_deg=None,
+                solar_shadow_fraction=Quantity(
+                    value=cfa_est.solar_shadow_fraction,
+                    unit="ratio",
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                ),
+                hurst_exponent_h=Quantity(
+                    value=hurst_h,
+                    unit="H",
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                ),
+                geologic_unit=s.geologic_unit,
+                aoa_inside=aoa_in,
+                calibrated_opinion=cal_op,
+                sky_view_factor=Quantity(
+                    value=svf_val,
+                    unit="ratio",
+                    tag="DERIVED",
+                    source_id=DTM_SOURCE_ID,
+                ),
+                rf_comms_verdict=rf_v,
             )
         )
 
@@ -298,6 +497,7 @@ def _classify_grid_from_samples(
         rows=rows,
         cols=cols,
         cell_size_m=cells[0].size_m if cells else 100.0,
+        external_layers_status=external_layers_status,
         cells=cells,
     )
     return grid, mean_i
@@ -544,8 +744,8 @@ def _build_engine_eva_route(
 async def run_engine_pipeline_async(
     repo_root: Path,
     generated_at: str = ENGINE_GENERATED_AT,
-    rows: int = 16,
-    cols: int = 24,
+    rows: int = 40,
+    cols: int = 40,
 ) -> EnginePipelineResult:
     """Execute `INGEST ─G0─► CLASSIFY ─G1─► SEARCH ─G2─► PLAN ─G3─► PACK` asynchronously."""
     datalake_dir = repo_root / "datalake"
@@ -748,7 +948,7 @@ async def run_engine_pipeline_async(
 
     _write_deterministic_json(wp_out, waypoints.model_dump(mode="json"))
     _write_deterministic_json(route_out, route.model_dump(mode="json"))
-    _write_deterministic_json(hazard_out, hazard_grid.model_dump(mode="json"))
+    _write_deterministic_json(hazard_out, hazard_grid.model_dump(mode="json", exclude_none=True))
     _write_deterministic_json(constraints_out, constraints.model_dump(mode="json"))
     _write_deterministic_json(val_out, val_report.model_dump(mode="json"))
 

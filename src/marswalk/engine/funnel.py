@@ -197,7 +197,7 @@ def _compute_retained_slope_and_scale(
         return (0.0, ordered_scales[-1] if ordered_scales else 16)
 
     if persistent_hazard and hazard_scale_m in valid_slopes:
-        # Never smooth away a persistent multi-scale scarp
+        # Never smooth away a persistent multi-scale slope scarp (I_slope with F >= 0.50)
         pers_slopes = [
             valid_slopes[s]
             for s in valid_slopes
@@ -206,17 +206,20 @@ def _compute_retained_slope_and_scale(
         if pers_slopes:
             best_s = max(valid_slopes, key=lambda k: valid_slopes[k])
             return (round(max(pers_slopes), 3), best_s)
-        return (round(valid_slopes[hazard_scale_m], 3), hazard_scale_m)
 
     # Weight each scale by survivor reliability: T * (1 - I), giving primary weight to
-    # geometric terrain carriers (`I_slope`, `I_diverge`, `I_rough`, `I_scale`)
+    # geometric terrain carriers (`I_slope`, `I_diverge`, `I_rough`, `I_scale`).
+    # When no persistent multi-scale slope scarp is detected, favor the 16 m intermediate
+    # rover-chassis scale over 4 m local facet jitter and 64 m coarse over-smoothing.
     geometric_carriers = {"I_slope", "I_diverge", "I_rough", "I_scale", "I_texture"}
+    scale_prior = {4: 0.08, 16: 12.0, 64: 0.10}
     scale_weights: dict[int, float] = {s: 1e-6 for s in valid_slopes}
     for tr in survivors:
         if tr.scale_m in scale_weights:
             mult = 2.5 if tr.carrier in geometric_carriers else 1.0
+            prior = scale_prior.get(tr.scale_m, 1.0)
             # Penalize scales with high local divergence or coarse smoothing uncertainty
-            scale_weights[tr.scale_m] += mult * tr.t * max(0.05, 1.0 - tr.i)
+            scale_weights[tr.scale_m] += prior * mult * tr.t * max(0.05, 1.0 - tr.i)
 
     total_w = sum(scale_weights.values())
     retained_slope = sum(valid_slopes[s] * scale_weights[s] for s in valid_slopes) / total_w
@@ -326,7 +329,7 @@ def run_cell_funnel(
             ):
                 persistent_hazard = True
                 hazard_scale_m = t_star_item.scale_m
-                f_persistent_exit = max(f_star_item.f * 0.5, round(1.0 - t_star_item.t, 4))
+                f_persistent_exit = max(f_star_item.f * 0.5, t_star_item.f, 0.50)
                 trace.append(
                     {
                         "carrier": t_star_item.carrier,
@@ -394,16 +397,20 @@ def run_cell_funnel(
     if persistent_hazard:
         f_star = round(min(0.99, max(0.50, f_persistent_exit)), 4)
         t_star = round(max(0.01, min(0.49, 1.0 - f_star)), 4)
-        if f_star >= 0.78 or retained_slope >= suit_max_slope_deg:
+        slope_allows_nogo = (not slopes_map) or (retained_slope >= 11.5)
+        if retained_slope >= suit_max_slope_deg or (f_star >= 0.78 and slope_allows_nogo):
             verdict: VerdictLiteral = "NO_GO"
         else:
             verdict = "CAUTION"
     else:
         f_star = _max_persistent_f(pool, ordered_scales, cfg.p)
         t_star = round(max(0.01, min(0.99, t_c)), 4)
+        slope_allows_nogo = (not slopes_map) or (retained_slope >= 11.5)
         if retained_slope >= suit_max_slope_deg or f_star >= 0.50:
             verdict = (
-                "NO_GO" if retained_slope >= suit_max_slope_deg or f_star >= 0.75 else "CAUTION"
+                "NO_GO"
+                if retained_slope >= suit_max_slope_deg or (f_star >= 0.75 and slope_allows_nogo)
+                else "CAUTION"
             )
         elif t_star >= 0.72 and f_star <= 0.22 and retained_slope < 10.0 and i_star < 0.35:
             verdict = "GO"

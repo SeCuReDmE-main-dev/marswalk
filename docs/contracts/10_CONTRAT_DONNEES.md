@@ -1,6 +1,6 @@
-# MarsWalk Data Contract Specification — `v1.0.0` (`docs/contracts/10_CONTRAT_DONNEES.md`)
+# MarsWalk Data Contract Specification — `v1.1.0` (`docs/contracts/10_CONTRAT_DONNEES.md`)
 
-**Status:** Frozen (`v1.0.0`)  
+**Status:** Additive Update (`v1.1.0`, backwards-compatible with `v1.0.0`)  
 **Geodetic Reference:** Planetocentric East Longitude (`lon`) & Latitude (`lat`) on the Mars Sphere `R = 3,396,190.0 m` (`IAU2015:49900`)  
 **Primary Static Pack Path:** `public_packs/jezero/v1/`  
 **JSON Schemas (Draft 2020-12):** `schemas/*.schema.json`

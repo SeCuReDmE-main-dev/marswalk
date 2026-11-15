@@ -1,5 +1,5 @@
 {
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "suit_max_slope_deg": {
     "value": 20.0,
     "unit": "deg",
@@ -84,5 +84,13 @@
     "source_id": "SRC-RAD-GALE",
     "note": "proxy Curiosity RAD, Gale"
   },
-  "radiation_environment_note": "Galactic Cosmic Ray (GCR) surface baseline of 0.67 mSv/day (approx. 28 uSv/h) measured by MSL Curiosity RAD at Gale Crater (Hassler et al. 2014) and applied as a transparent scalar reference proxy for Jezero Crater EVA duration budgeting."
+  "radiation_environment_note": "Galactic Cosmic Ray (GCR) surface baseline of 0.67 mSv/day (approx. 28 uSv/h) measured by MSL Curiosity RAD at Gale Crater (Hassler et al. 2014) and applied as a transparent scalar reference proxy for Jezero Crater EVA duration budgeting.",
+  "bfo_30d_limit_mgy_eq": null,
+  "career_dose_limit_msv": null,
+  "primary_o2_kg": null,
+  "walkback_metabolic_w": null,
+  "dust_ingress_decontam_min": null,
+  "themis_sand_cut_tiu": null,
+  "rf_freq_mhz": null,
+  "rf_link_margin_db": null
 }

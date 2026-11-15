@@ -1,10 +1,10 @@
 {
-  "mae_funnel": 1.4792,
-  "mae_fixed_1m": 2.1397,
-  "mae_fixed_4m": 1.7127,
-  "mae_fixed_16m": 1.1437,
-  "mae_fixed_64m": 1.7965,
-  "mean_i_star": 0.2433,
+  "mae_funnel": 1.2468,
+  "mae_fixed_1m": 2.169,
+  "mae_fixed_4m": 1.7374,
+  "mae_fixed_16m": 1.1411,
+  "mae_fixed_64m": 1.7812,
+  "mean_i_star": 0.244,
   "zero_i_star_count": 0,
   "n_test": 72,
   "split": "even_sols_only",
@@ -14,7 +14,7 @@
     "h_min": 0.7,
     "eps": 0.005
   },
-  "comparison_vs_fixed_baselines": "funnel point MAE below fixed baselines ['1m', '4m', '64m']; best fixed baseline is 16m (1.1437 deg). B5 verdict: FAIL against the best fixed baseline. Significance: see bench/results/b5_bootstrap.json.",
+  "comparison_vs_fixed_baselines": "funnel point MAE below fixed baselines ['1m', '4m', '64m']; best fixed baseline is 16m (1.1411 deg). B5 verdict: FAIL against the best fixed baseline. Significance: see bench/results/b5_bootstrap.json.",
   "hypothesis_16m": "I propose (hypothesis, not tested): the rover chassis (~3 m wheelbase) plus stop localization error may average the ground over a footprint closer to the 16 m baseline, while the funnel keeps steeper 4 m slopes when hazards persist.",
-  "sha256_pack": "13f56f530ccf125c51cd96fa289475277127b03a5fdb4be124bb6ced895575ff"
+  "sha256_pack": "6f476264477342ee38ae84ff76b3cdea072d95591055582c19c63e054f49f634"
 }
