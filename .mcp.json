@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "spaceapps-bridge": {
+      "command": "python",
+      "args": ["tools/spaceapps_bridge.py", "serve-mcp"],
+      "env": {
+        "SPACEAPPS_VAULT": "./shared"
+      }
+    }
+  }
+}
