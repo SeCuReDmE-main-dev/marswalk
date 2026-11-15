@@ -175,7 +175,6 @@ function Workspace({
   function navigate(index: number) {
     setStep(index);
     setExpanded(true);
-    setCollapsed(false);
     if (index === 1 && !cell && !outside)
       setCell(
         data.hazards.cells.find((c) => c.verdict === "CAUTION") ||
@@ -198,7 +197,6 @@ function Workspace({
     setWaypoint(undefined);
     setStep(0);
     setExpanded(true);
-    setCollapsed(false);
     setLayers((l) => ({ ...l, stops: true }));
   }
   function chooseCell(value?: HazardCell) {
@@ -208,14 +206,12 @@ function Workspace({
     setSelectedStop(undefined);
     setStep(1);
     setExpanded(true);
-    setCollapsed(false);
   }
   function chooseWaypoint(value: Waypoint) {
     setWaypoint(value);
     setSelectedStop(undefined);
     setStep(2);
     setExpanded(true);
-    setCollapsed(false);
     setLayers((l) => ({ ...l, rover: true }));
   }
   function fitMap(mode: "route" | "coverage") {
@@ -274,6 +270,19 @@ function Workspace({
         </div>
         <span className="prototype">Planning prototype</span>
         <nav aria-label="Application">
+          <button
+            aria-label={collapsed ? "Show mission guide" : "Hide mission guide"}
+            aria-expanded={!collapsed}
+            aria-controls="guide"
+            onClick={() => setCollapsed((value) => !value)}
+          >
+            {collapsed ? (
+              <PanelRightOpen size={17} />
+            ) : (
+              <PanelRightClose size={17} />
+            )}
+            <span>Guide</span>
+          </button>
           <button
             aria-label="Sources"
             onClick={() => {
@@ -976,6 +985,7 @@ function Workspace({
             className="primary-button"
             onClick={() => {
               setTips(true);
+              setCollapsed(false);
               navigate(0);
               setDialog(null);
             }}
