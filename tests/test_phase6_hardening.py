@@ -2,8 +2,10 @@
 
 Tests:
 1. Vectorized 8-directional A* speedup on the real 200x190 Jezero 10 m grid (`< 120 ms` warm
-   on a typical EVA sortie leg; `< 650 ms` warm on the 93%-expansion SE->NW scarp stress test
-   vs `1,566 ms` scalar baseline) with exact Dijkstra equality and `NaN`/`Inf` immunity.
+   on a typical EVA sortie leg; the 93%-expansion SE->NW scarp stress test must stay within
+   `1.8x` of an independent pure-Python reference Dijkstra timed on the same machine, which
+   is machine-load independent; the `1,566 ms` scalar baseline sits at `>= 2.6x`) with exact
+   Dijkstra equality and `NaN`/`Inf` immunity.
 2. Path-traversal rejection (`pack_loader.py` & `api.py`) and LRU cache-poisoning immunity.
 3. Coordinate finiteness (`NaN`/`Inf`) and planetocentric range validation on request payloads.
 4. Verdict monotonicity (`GO -> CAUTION -> NO_GO`, never backwards) on `/plan-route` under
@@ -49,9 +51,83 @@ client = TestClient(app)
 
 _VERDICT_SEVERITY = {"GO": 0, "CAUTION": 1, "NO_GO": 2}
 
+_TIMING_REPEATS = 7
+
+# Stress-leg time / reference time. Calibrated 2026-11-15 on an 8-core laptop:
+# median 1.11-1.12 both idle and with all 8 cores saturated (absolute time moved
+# 200 -> 687 ms meanwhile); worst single-round spike 1.52. Losing vectorization
+# (scalar code, 2.4-4.2x slower) lands at >= 2.6. Regressions under ~60 % are NOT
+# caught by this gate; it guards the vectorized speedup, not micro-tuning.
+_MAX_STRESS_TO_REFERENCE_RATIO = 1.8
+
+
+def _ms(fn) -> tuple[object, float]:
+    t0 = time.perf_counter()
+    result = fn()
+    return result, (time.perf_counter() - t0) * 1000.0
+
+
+def _best_of_ms(fn, repeats: int = _TIMING_REPEATS):
+    """Return (last_result, min wall-clock ms) over `repeats` runs.
+
+    OS scheduling and background load can only ADD time, never remove it, so the
+    minimum is the least noisy estimate of the code's own speed (`timeit` rationale).
+    """
+    best = math.inf
+    result = None
+    for _ in range(repeats):
+        result, ms = _ms(fn)
+        best = min(best, ms)
+    return result, best
+
+
+def _reference_dijkstra(rows: int = 190, cols: int = 200, seed: int = 20261115) -> float:
+    """Fixed pure-Python 8-connected Dijkstra on a seeded random grid.
+
+    It shares NO code with `planner_m2`, so a planner regression cannot slow it down
+    too; only the machine (load, CPU clock) moves both timings together.
+    """
+    import heapq
+    import random
+
+    rng = random.Random(seed)
+    cost = [[1.0 + rng.random() for _ in range(cols)] for _ in range(rows)]
+    dist = [[math.inf] * cols for _ in range(rows)]
+    dist[rows - 2][cols - 2] = 0.0
+    heap = [(0.0, rows - 2, cols - 2)]
+    diag = math.sqrt(2.0)
+    steps = (
+        (-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
+        (-1, -1, diag), (-1, 1, diag), (1, -1, diag), (1, 1, diag),
+    )  # fmt: skip
+    while heap:
+        d, r, c = heapq.heappop(heap)
+        if d > dist[r][c]:
+            continue
+        for dr, dc, w in steps:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols:
+                nd = d + w * cost[nr][nc]
+                if nd < dist[nr][nc]:
+                    dist[nr][nc] = nd
+                    heapq.heappush(heap, (nd, nr, nc))
+    return dist[1][1]
+
+
+def _interleaved_best_ms(fn, reference, repeats: int = _TIMING_REPEATS):
+    """Time `fn` and `reference` alternately so both see the same machine load."""
+    best_fn = best_ref = math.inf
+    result = None
+    for _ in range(repeats):
+        _, ref_ms = _ms(reference)
+        result, fn_ms = _ms(fn)
+        best_ref = min(best_ref, ref_ms)
+        best_fn = min(best_fn, fn_ms)
+    return result, best_fn, best_ref
+
 
 def test_planner_m2_vectorized_speedup_and_nan_immunity() -> None:
-    """Verify fast vectorized A* (< 120 ms EVA leg, < 650 ms full-map stress) and NaN immunity."""
+    """Verify fast vectorized A* (< 120 ms EVA leg, stress <= 1.8x reference) and NaN immunity."""
     pack = load_and_verify_pack(REPO_ROOT, site_id="jezero")
     grid = pack.planner_grid_10m
     assert grid is not None
@@ -71,19 +147,24 @@ def test_planner_m2_vectorized_speedup_and_nan_immunity() -> None:
 
     # 1) Typical EVA sortie leg latency (< 120 ms warm)
     eva_wpts = [(77.4070, 18.4520), (77.4048, 18.4535)]
-    t_eva = time.perf_counter()
-    eva_res = plan_obstacle_aware_route(grid, eva_wpts, heuristic_weight=1.0)
-    eva_ms = (time.perf_counter() - t_eva) * 1000.0
+    eva_res, eva_ms = _best_of_ms(
+        lambda: plan_obstacle_aware_route(grid, eva_wpts, heuristic_weight=1.0)
+    )
     assert eva_res.reachable is True
     assert eva_ms < 120.0, f"Expected < 120 ms warm on EVA leg, got {eva_ms:.1f} ms"
 
-    # 2) Worst-case 93%-expansion SE->NW scarp detour (< 650 ms vs 1,566 ms scalar baseline)
-    t0 = time.perf_counter()
-    timed = plan_obstacle_aware_route(grid, wpts, heuristic_weight=1.0)
-    elapsed_ms = (time.perf_counter() - t0) * 1000.0
+    # 2) Worst-case 93%-expansion SE->NW scarp detour, judged RELATIVE to a reference
+    #    workload timed on the same machine at the same moment (load-independent).
+    _reference_dijkstra()  # warm
+    timed, elapsed_ms, ref_ms = _interleaved_best_ms(
+        lambda: plan_obstacle_aware_route(grid, wpts, heuristic_weight=1.0),
+        _reference_dijkstra,
+    )
     assert timed.reachable is True
-    assert elapsed_ms < 650.0, (
-        f"Expected < 650 ms warm on 200x190 stress test, got {elapsed_ms:.1f} ms"
+    ratio = elapsed_ms / ref_ms
+    assert ratio <= _MAX_STRESS_TO_REFERENCE_RATIO, (
+        f"Stress leg {elapsed_ms:.1f} ms is {ratio:.2f}x the reference ({ref_ms:.1f} ms), "
+        f"limit {_MAX_STRESS_TO_REFERENCE_RATIO}x (best of {_TIMING_REPEATS}, interleaved)"
     )
 
     # Exact optimality check against Dijkstra (heuristic_weight=0.0) on real Jezero grid
