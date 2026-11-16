@@ -22,14 +22,16 @@ What it promises
 
 from __future__ import annotations
 
+import logging
 import re
 from functools import lru_cache
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi import Path as PathParam
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from marswalk.contracts.models import (
     CONTRACT_VERSION,
@@ -58,6 +60,20 @@ from marswalk.middleware.query_service import (
     is_safe_mode_enabled,
 )
 
+_log = logging.getLogger(__name__)
+
+_PACK_NOT_FOUND_DETAIL = "Site pack not found or failed its integrity check"
+
+
+def _pack_not_found(exc: PackIntegrityError) -> HTTPException:
+    """Log the full integrity reason for the operator; give the client a generic 404.
+
+    `PackIntegrityError` messages carry absolute disk paths and SHA-256 details that
+    `verify-pack` needs, but that must never reach an HTTP client.
+    """
+    _log.warning("Pack refused: %s", exc)
+    return HTTPException(status_code=404, detail=_PACK_NOT_FOUND_DETAIL)
+
 
 def _default_repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
@@ -75,7 +91,7 @@ def get_query_service(site_id: str = "jezero") -> PackQueryService:
         safe_site = validate_safe_site_id(site_id)
         return _load_cached_query_service(safe_site)
     except PackIntegrityError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise _pack_not_found(exc) from exc
 
 
 get_query_service.cache_clear = _load_cached_query_service.cache_clear  # type: ignore[attr-defined]
@@ -97,6 +113,21 @@ app.add_middleware(
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def _validation_error_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
+    """Answer 422 with `loc`/`msg`/`type` only.
+
+    FastAPI's default handler echoes the rejected `input` back. A NaN/Infinity
+    input is not JSON compliant, so rendering that echo crashed into a 500, and
+    echoing raw client input is a reflection risk anyway.
+    """
+    detail = [
+        {"loc": list(err.get("loc", ())), "msg": str(err.get("msg", "")), "type": err.get("type")}
+        for err in exc.errors()
+    ]
+    return JSONResponse(status_code=422, content={"detail": detail})
 
 
 @app.get("/health")
@@ -146,7 +177,7 @@ def get_hazard_overlay_png(site_id: str) -> FileResponse:
     try:
         png_path = resolve_pack_relative_path(svc.pack.pack_dir, svc.pack.hazards.overlay_file)
     except PackIntegrityError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise _pack_not_found(exc) from exc
     if not png_path.exists():
         raise HTTPException(status_code=404, detail="hazard_overlay.png not present in site pack")
     return FileResponse(png_path, media_type="image/png")
@@ -197,7 +228,7 @@ def get_planner_grid_10m_png(site_id: str) -> FileResponse:
     try:
         png_path = resolve_pack_relative_path(svc.pack.pack_dir, fname)
     except PackIntegrityError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise _pack_not_found(exc) from exc
     if not png_path.exists():
         raise HTTPException(status_code=404, detail="planner_grid_10m.png not present in site pack")
     return FileResponse(png_path, media_type="image/png")
@@ -218,7 +249,7 @@ def get_pack_panorama_jpg(site_id: str, filename: str) -> FileResponse:
     try:
         jpg_path = resolve_pack_relative_path(svc.pack.pack_dir, rel_path)
     except PackIntegrityError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise _pack_not_found(exc) from exc
     if not jpg_path.is_file():
         raise HTTPException(status_code=404, detail=f"{rel_path} not present in site pack")
     return FileResponse(jpg_path, media_type="image/jpeg")

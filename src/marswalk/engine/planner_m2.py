@@ -218,25 +218,23 @@ def supercover_grid_cells(
         elif t_max_c < t_max_r:
             c += step_c
             t_max_c += t_delta_c
-            if not (0 <= r < rows and 0 <= c < cols):
+            if not (0 <= c < cols):
                 return (False, visited)
             if has_blocked and blocked_flat[r * cols + c]:  # type: ignore[index]
                 return (False, visited)
-            if r != last_r or c != last_c:
-                append((r, c))
-                last_r = r
-                last_c = c
+            append((r, c))
+            last_r = r
+            last_c = c
         else:
             r += step_r
             t_max_r += t_delta_r
-            if not (0 <= r < rows and 0 <= c < cols):
+            if not (0 <= r < rows):
                 return (False, visited)
             if has_blocked and blocked_flat[r * cols + c]:  # type: ignore[index]
                 return (False, visited)
-            if r != last_r or c != last_c:
-                append((r, c))
-                last_r = r
-                last_c = c
+            append((r, c))
+            last_r = r
+            last_c = c
 
     if last_r != r1 or last_c != c1:
         if not (0 <= r1 < rows and 0 <= c1 < cols):
@@ -244,6 +242,101 @@ def supercover_grid_cells(
         if has_blocked and blocked_flat[r1 * cols + c1]:  # type: ignore[index]
             return (False, visited)
         append((r1, c1))
+    return (True, visited)
+
+
+def _supercover_flat_indices(
+    rows: int,
+    cols: int,
+    r0: int,
+    c0: int,
+    r1: int,
+    c1: int,
+    blocked_flat: list[bool],
+) -> tuple[bool, list[int]]:
+    """Fast flat-index variant of `supercover_grid_cells` avoiding tuple allocation (`H3`)."""
+    if not (0 <= r0 < rows and 0 <= c0 < cols and 0 <= r1 < rows and 0 <= c1 < cols):
+        return (False, [])
+    idx0 = r0 * cols + c0
+    idx1 = r1 * cols + c1
+    if blocked_flat[idx0] or blocked_flat[idx1]:
+        return (False, [])
+
+    visited: list[int] = [idx0]
+    if idx0 == idx1:
+        return (True, visited)
+
+    du = float(c1 - c0)
+    dv = float(r1 - r0)
+    c = c0
+    r = r0
+    step_c = 1 if du > 0.0 else (-1 if du < 0.0 else 0)
+    step_r = 1 if dv > 0.0 else (-1 if dv < 0.0 else 0)
+    step_idx_r = step_r * cols
+
+    t_delta_c = abs(1.0 / du) if step_c != 0 else float("inf")
+    t_delta_r = abs(1.0 / dv) if step_r != 0 else float("inf")
+    t_max_c = (0.5 * t_delta_c) if step_c != 0 else float("inf")
+    t_max_r = (0.5 * t_delta_r) if step_r != 0 else float("inf")
+
+    cur_idx = idx0
+    last_idx = idx0
+    append = visited.append
+    max_iters = 2 * (abs(r1 - r0) + abs(c1 - c0)) + 4
+    corner_eps = 1e-9
+
+    for _ in range(max_iters):
+        if cur_idx == idx1:
+            break
+        diff = t_max_c - t_max_r
+        if diff < -corner_eps:
+            c += step_c
+            cur_idx += step_c
+            t_max_c += t_delta_c
+            if not (0 <= c < cols) or blocked_flat[cur_idx]:
+                return (False, visited)
+            append(cur_idx)
+            last_idx = cur_idx
+        elif diff > corner_eps:
+            r += step_r
+            cur_idx += step_idx_r
+            t_max_r += t_delta_r
+            if not (0 <= r < rows) or blocked_flat[cur_idx]:
+                return (False, visited)
+            append(cur_idx)
+            last_idx = cur_idx
+        else:
+            nc1 = c + step_c
+            idx_c1 = cur_idx + step_c
+            if not (0 <= r < rows and 0 <= nc1 < cols) or blocked_flat[idx_c1]:
+                return (False, visited)
+            if idx_c1 != last_idx:
+                append(idx_c1)
+                last_idx = idx_c1
+
+            nr2 = r + step_r
+            idx_r2 = cur_idx + step_idx_r
+            if not (0 <= nr2 < rows and 0 <= c < cols) or blocked_flat[idx_r2]:
+                return (False, visited)
+            if idx_r2 != last_idx:
+                append(idx_r2)
+                last_idx = idx_r2
+
+            c = nc1
+            r = nr2
+            cur_idx = r * cols + c
+            t_max_c += t_delta_c
+            t_max_r += t_delta_r
+            if not (0 <= r < rows and 0 <= c < cols) or blocked_flat[cur_idx]:
+                return (False, visited)
+            if cur_idx != last_idx:
+                append(cur_idx)
+                last_idx = cur_idx
+
+    if last_idx != idx1:
+        if not (0 <= r1 < rows and 0 <= c1 < cols) or blocked_flat[idx1]:
+            return (False, visited)
+        append(idx1)
     return (True, visited)
 
 
@@ -328,10 +421,8 @@ def evaluate_shortcut_segment_cost_s(
     else:
         blocked_f, caution_f, gx_f, gy_f, risk_f = _get_flat_grid_lists(grid)
 
-    ok_bounds, cells = supercover_grid_cells(
-        grid.rows, cols, r0, c0, r1, c1, blocked_flat=blocked_f
-    )
-    if not ok_bounds or not cells:
+    ok_bounds, cell_indices = _supercover_flat_indices(grid.rows, cols, r0, c0, r1, c1, blocked_f)
+    if not ok_bounds or not cell_indices:
         return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
 
     dx_m = (c1 - c0) * grid.step_x_ground_m
@@ -340,13 +431,13 @@ def evaluate_shortcut_segment_cost_s(
     if total_dist_m <= 1e-9:
         return (True, 0.0, 0.0, 0.0, 0.0, 0)
 
-    ds_m = total_dist_m / float(len(cells))
+    ds_m = total_dist_m / float(len(cell_indices))
     ux = dx_m / total_dist_m
     uy = dy_north_m / total_dist_m
     total_weighted_s = 0.0
     total_dt_s = 0.0
-    max_par = 0.0
-    max_cross = 0.0
+    max_abs_par = 0.0
+    max_g_cross = 0.0
     caution_cnt = 0
 
     _atan = math.atan
@@ -359,36 +450,36 @@ def evaluate_shortcut_segment_cost_s(
     tan20 = _TAN_MAX_SLOPE_20
     tan15 = _TAN_CROSS_CAUTION_15
 
-    for rr, cc in cells:
-        idx = rr * cols + cc
+    for idx in cell_indices:
         gx = gx_f[idx]
         gy = gy_f[idx]
-        if not (_isfinite(gx) and _isfinite(gy)):
-            return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
         g_par = gx * ux + gy * uy
-        abs_g_par = abs(g_par)
-        g_cross = abs(gx * uy - gy * ux)
-        if abs_g_par > tan20 or g_cross > tan20:
+        abs_g_par = -g_par if g_par < 0.0 else g_par
+        g_cross = gx * uy - gy * ux
+        if g_cross < 0.0:
+            g_cross = -g_cross
+        g_max = abs_g_par if abs_g_par >= g_cross else g_cross
+        if not (g_max <= tan20):
+            if not (_isfinite(gx) and _isfinite(gy)):
+                return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
             theta_par_bad = _degrees(_atan(abs_g_par))
             theta_cross_bad = _degrees(_atan(g_cross))
             if max(theta_par_bad, theta_cross_bad) > max_slope_deg:
                 return (False, float("inf"), float("inf"), theta_par_bad, theta_cross_bad, 0)
 
-        theta_par = _degrees(_atan(abs_g_par))
-        theta_cross = _degrees(_atan(g_cross))
-        theta_max = theta_par if theta_par >= theta_cross else theta_cross
-        if theta_max > max_slope_deg:
-            return (False, float("inf"), float("inf"), theta_par, theta_cross, 0)
-
-        if theta_par > max_par:
-            max_par = theta_par
-        if theta_cross > max_cross:
-            max_cross = theta_cross
+        if abs_g_par > max_abs_par:
+            max_abs_par = abs_g_par
+        if g_cross > max_g_cross:
+            max_g_cross = g_cross
         is_caut = caution_f[idx]
-        if is_caut or g_cross > tan15:
+        over_tan15 = g_cross > tan15
+        if is_caut or over_tan15:
             caution_cnt += 1
 
-        base_kmh = 2.4 * _exp(-3.5 * abs(g_par + 0.05))
+        gp_shift = g_par + 0.05
+        if gp_shift < 0.0:
+            gp_shift = -gp_shift
+        base_kmh = 2.4 * _exp(-3.5 * gp_shift)
         if base_kmh < 0.15:
             base_kmh = 0.15
         v_ms = (base_kmh / 3.6) / (1.0 + 0.60 * (g_cross * g_cross))
@@ -402,21 +493,28 @@ def evaluate_shortcut_segment_cost_s(
         if pure_time_only:
             total_weighted_s += dt_s
         else:
+            theta_max = _degrees(_atan(g_max))
             norm_slope = theta_max / max_slope_deg
             risk_v = risk_f[idx]
-            if not _isfinite(risk_v):
-                return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
-            cross_caution = (
-                0.45 * ((theta_cross - cross_caution_deg) / 5.0)
-                if theta_cross > cross_caution_deg
-                else 0.0
-            )
+            if over_tan15:
+                theta_cross = theta_max if g_max == g_cross else _degrees(_atan(g_cross))
+                cross_caution = (
+                    0.45 * ((theta_cross - cross_caution_deg) / 5.0)
+                    if theta_cross > cross_caution_deg
+                    else 0.0
+                )
+            else:
+                cross_caution = 0.0
             caution_pen = 0.20 if is_caut else 0.0
             mult = (
                 1.0 + alpha_slope * norm_slope + gamma_risk * risk_v + cross_caution + caution_pen
             )
             total_weighted_s += dt_s * mult
 
+    if not _isfinite(total_weighted_s):
+        return (False, float("inf"), float("inf"), 90.0, 90.0, 0)
+    max_par = _degrees(_atan(max_abs_par))
+    max_cross = _degrees(_atan(max_g_cross))
     return (True, total_weighted_s, total_dt_s, max_par, max_cross, caution_cnt)
 
 
@@ -528,6 +626,92 @@ def _register_grid_digest(grid: PlannerGrid10m) -> bytes:
     return digest
 
 
+@lru_cache(maxsize=4096)
+def _rel_supercover_geom(
+    dr: int, dc: int, cols: int, step_x: float, step_y: float
+) -> tuple[np.ndarray, float, float, float, float]:
+    """Cache relative flat index offsets and unit vector geometry for `(dr, dc)`."""
+    if dr == 0 and dc == 0:
+        return (np.zeros(1, dtype=np.intp), 0.0, 0.0, 0.0, 0.0)
+    du = float(dc)
+    dv = float(dr)
+    c = 0
+    r = 0
+    step_c = 1 if du > 0.0 else (-1 if du < 0.0 else 0)
+    step_r = 1 if dv > 0.0 else (-1 if dv < 0.0 else 0)
+    step_idx_r = step_r * cols
+    t_delta_c = abs(1.0 / du) if step_c != 0 else float("inf")
+    t_delta_r = abs(1.0 / dv) if step_r != 0 else float("inf")
+    t_max_c = (0.5 * t_delta_c) if step_c != 0 else float("inf")
+    t_max_r = (0.5 * t_delta_r) if step_r != 0 else float("inf")
+    idx1 = dr * cols + dc
+    cur_idx = 0
+    last_idx = 0
+    visited = [0]
+    append = visited.append
+    max_iters = 2 * (abs(dr) + abs(dc)) + 4
+    corner_eps = 1e-9
+    for _ in range(max_iters):
+        if cur_idx == idx1:
+            break
+        diff = t_max_c - t_max_r
+        if diff < -corner_eps:
+            c += step_c
+            cur_idx += step_c
+            t_max_c += t_delta_c
+            append(cur_idx)
+            last_idx = cur_idx
+        elif diff > corner_eps:
+            r += step_r
+            cur_idx += step_idx_r
+            t_max_r += t_delta_r
+            append(cur_idx)
+            last_idx = cur_idx
+        else:
+            nc1 = c + step_c
+            idx_c1 = cur_idx + step_c
+            if idx_c1 != last_idx:
+                append(idx_c1)
+                last_idx = idx_c1
+            nr2 = r + step_r
+            idx_r2 = cur_idx + step_idx_r
+            if idx_r2 != last_idx:
+                append(idx_r2)
+                last_idx = idx_r2
+            c = nc1
+            r = nr2
+            cur_idx = r * cols + c
+            t_max_c += t_delta_c
+            t_max_r += t_delta_r
+            if cur_idx != last_idx:
+                append(cur_idx)
+                last_idx = cur_idx
+    if last_idx != idx1:
+        append(idx1)
+    dx_m = dc * step_x
+    dy_north_m = -dr * step_y
+    total_dist_m = math.hypot(dx_m, dy_north_m)
+    ds_m = total_dist_m / float(len(visited))
+    ux = dx_m / total_dist_m
+    uy = dy_north_m / total_dist_m
+    return (np.array(visited, dtype=np.intp), total_dist_m, ds_m, ux, uy)
+
+
+@lru_cache(maxsize=12)
+def _cached_flat_grid_np(
+    digest: bytes,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Cache flat 1D contiguous NumPy views for vectorized string-pull shortcut evaluation."""
+    blocked, caution, grad_x, grad_y, risk_01 = _GRID_ARRAYS_BY_DIGEST[digest]
+    return (
+        np.ascontiguousarray(blocked, dtype=np.uint8).ravel(),
+        np.where(np.ascontiguousarray(caution, dtype=bool).ravel(), 0.20, 0.0),
+        np.ascontiguousarray(grad_x, dtype=np.float64).ravel(),
+        np.ascontiguousarray(grad_y, dtype=np.float64).ravel(),
+        np.ascontiguousarray(risk_01, dtype=np.float64).ravel(),
+    )
+
+
 @lru_cache(maxsize=12)
 def _cached_flat_grid_lists(
     digest: bytes,
@@ -545,9 +729,11 @@ def _cached_flat_grid_lists(
 
 def _get_flat_grid_lists(
     grid: PlannerGrid10m,
+    *,
+    _digest: bytes | None = None,
 ) -> tuple[list[bool], list[bool], list[float], list[float], list[float]]:
     """Return cached flat Python lists for `grid` (bounded LRU <= 12)."""
-    return _cached_flat_grid_lists(_register_grid_digest(grid))
+    return _cached_flat_grid_lists(_digest if _digest is not None else _register_grid_digest(grid))
 
 
 def _get_directional_edge_tables(
@@ -556,9 +742,10 @@ def _get_directional_edge_tables(
     alpha_slope: float,
     gamma_risk: float,
     pure_time_only: bool,
+    _digest: bytes | None = None,
 ) -> tuple[tuple[int, list[float]], ...]:
     """Return cached 8-directional edge-cost tables for `grid` (bounded ring buffer <= 12)."""
-    digest = _register_grid_digest(grid)
+    digest = _digest if _digest is not None else _register_grid_digest(grid)
     return _cached_directional_edge_tables(
         grid.rows,
         grid.cols,
@@ -571,6 +758,25 @@ def _get_directional_edge_tables(
     )
 
 
+@lru_cache(maxsize=32)
+def _cached_h_table(
+    rows: int,
+    cols: int,
+    gr: int,
+    gc: int,
+    step_x: float,
+    step_y: float,
+    w_h: float,
+) -> list[float]:
+    """Cache Euclidean A* heuristic table `d / V_MAX_XEVA_M_S` for `(rows, cols, gr, gc)`."""
+    if w_h == 0.0:
+        return [0.0] * (rows * cols)
+    scale_h = w_h / V_MAX_XEVA_M_S
+    dy_vec = (gr - np.arange(rows, dtype=np.float64)) * step_y
+    dx_vec = (gc - np.arange(cols, dtype=np.float64)) * step_x
+    return (np.hypot(dy_vec[:, None], dx_vec[None, :]) * scale_h).ravel().tolist()
+
+
 def _astar_single_leg(
     grid: PlannerGrid10m,
     start_rc: tuple[int, int],
@@ -580,6 +786,7 @@ def _astar_single_leg(
     alpha_slope: float = 1.2,
     gamma_risk: float = 1.4,
     pure_time_only: bool = False,
+    _digest: bytes | None = None,
 ) -> tuple[bool, list[tuple[int, int]], list[float], int]:
     """Run 8-connected A* with strictly admissible Euclidean heuristic `d / V_MAX_XEVA_M_S`."""
     rows = grid.rows
@@ -602,37 +809,53 @@ def _astar_single_leg(
         alpha_slope=alpha_slope,
         gamma_risk=gamma_risk,
         pure_time_only=pure_time_only,
+        _digest=_digest,
     )
 
-    step_x = grid.step_x_ground_m
-    step_y = grid.step_y_ground_m
     w_h = max(0.0, float(heuristic_weight))
-    if w_h == 0.0:
-        h_table = [0.0] * (rows * cols)
-    else:
-        scale_h = w_h / V_MAX_XEVA_M_S
-        dy_vec = (gr - np.arange(rows, dtype=np.float64)) * step_y
-        dx_vec = (gc - np.arange(cols, dtype=np.float64)) * step_x
-        h_table = (np.hypot(dy_vec[:, None], dx_vec[None, :]) * scale_h).ravel().tolist()
+    h_table = _cached_h_table(
+        rows,
+        cols,
+        gr,
+        gc,
+        float(grid.step_x_ground_m),
+        float(grid.step_y_ground_m),
+        w_h,
+    )
 
     inf = float("inf")
     n_total = rows * cols
     g_score = [inf] * n_total
     came_from = [-1] * n_total
-    closed = [False] * n_total
 
     g_score[s_idx] = 0.0
-    heap: list[tuple[float, int, int]] = [(h_table[s_idx], 0, s_idx)]
+    idx_shift = max(1, n_total.bit_length())
+    idx_mask = (1 << idx_shift) - 1
+    heap: list[tuple[float, int]] = [(h_table[s_idx], s_idx)]
     tie = 0
     expanded = 0
     heappop = heapq.heappop
     heappush = heapq.heappush
 
+    (
+        (d0, e0),
+        (d1, e1),
+        (d2, e2),
+        (d3, e3),
+        (d4, e4),
+        (d5, e5),
+        (d6, e6),
+        (d7, e7),
+    ) = dir_tables
+    eps = 1e-12
+
     while heap:
-        _, _, cur_idx = heappop(heap)
-        if closed[cur_idx]:
+        _, packed = heappop(heap)
+        cur_idx = packed & idx_mask
+        cur_g = g_score[cur_idx]
+        if cur_g < 0.0:
             continue
-        closed[cur_idx] = True
+        g_score[cur_idx] = -1.0 - cur_g
         expanded += 1
 
         if cur_idx == g_idx:
@@ -643,23 +866,83 @@ def _astar_single_leg(
                 rev_indices.append(walk)
             rev_indices.reverse()
             path = [(idx // cols, idx % cols) for idx in rev_indices]
-            cum_g = [g_score[idx] for idx in rev_indices]
+            cum_g = [-1.0 - g_score[idx] for idx in rev_indices]
             return (True, path, cum_g, expanded)
 
-        cur_g = g_score[cur_idx]
-        for delta_idx, edge_costs_k in dir_tables:
-            edge_s = edge_costs_k[cur_idx]
-            if edge_s == inf:
-                continue
-            n_idx = cur_idx + delta_idx
-            if closed[n_idx]:
-                continue
-            cand_g = cur_g + edge_s
-            if cand_g < g_score[n_idx] - 1e-12:
-                g_score[n_idx] = cand_g
-                came_from[n_idx] = cur_idx
+        cg_eps = cur_g + eps
+
+        es = e0[cur_idx]
+        if es != inf:
+            ni = cur_idx + d0
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
                 tie += 1
-                heappush(heap, (cand_g + h_table[n_idx], tie, n_idx))
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e1[cur_idx]
+        if es != inf:
+            ni = cur_idx + d1
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e2[cur_idx]
+        if es != inf:
+            ni = cur_idx + d2
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e3[cur_idx]
+        if es != inf:
+            ni = cur_idx + d3
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e4[cur_idx]
+        if es != inf:
+            ni = cur_idx + d4
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e5[cur_idx]
+        if es != inf:
+            ni = cur_idx + d5
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e6[cur_idx]
+        if es != inf:
+            ni = cur_idx + d6
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
+        es = e7[cur_idx]
+        if es != inf:
+            ni = cur_idx + d7
+            if cg_eps + es < g_score[ni]:
+                cg = cur_g + es
+                g_score[ni] = cg
+                came_from[ni] = cur_idx
+                tie += 1
+                heappush(heap, (cg + h_table[ni], (tie << idx_shift) | ni))
 
     return (False, [], [], expanded)
 
@@ -674,6 +957,7 @@ def string_pull_with_cost_guard(
     pure_time_only: bool = False,
     cost_eps_s: float = 1e-6,
     max_lookahead_steps: int = 48,
+    _digest: bytes | None = None,
 ) -> tuple[list[tuple[int, int]], StringPullAudit]:
     """Smooth an 8-connected A* path only if supercover is clear AND cost never rises (`H2`)."""
     if len(raw_path) <= 2:
@@ -690,7 +974,18 @@ def string_pull_with_cost_guard(
             ),
         )
 
-    flat_cache = _get_flat_grid_lists(grid)
+    digest = _digest if _digest is not None else _register_grid_digest(grid)
+    blocked_arr, caut_pen_arr, gx_arr, gy_arr, risk_arr = _cached_flat_grid_np(digest)
+    rows = grid.rows
+    cols = grid.cols
+    step_x = float(grid.step_x_ground_m)
+    step_y = float(grid.step_y_ground_m)
+    max_slope_deg = EVA_SUIT_MAX_SLOPE_DEG
+    cross_caution_deg = INTERNAL_CROSS_SLOPE_CAUTION_DEG
+    vmax = V_MAX_XEVA_M_S
+    tan15 = _TAN_CROSS_CAUTION_15
+    slope_scale = alpha_slope / max_slope_deg
+    base_mult_arr = 1.0 + gamma_risk * risk_arr + caut_pen_arr if not pure_time_only else risk_arr
 
     smoothed: list[tuple[int, int]] = [raw_path[0]]
     candidates_tested = 0
@@ -703,45 +998,110 @@ def string_pull_with_cost_guard(
     n = len(raw_path)
     while idx < n - 1:
         chosen_j = idx + 1
-        _, chosen_seg_s, _, _, _ = _cell_step_cost_s(
-            grid,
-            raw_path[idx][0],
-            raw_path[idx][1],
-            raw_path[idx + 1][0],
-            raw_path[idx + 1][1],
-            alpha_slope=alpha_slope,
-            gamma_risk=gamma_risk,
-            pure_time_only=pure_time_only,
-        )
+        chosen_seg_s = -1.0
+        r0, c0 = raw_path[idx]
+        idx0 = r0 * cols + c0
 
         upper_j = min(n - 1, idx + max(2, int(max_lookahead_steps)))
-        for cand_j in range(upper_j, idx + 1, -1):
-            candidates_tested += 1
-            r0, c0 = raw_path[idx]
-            r1, c1 = raw_path[cand_j]
-            ok_seg, seg_cost_s, _, _, _, _ = evaluate_shortcut_segment_cost_s(
+        base_g_s = cum_g_s[idx]
+        cand_js = list(range(upper_j, idx + 1, -1))
+        if cand_js:
+            seg_arrays: list[np.ndarray] = []
+            lengths: list[int] = []
+            ux_segs: list[float] = []
+            uy_segs: list[float] = []
+            ds_segs: list[float] = []
+            caps: list[float] = []
+            oob_flags: list[bool] = []
+
+            for cj in cand_js:
+                r1, c1 = raw_path[cj]
+                caps.append((cum_g_s[cj] - base_g_s) + cost_eps_s)
+                if not (0 <= r0 < rows and 0 <= c0 < cols and 0 <= r1 < rows and 0 <= c1 < cols):
+                    oob_flags.append(True)
+                    seg_arrays.append(np.zeros(1, dtype=np.intp))
+                    lengths.append(1)
+                    ux_segs.append(0.0)
+                    uy_segs.append(0.0)
+                    ds_segs.append(0.0)
+                    continue
+                oob_flags.append(False)
+                rel_arr, _, ds_m, ux, uy = _rel_supercover_geom(
+                    r1 - r0, c1 - c0, cols, step_x, step_y
+                )
+                seg_arrays.append(idx0 + rel_arr)
+                lengths.append(len(rel_arr))
+                ux_segs.append(ux)
+                uy_segs.append(uy)
+                ds_segs.append(ds_m)
+
+            c_idx_arr = np.concatenate(seg_arrays)
+            len_arr = np.array(lengths, dtype=np.intp)
+            off_arr = np.zeros(len(lengths), dtype=np.intp)
+            if len(lengths) > 1:
+                np.cumsum(len_arr[:-1], out=off_arr[1:])
+
+            ux_a = np.repeat(np.array(ux_segs, dtype=np.float64), len_arr)
+            uy_a = np.repeat(np.array(uy_segs, dtype=np.float64), len_arr)
+            ds_a = np.repeat(np.array(ds_segs, dtype=np.float64), len_arr)
+
+            gx = gx_arr[c_idx_arr]
+            gy = gy_arr[c_idx_arr]
+            g_par = gx * ux_a + gy * uy_a
+            g_cross = np.abs(gx * uy_a - gy * ux_a)
+            g_max = np.maximum(np.abs(g_par), g_cross)
+            theta_max = np.degrees(np.arctan(g_max))
+            cell_invalid = (
+                (blocked_arr[c_idx_arr] != 0)
+                | (~np.isfinite(gx))
+                | (~np.isfinite(gy))
+                | (theta_max > max_slope_deg)
+            )
+            v_kmh = np.maximum(0.15, 2.4 * np.exp(-3.5 * np.abs(g_par + 0.05)))
+            v_ms = np.clip((v_kmh / 3.6) / (1.0 + 0.60 * (g_cross * g_cross)), 0.04, vmax)
+            dt_s = ds_a / v_ms
+            if pure_time_only:
+                cell_cost = dt_s
+            else:
+                cell_invalid |= ~np.isfinite(risk_arr[c_idx_arr])
+                mult = base_mult_arr[c_idx_arr] + slope_scale * theta_max
+                if np.any(g_cross > tan15):
+                    theta_cross = np.degrees(np.arctan(g_cross))
+                    mult = mult + np.where(
+                        theta_cross > cross_caution_deg,
+                        0.45 * ((theta_cross - cross_caution_deg) / 5.0),
+                        0.0,
+                    )
+                cell_cost = dt_s * mult
+
+            seg_bad = np.maximum.reduceat(cell_invalid.view(np.uint8), off_arr) > 0
+            seg_costs = np.add.reduceat(cell_cost, off_arr)
+            seg_bad |= ~np.isfinite(seg_costs)
+
+            for k, cj in enumerate(cand_js):
+                candidates_tested += 1
+                if oob_flags[k] or seg_bad[k]:
+                    rej_obs += 1
+                    continue
+                sc = float(seg_costs[k])
+                if sc <= caps[k]:
+                    accepted_count += 1
+                    chosen_j = cj
+                    chosen_seg_s = sc
+                    break
+                rej_cost += 1
+
+        if chosen_seg_s < 0.0:
+            _, chosen_seg_s, _, _, _ = _cell_step_cost_s(
                 grid,
                 r0,
                 c0,
-                r1,
-                c1,
+                raw_path[idx + 1][0],
+                raw_path[idx + 1][1],
                 alpha_slope=alpha_slope,
                 gamma_risk=gamma_risk,
                 pure_time_only=pure_time_only,
-                _flat=flat_cache,
             )
-            if not ok_seg:
-                rej_obs += 1
-                continue
-
-            subpath_budget_s = cum_g_s[cand_j] - cum_g_s[idx]
-            if seg_cost_s <= subpath_budget_s + cost_eps_s:
-                accepted_count += 1
-                chosen_j = cand_j
-                chosen_seg_s = seg_cost_s
-                break
-            rej_cost += 1
-
         smoothed.append(raw_path[chosen_j])
         smoothed_total_s += chosen_seg_s
         idx = chosen_j
@@ -893,6 +1253,7 @@ def plan_obstacle_aware_route(
     raw_cost_sum = 0.0
     smooth_cost_sum = 0.0
 
+    digest = _register_grid_digest(grid)
     for leg_idx in range(len(rc_stops) - 1):
         ok_leg, leg_raw, leg_g, exp_n = _astar_single_leg(
             grid,
@@ -900,6 +1261,7 @@ def plan_obstacle_aware_route(
             rc_stops[leg_idx + 1],
             heuristic_weight=w_h,
             pure_time_only=pure_time,
+            _digest=digest,
         )
         total_expanded += exp_n
         if not ok_leg:
@@ -923,7 +1285,7 @@ def plan_obstacle_aware_route(
 
         if enable_string_pull:
             leg_sm, audit = string_pull_with_cost_guard(
-                grid, leg_raw, leg_g, pure_time_only=pure_time
+                grid, leg_raw, leg_g, pure_time_only=pure_time, _digest=digest
             )
         else:
             leg_sm = list(leg_raw)
@@ -951,7 +1313,7 @@ def plan_obstacle_aware_route(
     max_par_deg = 0.0
     max_cross_deg = 0.0
     caution_cells = 0
-    flat_cache = _get_flat_grid_lists(grid)
+    flat_cache = _get_flat_grid_lists(grid, _digest=digest)
 
     for idx in range(len(full_smoothed) - 1):
         r0, c0 = full_smoothed[idx]
