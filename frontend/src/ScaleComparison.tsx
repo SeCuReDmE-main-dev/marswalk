@@ -60,7 +60,9 @@ export default function ScaleComparison({
   return (
     <section className="scale-comparison" aria-label="Terrain scale comparison">
       <h3>What changes with scale?</h3>
-      <p className="scale-intro">Same cell, different analysis distances.</p>
+      <p className="scale-intro">
+        A broad map can smooth over a short, steep stretch.
+      </p>
       <div
         className="scale-buttons"
         role="group"
@@ -95,10 +97,18 @@ export default function ScaleComparison({
         {comparison.explanation}
       </p>
       <p className="scale-caption">
-        Lines illustrate slope angles, not a terrain cross-section. Baseline
-        changes the comparison, not map zoom or the supplied{" "}
-        <b>{cell.verdict}</b> verdict.
+        Angle sketches, not a terrain cross-section. Changing scale keeps the
+        supplied <b>{cell.verdict}</b> verdict.
       </p>
+      <details>
+        <summary>What does 64 m mean?</summary>
+        <p>
+          It is the distance used to calculate the slope. A 64 m reading
+          compares heights farther apart than a 4 m reading. Short steep
+          sections can be less visible in the longer reading. These buttons do
+          not change map zoom.
+        </p>
+      </details>
       <details>
         <summary>Why not 1 m?</summary>
         <p>

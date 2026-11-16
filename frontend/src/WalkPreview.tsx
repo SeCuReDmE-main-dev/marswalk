@@ -122,8 +122,8 @@ export default function WalkPreview({
             <b>Walk preview</b>
             <small>
               {open
-                ? "Supplied route · playback only"
-                : "Explore the path and its elevation"}
+                ? "Route playback · not live tracking"
+                : "Play or scrub along the route"}
             </small>
           </span>
           {!open && <ChevronDown size={17} />}
@@ -350,10 +350,10 @@ export default function WalkPreview({
             </div>
           </div>
           <p className="preview-note">
-            {reducedMotion ? "Reduced motion: use the slider. " : ""}Not live
-            tracking. Elevations use {format(data.hazards.cell_size_m)} m cells;
-            profile gaps are unassessed. Colors show supplied cell assessments,
-            not approval to walk. Route:{" "}
+            {reducedMotion ? "Reduced motion: use the slider. " : ""}
+            Elevations use {format(data.hazards.cell_size_m)} m cells; gaps are
+            unassessed. Colors are model assessments, not safety certification.
+            Route:{" "}
             <button
               aria-label="View preview route source"
               onClick={() => {

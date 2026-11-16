@@ -7,28 +7,26 @@ export default function DataAvailability({ data }: { data: MarswalkData }) {
   const external = Object.entries(data.hazards.external_layers_status || {});
   return (
     <details className="source-card">
-      <summary>Local data & network limits</summary>
-      <h3>Included in the pack</h3>
+      <summary>Available data & offline use</summary>
+      <h3>Included data</h3>
       <p>
-        Rover observations, supplied routes, terrain assessments, constraints
-        and obstacles when supplied. {images} rover images are bundled; each
-        image is checked against the manifest when opened.
+        Rover stops, routes, terrain assessments, limits and supplied obstacles.
+        The {images} included photos are checksum-checked when opened.
       </p>
       <p>
         {data.mode === "static"
-          ? "This session loads its pack from the configured static host."
-          : "This session loads its pack from the configured API server."}{" "}
-        Bundled data still needs that host to be reachable. Offline use requires
-        serving the downloaded build locally; this app does not install an
-        offline browser cache.
+          ? "Data loads from the configured data host."
+          : "Data loads from the configured API server."}{" "}
+        For offline use, download the build and serve it locally. There is no
+        automatic offline browser cache.
       </p>
       <h3>Needs a connection</h3>
       <p>
-        NASA map tiles, the 3D satellite texture and unbundled rover photos need
-        NASA access. Coarse elevation relief remains available without tiles.
-        New route planning, path assessment and camera-cache lookup need the
-        configured engine server. The camera browser requests cached images
-        only; live NASA fetching requires operator permission on the server.
+        NASA maps, 3D satellite textures and additional rover photos need
+        internet access. Coarse terrain remains visible without map tiles. New
+        plans, route assessments and camera searches need the engine server;
+        camera searches use its cache unless its operator enables NASA
+        downloads.
       </p>
       <h3>Missing data & approximations</h3>
       {external.length ? (
@@ -49,9 +47,8 @@ export default function DataAvailability({ data }: { data: MarswalkData }) {
         <p>No external-layer availability report was supplied.</p>
       )}
       <p>
-        Geological units use an elevation/position approximation, not the
-        published SIM 3464 polygons. Missing layers are not invented. Outside
-        the assessed window, terrain remains unassessed.
+        Geology is estimated from elevation and position, not the SIM 3464 map
+        polygons. Missing layers and terrain outside the grid remain unassessed.
       </p>
     </details>
   );

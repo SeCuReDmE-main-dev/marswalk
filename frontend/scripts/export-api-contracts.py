@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from marswalk.contracts.models import ObstacleFeatureCollection
+from marswalk.engine.validation import ValidationReport
 from marswalk.middleware.query_service import (
     CellLookupResult,
     PlanRouteRequest,
@@ -16,6 +17,7 @@ from marswalk.middleware.query_service import (
 destination = Path(__file__).resolve().parents[1] / "src/data/api-schemas"
 destination.mkdir(parents=True, exist_ok=True)
 for model in (
+    ValidationReport,
     ObstacleFeatureCollection,
     CellLookupResult,
     PlanRouteRequest,

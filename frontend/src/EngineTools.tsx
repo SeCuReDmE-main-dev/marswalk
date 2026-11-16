@@ -205,12 +205,12 @@ export function EngineTools({
           ? health.safe_mode
             ? "Operator stop active"
             : "Engine connected"
-          : "Connect to live engine"}
+          : "Connect to planner"}
       </button>
       {!health && (
         <p className="footnote">
-          Start the middleware at the configured API address to plan a new walk.
-          Supplied routes and obstacles work offline.
+          New plans need the engine server. You can browse the included route
+          without connecting.
         </p>
       )}
       <label className="field-label">
@@ -283,7 +283,7 @@ export function EngineTools({
         </button>
       </div>
       <details>
-        <summary>Scenario controls</summary>
+        <summary>Planning assumptions</summary>
         <p className="footnote">
           These are planning assumptions, not live telemetry.
         </p>
@@ -521,8 +521,8 @@ export function CameraPanel({
     <details className="camera-panel">
       <summary>Rover camera frames</summary>
       <p className="footnote">
-        Cached NASA frames for Sol {sol}. Live fetching requires the server
-        operator; this interface never enables it.
+        Browse cached NASA photos for Sol {sol}. This does not request new
+        downloads from NASA.
       </p>
       <label className="field-label">
         Mast azimuth (optional, 0–360°)

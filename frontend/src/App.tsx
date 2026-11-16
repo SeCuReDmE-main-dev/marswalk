@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useId,
   type ReactNode,
 } from "react";
 import {
@@ -33,6 +34,7 @@ import DataAvailability from "./DataAvailability";
 import WalkPreview from "./WalkPreview";
 import type { PreviewPosition } from "./routePreview";
 import ScaleComparison from "./ScaleComparison";
+import ValidationEvidence from "./ValidationEvidence";
 const Terrain3D = lazy(() => import("./Terrain3D"));
 import {
   EngineTools,
@@ -61,10 +63,10 @@ import {
 } from "./domain";
 
 const steps = [
-  "Review the walk",
-  "Inspect the terrain",
-  "Check the evidence",
-  "Review the assessment",
+  "The route",
+  "Terrain",
+  "Rover observations",
+  "Route assessment",
 ];
 const defaultLayers: LayerState = {
   imagery: true,
@@ -104,12 +106,14 @@ function Dialog({
   onClose: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   useEffect(() => {
     ref.current?.showModal();
   }, []);
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onCancel={onClose}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -117,7 +121,7 @@ function Dialog({
     >
       <div className="dialog-content">
         <header>
-          <h2>{title}</h2>
+          <h2 id={titleId}>{title}</h2>
           <button
             className="icon-button"
             aria-label="Close dialog"
@@ -512,7 +516,7 @@ function Workspace({
             <div className="guide-heading">
               <div>
                 <span className="eyebrow">LIVE PLANNER</span>
-                <h1>Plan a Marswalk</h1>
+                <h1>Plan a walk</h1>
               </div>
               <button
                 className="icon-button"
@@ -557,7 +561,7 @@ function Workspace({
               <div className="guide-heading">
                 <div>
                   <span className="eyebrow">MISSION GUIDE</span>
-                  <h1>Explore this Marswalk</h1>
+                  <h1>Your Marswalk</h1>
                 </div>
                 <button
                   className="icon-button"
@@ -580,6 +584,9 @@ function Workspace({
                   <span>Show tips</span>
                 </label>
               </div>
+              <p className="guide-purpose">
+                Compare the map with what the rover measured on the ground.
+              </p>
               <div className="guide-scroll">
                 {steps.map((name, i) => (
                   <section
@@ -815,107 +822,118 @@ function Workspace({
                               }}
                               q={q}
                             />
-                            <p className="intro">
-                              Browse Perseverance’s measured observations. A
-                              rover stop may not coincide with an assessed cell.
-                            </p>
-                            <label className="field-label">
-                              Find a sol
-                              <input
-                                aria-label="Find a sol"
-                                type="search"
-                                inputMode="numeric"
-                                value={solSearch}
-                                onChange={(e) => setSolSearch(e.target.value)}
-                                placeholder="e.g. 609"
-                              />
-                            </label>
-                            <label className="field-label">
-                              Rover observation
-                              <select
-                                aria-label="Rover observation"
-                                value={waypoint?.properties.waypoint_id || ""}
-                                onChange={(e) => {
-                                  const w = data.waypoints.features.find(
-                                    (w) =>
-                                      w.properties.waypoint_id ===
-                                      e.target.value,
-                                  );
-                                  if (w) chooseWaypoint(w);
-                                }}
-                              >
-                                <option value="">Select an observation…</option>
-                                {(waypoint &&
-                                !filteredWaypoints.includes(waypoint)
-                                  ? [waypoint, ...filteredWaypoints]
-                                  : filteredWaypoints
-                                ).map((w) => (
-                                  <option
-                                    value={w.properties.waypoint_id}
-                                    key={w.properties.waypoint_id}
-                                  >
-                                    Sol {w.properties.sol} · Site{" "}
-                                    {w.properties.site} / Drive{" "}
-                                    {w.properties.drive}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                            {!filteredWaypoints.length && (
-                              <p className="footnote">
-                                No observations match that sol.
+                            <details
+                              className="rover-browser"
+                              open={!selectedBenchmark}
+                            >
+                              <summary>Browse rover stops</summary>
+                              <p className="intro">
+                                Find a Perseverance stop by sol (Martian day).
                               </p>
-                            )}
-                            {waypoint && (
-                              <>
-                                <div className="observation-title">
-                                  <h2>Perseverance</h2>
-                                  <span>Sol {waypoint.properties.sol}</span>
-                                </div>
-                                <div className="readout">
-                                  <span>Measured rover tilt</span>
-                                  {q(waypoint.properties.rover_tilt_deg, 2)}
-                                </div>
-                                <div className="readout">
-                                  <span>Pitch</span>
-                                  {q(waypoint.properties.rover_pitch_deg, 2)}
-                                </div>
-                                <div className="readout">
-                                  <span>Roll</span>
-                                  {q(waypoint.properties.rover_roll_deg, 2)}
-                                </div>
-                                <RoverImage
-                                  data={data}
-                                  url={waypoint.properties.panorama_url}
+                              <label className="field-label">
+                                Find a sol
+                                <input
+                                  aria-label="Find a sol"
+                                  type="search"
+                                  inputMode="numeric"
+                                  value={solSearch}
+                                  onChange={(e) => setSolSearch(e.target.value)}
+                                  placeholder="e.g. 609"
                                 />
-                                <CameraPanel
-                                  data={data}
-                                  sol={waypoint.properties.sol}
-                                />
+                              </label>
+                              <label className="field-label">
+                                Rover observation
+                                <select
+                                  aria-label="Rover observation"
+                                  value={waypoint?.properties.waypoint_id || ""}
+                                  onChange={(e) => {
+                                    const w = data.waypoints.features.find(
+                                      (w) =>
+                                        w.properties.waypoint_id ===
+                                        e.target.value,
+                                    );
+                                    if (w) chooseWaypoint(w);
+                                  }}
+                                >
+                                  <option value="">
+                                    Select an observation…
+                                  </option>
+                                  {(waypoint &&
+                                  !filteredWaypoints.includes(waypoint)
+                                    ? [waypoint, ...filteredWaypoints]
+                                    : filteredWaypoints
+                                  ).map((w) => (
+                                    <option
+                                      value={w.properties.waypoint_id}
+                                      key={w.properties.waypoint_id}
+                                    >
+                                      Sol {w.properties.sol} · Site{" "}
+                                      {w.properties.site} / Drive{" "}
+                                      {w.properties.drive}
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+                              {!filteredWaypoints.length && (
                                 <p className="footnote">
-                                  {waypoint.properties.lat.toFixed(5)}° N,{" "}
-                                  {waypoint.properties.lon.toFixed(5)}° E
+                                  No observations match that sol.
                                 </p>
-                              </>
-                            )}
-                            <div className="notice quiet">
-                              <BookOpen size={18} />
-                              <div>
-                                <b>Keep observation and model separate</b>
-                                <p>
-                                  {cell?.measured_rover_tilt_deg
-                                    ? "A matched value is available for the selected cell."
-                                    : "No matched rover observation is provided for the selected terrain cell."}
-                                </p>
+                              )}
+                              {waypoint && (
+                                <>
+                                  <div className="observation-title">
+                                    <h2>Perseverance</h2>
+                                    <span>Sol {waypoint.properties.sol}</span>
+                                  </div>
+                                  <div className="readout">
+                                    <span>Measured rover tilt</span>
+                                    {q(waypoint.properties.rover_tilt_deg, 2)}
+                                  </div>
+                                  <div className="readout">
+                                    <span>Pitch</span>
+                                    {q(waypoint.properties.rover_pitch_deg, 2)}
+                                  </div>
+                                  <div className="readout">
+                                    <span>Roll</span>
+                                    {q(waypoint.properties.rover_roll_deg, 2)}
+                                  </div>
+                                  <RoverImage
+                                    data={data}
+                                    url={waypoint.properties.panorama_url}
+                                  />
+                                  <CameraPanel
+                                    data={data}
+                                    sol={waypoint.properties.sol}
+                                  />
+                                  <ValidationEvidence
+                                    data={data}
+                                    waypoint={waypoint}
+                                    q={q}
+                                  />
+                                  <p className="footnote">
+                                    {waypoint.properties.lat.toFixed(5)}° N,{" "}
+                                    {waypoint.properties.lon.toFixed(5)}° E
+                                  </p>
+                                </>
+                              )}
+                              <div className="notice quiet">
+                                <BookOpen size={18} />
+                                <div>
+                                  <b>Keep observation and model separate</b>
+                                  <p>
+                                    {cell?.measured_rover_tilt_deg
+                                      ? "A matched value is available for the selected cell."
+                                      : "No matched rover observation is provided for the selected terrain cell."}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
+                            </details>
                           </>
                         )}
                         {i === 3 && (
                           <>
                             <p className="intro">
-                              Review the supplied route assessment and the
-                              limits behind it.
+                              These estimates describe the proposed route.
                             </p>
                             {candidate && (
                               <>
@@ -965,13 +983,13 @@ function Workspace({
                                   return path.
                                 </p>
                                 <details>
-                                  <summary>Supplied route notes</summary>
+                                  <summary>Route notes</summary>
                                   <p>{candidate.properties.notes}</p>
                                 </details>
                               </>
                             )}
                             <details open>
-                              <summary>Reference constraints</summary>
+                              <summary>Limits and assumptions</summary>
                               <div className="readout">
                                 <span>Suit slope limit</span>
                                 {q(data.constraints.suit_max_slope_deg)}
@@ -1045,16 +1063,13 @@ function Workspace({
         </aside>
       </main>
       {dialog === "sources" && (
-        <Dialog title="Sources & provenance" onClose={() => setDialog(null)}>
-          <p className="dialog-lead">
-            Every reading retains its source and provenance. Explore the records
-            behind this pack.
-          </p>
+        <Dialog title="Data & sources" onClose={() => setDialog(null)}>
+          <p className="dialog-lead">Check the sources behind each reading.</p>
           <div className="integrity-strip">
             <Check size={16} />
             {data.integrity === "sha256-verified"
-              ? "Static payload SHA-256 checks passed"
-              : "API payloads validated against shared schemas"}
+              ? "Loaded data checksums verified"
+              : "Data format checked · API mode"}
             <span>
               Contract {data.manifest.contract_version} · Pack{" "}
               {data.manifest.pack_version}
@@ -1085,20 +1100,16 @@ function Workspace({
             </article>
           ))}
           <p className="footnote">
-            Hashes check consistency against the supplied manifest, not
-            authorship or scientific validity. API mode trusts the middleware to
-            verify its stored pack.
+            Checksums confirm file consistency, not scientific accuracy. In API
+            mode, the server checks the stored pack.
           </p>
         </Dialog>
       )}
       {dialog === "help" && (
-        <Dialog
-          title="A walk through the evidence"
-          onClose={() => setDialog(null)}
-        >
+        <Dialog title="How does it work?" onClose={() => setDialog(null)}>
           <p className="dialog-lead">
-            Marswalk connects a proposed astronaut walk with terrain assessments
-            and real rover observations.
+            Compare Mars terrain at different scales with real Perseverance
+            observations before planning a walk.
           </p>
           <ol className="help-steps">
             {steps.map((s, i) => (
@@ -1107,16 +1118,33 @@ function Workspace({
                 <p>
                   {
                     [
-                      "Choose a science stop and see where it sits along the candidate route.",
-                      "Select a cell. Compare slopes at different spatial baselines without changing its supplied verdict.",
-                      "Browse measured Perseverance observations and inspect their source camera images.",
-                      "Review the simulated walk’s estimates, constraints and limitations.",
+                      "Choose a science stop along the proposed route.",
+                      "Compare the same cell at 64 m, 16 m and 4 m analysis distances.",
+                      "Compare orbital slopes with rover tilt and NASA photos.",
+                      "Read the route verdict, estimates and limits.",
                     ][i]
                   }
                 </p>
               </li>
             ))}
           </ol>
+          <details>
+            <summary>What do the colors mean?</summary>
+            <p>
+              <b>GO:</b> the model’s checks passed. <b>CAUTION:</b> warnings or
+              uncertainty remain. <b>NO_GO:</b> the model blocks the cell or
+              route. None is a guarantee of safety. Outside the grid, terrain is
+              unassessed.
+            </p>
+          </details>
+          <details>
+            <summary>What is rover tilt?</summary>
+            <p>
+              How far the rover leaned while standing on the ground. The orbital
+              map estimates the slope across an area. Comparing them helps show
+              what a broad map can miss; they are different measurements.
+            </p>
+          </details>
           <div className="tag-explainer">
             <p>
               <Badge value="MEASURED" /> Direct observations or published
@@ -1131,9 +1159,8 @@ function Workspace({
             </p>
           </div>
           <p>
-            Confidence has three independent components: verified agreement,
-            scale/data uncertainty, and hazard contradiction. They are not
-            percentages of one probability.
+            Confidence shows agreement, uncertainty and hazard separately. These
+            values do not add up to 100%.
           </p>
           <button
             className="primary-button"
@@ -1142,6 +1169,7 @@ function Workspace({
               setCollapsed(false);
               navigate(0);
               setDialog(null);
+              focusGuideStep(0);
             }}
           >
             Show me around <ArrowRight size={15} />
@@ -1156,9 +1184,9 @@ function Confidence({ cell }: { cell: HazardCell }) {
     <div className="confidence">
       {(
         [
-          ["t", "Verified agreement"],
-          ["i", "Scale/data uncertainty"],
-          ["f", "Hazard contradiction"],
+          ["t", "Agreement"],
+          ["i", "Uncertainty"],
+          ["f", "Hazard evidence"],
         ] as const
       ).map(([key, label]) => (
         <div key={key}>
@@ -1170,7 +1198,8 @@ function Confidence({ cell }: { cell: HazardCell }) {
         </div>
       ))}
       <p className="footnote">
-        Independent evidence components, not a normalized probability.
+        How much the evidence agrees, how much is unknown, and how much points
+        to a hazard. These are separate values, not a percentage split.
       </p>
     </div>
   );
@@ -1210,13 +1239,10 @@ export default function App() {
         />
         <span className="eyebrow">MARSWALK / JEZERO</span>
         <h1>
-          {error
-            ? "The data pack could not be loaded"
-            : "Preparing your Marswalk"}
+          {error ? "The data pack could not be loaded" : "Loading Jezero"}
         </h1>
         <p role={error ? "alert" : "status"}>
-          {error ||
-            "Loading the route, terrain assessments and rover evidence."}
+          {error || "Loading terrain, routes and rover observations."}
         </p>
         {error ? (
           <button
@@ -1228,7 +1254,7 @@ export default function App() {
         ) : (
           <div className="loading-line" />
         )}
-        <small>Static pack or shared API · no account required</small>
+        <small>No account required</small>
       </div>
     );
   return <Workspace data={data} onRetry={() => setAttempt((n) => n + 1)} />;

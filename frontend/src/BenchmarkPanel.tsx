@@ -8,6 +8,7 @@ import type {
 import { cellAt, routeParts, type LonLat } from "./domain";
 import RoverImage from "./RoverImage";
 import { AngleReading } from "./ScaleComparison";
+import ValidationEvidence from "./ValidationEvidence";
 
 export default function BenchmarkPanel({
   data,
@@ -29,6 +30,15 @@ export default function BenchmarkPanel({
       ? (selected.geometry.coordinates.map(Number) as LonLat)
       : undefined;
   const cell = location ? cellAt(data.hazards, location) : undefined;
+  const observation =
+    selected && location
+      ? data.waypoints.features.find(
+          (w) =>
+            w.properties.sol === selected.properties.sol &&
+            Math.abs(w.properties.lon - location[0]) < 1e-7 &&
+            Math.abs(w.properties.lat - location[1]) < 1e-7,
+        )
+      : undefined;
   return (
     <section
       className="benchmark-panel"
@@ -36,8 +46,8 @@ export default function BenchmarkPanel({
     >
       <h3>Orbit vs ground</h3>
       <p className="intro">
-        One place, two kinds of evidence. These rover references are separate
-        from the proposed walk and science stops.
+        Compare the map with Perseverance’s measurements. These reference points
+        are separate from the proposed walk.
       </p>
       <label className="field-label">
         Hazard benchmark
@@ -93,6 +103,9 @@ export default function BenchmarkPanel({
             angles, not a terrain cross-section.
           </p>
           <RoverImage data={data} url={selected.properties.panorama_url} />
+          {observation && (
+            <ValidationEvidence data={data} waypoint={observation} q={q} />
+          )}
           <div className="readout">
             <span>Suit slope reference limit</span>
             {q(data.constraints.suit_max_slope_deg, 1)}
@@ -122,7 +135,7 @@ export default function BenchmarkPanel({
             </>
           )}
           <details>
-            <summary>Benchmark explanation from the pack</summary>
+            <summary>Reference notes</summary>
             <p>
               The comparison above uses the containing cell. A point-sampled
               slope in these notes has different spatial support.

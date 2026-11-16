@@ -1387,6 +1387,12 @@ a {
   color: #9bb0bf;
   font-size: 10px;
 }
+.guide-purpose {
+  margin: 0 20px 14px;
+  color: #c1d1dc;
+  font-size: 12px;
+  line-height: 1.6;
+}
 .tip-toggle {
   display: flex;
   align-items: center;

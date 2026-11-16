@@ -25,6 +25,7 @@ for (const name of names) {
   console.log("Generated", name);
 }
 for (const name of [
+  "ValidationReport",
   "ObstacleFeatureCollection",
   "CellLookupResult",
   "PlanRouteRequest",

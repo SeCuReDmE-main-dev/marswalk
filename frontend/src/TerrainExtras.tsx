@@ -157,15 +157,15 @@ export function CellEvidence({
   }
   return (
     <details>
-      <summary>Nearby rover evidence · live lookup</summary>
+      <summary>Nearest rover stop · server lookup</summary>
       <button
         className="secondary-button"
         disabled={!point || busy}
         onClick={load}
       >
-        Find nearby rover evidence
+        Find nearest rover stop
       </button>
-      {busy && <p role="status">Looking up evidence…</p>}
+      {busy && <p role="status">Finding the nearest stop…</p>}
       {error && <p role="alert">{error}</p>}
       {result && (
         <>

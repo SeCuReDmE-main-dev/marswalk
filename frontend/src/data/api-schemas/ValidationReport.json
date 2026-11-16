@@ -1,0 +1,285 @@
+{
+  "$defs": {
+    "BaselineValidationMetrics": {
+      "additionalProperties": false,
+      "description": "Error metrics comparing a single DTM baseline against ground-truth rover tilt.",
+      "properties": {
+        "baseline_m": {
+          "title": "Baseline M",
+          "type": "integer"
+        },
+        "sample_count": {
+          "title": "Sample Count",
+          "type": "integer"
+        },
+        "mae_deg": {
+          "description": "Mean Absolute Error |s_dtm - tilt_rover| (deg).",
+          "title": "Mae Deg",
+          "type": "number"
+        },
+        "rmse_deg": {
+          "description": "Root Mean Square Error (deg).",
+          "title": "Rmse Deg",
+          "type": "number"
+        },
+        "bias_deg": {
+          "description": "Mean signed error (s_dtm - tilt_rover) (deg).",
+          "title": "Bias Deg",
+          "type": "number"
+        },
+        "steep_sample_count": {
+          "description": "Number of steep stops (rover_tilt_deg >= 8.0 deg).",
+          "title": "Steep Sample Count",
+          "type": "integer"
+        },
+        "steep_mae_deg": {
+          "description": "MAE on steep scarp stops (>= 8.0 deg).",
+          "title": "Steep Mae Deg",
+          "type": "number"
+        },
+        "steep_bias_deg": {
+          "description": "Signed bias on steep scarp stops (negative = orbital underestimation).",
+          "title": "Steep Bias Deg",
+          "type": "number"
+        }
+      },
+      "required": [
+        "baseline_m",
+        "sample_count",
+        "mae_deg",
+        "rmse_deg",
+        "bias_deg",
+        "steep_sample_count",
+        "steep_mae_deg",
+        "steep_bias_deg"
+      ],
+      "title": "BaselineValidationMetrics",
+      "type": "object"
+    },
+    "WaypointValidationSample": {
+      "additionalProperties": false,
+      "description": "Per-waypoint comparison of measured Perseverance tilt vs. 1m..64m DTM slopes.",
+      "properties": {
+        "waypoint_id": {
+          "title": "Waypoint Id",
+          "type": "string"
+        },
+        "sol": {
+          "title": "Sol",
+          "type": "integer"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "measured_rover_tilt_deg": {
+          "title": "Measured Rover Tilt Deg",
+          "type": "number"
+        },
+        "dtm_elev_m": {
+          "title": "Dtm Elev M",
+          "type": "number"
+        },
+        "dtm_slope_deg_by_baseline": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "enum": [
+              "1",
+              "4",
+              "16",
+              "64"
+            ]
+          },
+          "title": "Dtm Slope Deg By Baseline",
+          "type": "object"
+        },
+        "signed_error_deg_by_baseline": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "enum": [
+              "1",
+              "4",
+              "16",
+              "64"
+            ]
+          },
+          "title": "Signed Error Deg By Baseline",
+          "type": "object"
+        }
+      },
+      "required": [
+        "waypoint_id",
+        "sol",
+        "lon",
+        "lat",
+        "measured_rover_tilt_deg",
+        "dtm_elev_m",
+        "dtm_slope_deg_by_baseline",
+        "signed_error_deg_by_baseline"
+      ],
+      "title": "WaypointValidationSample",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Complete `validation_report.json` quantifying the orbital-to-ground scale gap.",
+  "properties": {
+    "contract_version": {
+      "default": "1.1.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "pack_version": {
+      "default": "1.1.0",
+      "title": "Pack Version",
+      "type": "string"
+    },
+    "site_id": {
+      "default": "jezero",
+      "title": "Site Id",
+      "type": "string"
+    },
+    "dtm_source_id": {
+      "default": "SRC-USGS-HIRISE-DTM-1M",
+      "title": "Dtm Source Id",
+      "type": "string"
+    },
+    "rover_source_id": {
+      "default": "SRC-M20-WAYPOINTS",
+      "title": "Rover Source Id",
+      "type": "string"
+    },
+    "window_bbox": {
+      "maxItems": 4,
+      "minItems": 4,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Window Bbox",
+      "type": "array"
+    },
+    "waypoint_count_in_window": {
+      "title": "Waypoint Count In Window",
+      "type": "integer"
+    },
+    "steep_threshold_deg": {
+      "default": 8.0,
+      "title": "Steep Threshold Deg",
+      "type": "number"
+    },
+    "steep_waypoint_count": {
+      "title": "Steep Waypoint Count",
+      "type": "integer"
+    },
+    "metrics_by_baseline": {
+      "additionalProperties": {
+        "$ref": "#/$defs/BaselineValidationMetrics"
+      },
+      "propertyNames": {
+        "enum": [
+          "1",
+          "4",
+          "16",
+          "64"
+        ]
+      },
+      "title": "Metrics By Baseline",
+      "type": "object"
+    },
+    "split_rule": {
+      "default": "odd_sols_tune_even_sols_test",
+      "title": "Split Rule",
+      "type": "string"
+    },
+    "tune_odd_waypoint_count": {
+      "default": 0,
+      "title": "Tune Odd Waypoint Count",
+      "type": "integer"
+    },
+    "test_even_waypoint_count": {
+      "default": 0,
+      "title": "Test Even Waypoint Count",
+      "type": "integer"
+    },
+    "tune_odd_metrics_by_baseline": {
+      "additionalProperties": {
+        "$ref": "#/$defs/BaselineValidationMetrics"
+      },
+      "propertyNames": {
+        "enum": [
+          "1",
+          "4",
+          "16",
+          "64"
+        ]
+      },
+      "title": "Tune Odd Metrics By Baseline",
+      "type": "object"
+    },
+    "test_even_metrics_by_baseline": {
+      "additionalProperties": {
+        "$ref": "#/$defs/BaselineValidationMetrics"
+      },
+      "propertyNames": {
+        "enum": [
+          "1",
+          "4",
+          "16",
+          "64"
+        ]
+      },
+      "title": "Test Even Metrics By Baseline",
+      "type": "object"
+    },
+    "best_overall_baseline_m": {
+      "title": "Best Overall Baseline M",
+      "type": "integer"
+    },
+    "worst_steep_baseline_m": {
+      "title": "Worst Steep Baseline M",
+      "type": "integer"
+    },
+    "orbital_scale_gap_summary": {
+      "title": "Orbital Scale Gap Summary",
+      "type": "string"
+    },
+    "samples": {
+      "items": {
+        "$ref": "#/$defs/WaypointValidationSample"
+      },
+      "title": "Samples",
+      "type": "array"
+    }
+  },
+  "required": [
+    "window_bbox",
+    "waypoint_count_in_window",
+    "steep_waypoint_count",
+    "metrics_by_baseline",
+    "best_overall_baseline_m",
+    "worst_steep_baseline_m",
+    "orbital_scale_gap_summary",
+    "samples"
+  ],
+  "title": "ValidationReport",
+  "type": "object"
+}
