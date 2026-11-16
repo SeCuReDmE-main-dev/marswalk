@@ -1,0 +1,23 @@
+COMMAND=python -m ruff check shared/10_HANDOFFS/audit_evidence/part01
+STDOUT_BEGIN
+All checks passed!
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE=0
+
+COMMAND=python -m ruff format --check shared/10_HANDOFFS/audit_evidence/part01
+STDOUT_BEGIN
+2 files already formatted
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE=0
+
+COMMAND=python shared/10_HANDOFFS/audit_evidence/part01/run_probe.py
+STDOUT_BEGIN
+PROBE_EXIT_CODE=0; stdout/stderr captured in part01/probes.log
+STDOUT_END
+STDERR_BEGIN
+STDERR_END
+EXIT_CODE=0

@@ -1,0 +1,47 @@
+COMMAND=-m marswalk.middleware.cli verify-pack --site jezero
+[PACK VERIFIED] site=jezero waypoints=708 cells=1600 files=17
+
+EXIT_CODE=0
+COMMAND=-m ruff check .
+All checks passed!
+
+EXIT_CODE=0
+COMMAND=-m ruff format --check .
+122 files already formatted
+
+EXIT_CODE=0
+COMMAND=-m ruff check --select C901 --config lint.mccabe.max-complexity=15 src/marswalk/middleware src/marswalk/contracts
+C901 `generate_survival_map_svg` is too complex (36 > 15)
+   --> src\marswalk\middleware\map_card.py:103:5
+    |
+103 | def generate_survival_map_svg(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+104 |     repo_root: Path,
+105 |     site_id: str = "jezero",
+    |
+
+C901 `_amanatides_woo_supercover` is too complex (23 > 15)
+   --> src\marswalk\middleware\query_service.py:390:9
+    |
+388 |         return out
+389 |
+390 |     def _amanatides_woo_supercover(
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+391 |         self,
+392 |         lon0: float,
+    |
+
+C901 `_evaluate_route_impl` is too complex (21 > 15)
+   --> src\marswalk\middleware\query_service.py:634:9
+    |
+632 |             )
+633 |
+634 |     def _evaluate_route_impl(self, req: RouteEvaluationRequest) -> RouteEvaluationResult:
+    |         ^^^^^^^^^^^^^^^^^^^^
+635 |         """Internal route evaluator called inside `evaluate_route` fail-safe envelope."""
+636 |         pts = req.points
+    |
+
+Found 3 errors.
+
+EXIT_CODE=1

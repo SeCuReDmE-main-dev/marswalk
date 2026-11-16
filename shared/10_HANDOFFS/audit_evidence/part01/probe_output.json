@@ -1,0 +1,340 @@
+{
+  "source_imports": {
+    "marswalk.engine.calibration_aoa": "src/marswalk/engine/calibration_aoa.py",
+    "marswalk.engine.crism_ingest": "src/marswalk/engine/crism_ingest.py",
+    "marswalk.engine.dtm_ingest": "src/marswalk/engine/dtm_ingest.py",
+    "marswalk.engine.obstacles_m1": "src/marswalk/engine/obstacles_m1.py",
+    "marswalk.engine.sim3464_ingest": "src/marswalk/engine/sim3464_ingest.py",
+    "marswalk.engine.themis_ingest": "src/marswalk/engine/themis_ingest.py"
+  },
+  "independent_pack_arithmetic": {
+    "total_waypoints": 708,
+    "validation_samples": 147,
+    "bbox": [
+      77.376709,
+      18.447804,
+      77.41045,
+      18.481545
+    ],
+    "center_lat_deg": 18.4646745,
+    "ground_EW_m_per_projected_m": 0.9485191079580891,
+    "EW_overstatement_if_cos_omitted_pct": 5.427501840499094,
+    "window_ground_width_m": 1897.0264250016821,
+    "window_ground_height_m": 1999.9875691338239,
+    "planner_expected_step_x_m": 9.984349605272012,
+    "planner_expected_step_y_m": 9.99993784566912,
+    "radius_manifest_m": 3396190.0,
+    "obstacle_count": 82,
+    "obstacle_types": [
+      "large_rock_formation",
+      "scarp"
+    ],
+    "minimum_obstacle_footprint_area_m2": 199.7,
+    "minimum_obstacle_relief_m": 0.1,
+    "maximum_obstacle_relief_m": 47.35,
+    "clearance_values_m": [
+      0.8500000000000001
+    ],
+    "physical_corridor_diameter_m": 1.7000000000000002,
+    "external_layers": {
+      "themis_ti_100m": {
+        "available": false,
+        "tag": "UNAVAILABLE",
+        "source_id": "SRC-USGS-THEMIS-TI-100M",
+        "indeterminacy_i": 1.0,
+        "note": "layer themis_ti unavailable: cached THEMIS_TI_window_2x2km.tif not present"
+      },
+      "crism_mtrdr_18m": {
+        "available": false,
+        "tag": "UNAVAILABLE",
+        "source_id": "SRC-PDS-CRISM-MTRDR-18M",
+        "indeterminacy_i": 1.0,
+        "note": "layer crism_mtrdr unavailable: cached MTRDR .lbl/.img not present"
+      },
+      "meda_pds4_env": {
+        "available": false,
+        "tag": "UNAVAILABLE",
+        "source_id": "SRC-PDS-MEDA-ENV",
+        "indeterminacy_i": 1.0,
+        "note": "layer meda_env unavailable: cached MEDA_env_summary.csv not present"
+      },
+      "sim3464_geology": {
+        "available": true,
+        "tag": "DERIVED",
+        "source_id": "SRC-USGS-SIM3464",
+        "indeterminacy_i": 0.08,
+        "note": "USGS SIM 3464 geologic units and 150 m contact buffer"
+      }
+    },
+    "unmatched_validation_waypoint_ids": [],
+    "max_report_vs_waypoint_tilt_rounding_deg": 0.0004999999999999449,
+    "max_report_vs_waypoint_coordinate_error_deg": 0.0,
+    "metrics_from_report_stored_slopes_minus_pack_tilt": {
+      "all": {
+        "1": {
+          "n": 147,
+          "mae_deg": 2.025004761904762,
+          "rmse_deg": 2.7963634791061964,
+          "bias_deg": 0.5457408163265306,
+          "n_steep": 43,
+          "steep_mae_deg": 2.53993488372093,
+          "steep_bias_deg": -0.90813488372093
+        },
+        "4": {
+          "n": 147,
+          "mae_deg": 1.6458836734693878,
+          "rmse_deg": 2.2184278112071656,
+          "bias_deg": 0.34429863945578243,
+          "n_steep": 43,
+          "steep_mae_deg": 2.1189209302325582,
+          "steep_bias_deg": -0.7974139534883719
+        },
+        "16": {
+          "n": 147,
+          "mae_deg": 1.1244863945578232,
+          "rmse_deg": 1.7308566967134578,
+          "bias_deg": -0.16842244897959177,
+          "n_steep": 43,
+          "steep_mae_deg": 1.9933813953488368,
+          "steep_bias_deg": -0.6832744186046509
+        },
+        "64": {
+          "n": 147,
+          "mae_deg": 1.6920551020408163,
+          "rmse_deg": 2.6279375335171165,
+          "bias_deg": -0.6064972789115646,
+          "n_steep": 43,
+          "steep_mae_deg": 3.268748837209302,
+          "steep_bias_deg": -2.274018604651163
+        }
+      },
+      "odd": {
+        "1": {
+          "n": 75,
+          "mae_deg": 1.8867960000000001,
+          "rmse_deg": 2.3980534833346256,
+          "bias_deg": 0.2799666666666666,
+          "n_steep": 23,
+          "steep_mae_deg": 2.3009086956521743,
+          "steep_bias_deg": -1.0617347826086958
+        },
+        "4": {
+          "n": 75,
+          "mae_deg": 1.5579906666666667,
+          "rmse_deg": 1.991939053184108,
+          "bias_deg": 0.16807333333333338,
+          "n_steep": 23,
+          "steep_mae_deg": 1.8700739130434785,
+          "steep_bias_deg": -0.8796043478260869
+        },
+        "16": {
+          "n": 75,
+          "mae_deg": 1.1085133333333332,
+          "rmse_deg": 1.6727300924735784,
+          "bias_deg": -0.14553999999999995,
+          "n_steep": 23,
+          "steep_mae_deg": 1.7557347826086958,
+          "steep_bias_deg": -0.5007347826086955
+        },
+        "64": {
+          "n": 75,
+          "mae_deg": 1.6065,
+          "rmse_deg": 2.4228866936500904,
+          "bias_deg": -0.37674,
+          "n_steep": 23,
+          "steep_mae_deg": 2.7992739130434785,
+          "steep_bias_deg": -1.712213043478261
+        }
+      },
+      "even": {
+        "1": {
+          "n": 72,
+          "mae_deg": 2.168972222222222,
+          "rmse_deg": 3.1582977610133947,
+          "bias_deg": 0.822588888888889,
+          "n_steep": 20,
+          "steep_mae_deg": 2.8148149999999994,
+          "steep_bias_deg": -0.7314949999999995
+        },
+        "4": {
+          "n": 72,
+          "mae_deg": 1.737438888888889,
+          "rmse_deg": 2.4320271545678835,
+          "bias_deg": 0.5278666666666668,
+          "n_steep": 20,
+          "steep_mae_deg": 2.405095,
+          "steep_bias_deg": -0.7028949999999993
+        },
+        "16": {
+          "n": 72,
+          "mae_deg": 1.141125,
+          "rmse_deg": 1.7893985403232873,
+          "bias_deg": -0.19225833333333328,
+          "n_steep": 20,
+          "steep_mae_deg": 2.2666749999999998,
+          "steep_bias_deg": -0.8931949999999997
+        },
+        "64": {
+          "n": 72,
+          "mae_deg": 1.781175,
+          "rmse_deg": 2.8257538084750253,
+          "bias_deg": -0.8458277777777776,
+          "n_steep": 20,
+          "steep_mae_deg": 3.808645,
+          "steep_bias_deg": -2.920095
+        }
+      }
+    }
+  },
+  "analytic_plane": {
+    "expected_slope_deg": 26.56505117707799,
+    "actual_slope_deg": 26.565051177077994,
+    "actual_gx": 0.29999999999999977,
+    "actual_gy": 0.40000000000000036
+  },
+  "not_horn_counterexample": {
+    "input": "9x9 zero elevation; z[row=2,col=6]=4m; evaluate row=4,col=4",
+    "central_difference_slope_deg": 0.0,
+    "horn_3x3_2m_sample_spacing_slope_deg": 19.96453767629385
+  },
+  "seam_scarp_erasure": {
+    "input": "100x100 1m raster, z=0 at col<50 else z=2m; 10x10 planner cells",
+    "detected_obstacle_pixels_1m": 400,
+    "slope_4m_deg_max": 27.79475259165792,
+    "detected_obstacle_fraction_in_each_adjacent_cell": [
+      0.2,
+      0.2
+    ],
+    "blocked_planner_cells": 0,
+    "caution_planner_cells": 20,
+    "exported_obstacle_polygons": 0
+  },
+  "physical_clearance_raster": {
+    "input": "one solid obstacle pixel at row=4,col=4; 1m square pixels",
+    "blocked_pixels_after_buffer": 1,
+    "adjacent_pixel_4_5_blocked": false,
+    "adjacent_pixel_center_distance_to_solid_m": 0.5,
+    "required_clearance_m": 0.85
+  },
+  "physical_corridors": {
+    "1_pixel_gap": {
+      "actual_ground_width_m": 0.9485449445269375,
+      "open_interior_pixels": 0
+    },
+    "2_pixel_gap": {
+      "actual_ground_width_m": 1.897089889053875,
+      "open_interior_pixels": 10
+    }
+  },
+  "synthetic_ingest_nodata_hole": {
+    "reported_sphere_radius_m": 3396190.0,
+    "input_b_radius_m": 3396190.0,
+    "input_pixel_spacing_m": 1,
+    "output_nodata_fraction": 0.04,
+    "output_cell_nodata_local": 0.04,
+    "output_cell_elevation_m": -2500.0,
+    "output_cell_slope_1m_deg": 0.0,
+    "output_cell_slope_4m_deg": 0.0,
+    "output_elevation_all_finite": true,
+    "analytic_input_slope_deg": 0
+  },
+  "synthetic_ingest_ellipsoid": {
+    "reported_sphere_radius_m": 3396190.0,
+    "input_b_radius_m": 3376200,
+    "input_pixel_spacing_m": 1,
+    "output_nodata_fraction": 0.0,
+    "output_cell_nodata_local": 0.0,
+    "output_cell_elevation_m": -2500.0,
+    "output_cell_slope_1m_deg": 0.0,
+    "output_cell_slope_4m_deg": 0.0,
+    "output_elevation_all_finite": true,
+    "analytic_input_slope_deg": 0
+  },
+  "synthetic_ingest_two_metre_pixels": {
+    "reported_sphere_radius_m": 3396190.0,
+    "input_b_radius_m": 3396190.0,
+    "input_pixel_spacing_m": 2,
+    "output_nodata_fraction": 0.0,
+    "output_cell_nodata_local": 0.0,
+    "output_cell_elevation_m": -2420.5,
+    "output_cell_slope_1m_deg": 46.51,
+    "output_cell_slope_4m_deg": 46.51,
+    "output_elevation_all_finite": true,
+    "analytic_input_slope_deg": 27.79475259165792
+  },
+  "missing_themis": {
+    "available": false,
+    "source_id": "SRC-USGS-THEMIS-TI-100M",
+    "min_tiu": null,
+    "median_tiu": null,
+    "max_tiu": null,
+    "below_150_tiu_count": null,
+    "indeterminacy_i": 1.0,
+    "note": "layer themis_ti unavailable: cached THEMIS_TI_window_2x2km.tif not present"
+  },
+  "missing_crism": {
+    "available": false,
+    "tag": "UNAVAILABLE",
+    "source_id": "SRC-PDS-CRISM-MTRDR-18M",
+    "indeterminacy_i": 1.0,
+    "note": "layer crism_mtrdr unavailable: cached MTRDR .lbl/.img not present"
+  },
+  "label_only_crism": {
+    "available": true,
+    "tag": "DERIVED",
+    "source_id": "SRC-PDS-CRISM-MTRDR-18M",
+    "center_lat_deg": 15.0,
+    "indeterminacy_i": 0.1,
+    "note": "CRISM MTRDR warped from lat_ts=15.0 deg"
+  },
+  "empty_calibration": {
+    "input_training_observations": 0,
+    "output_cv_feasible": true,
+    "output_n_eff_blocks": 1,
+    "inside_aoa": true,
+    "opinion": {
+      "t": 0.3,
+      "i": 0.6667,
+      "f": 0.0333
+    }
+  },
+  "josang_oversampled": [
+    0.09090909090909091,
+    0.8181818181818182,
+    0.09090909090909091
+  ],
+  "josang_outside": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "geology_missing_defaults": {
+    "empty": {
+      "unit_code": "NHjf2",
+      "unit_label": "Jezero fan 2 deposit (upper delta layered topset, USGS SIM 3464)",
+      "near_contact_zone": false,
+      "contact_indeterminacy_boost": 0.0,
+      "sand_speed_factor": 1.0
+    },
+    "unrecognized": {
+      "unit_code": "NHjf2",
+      "unit_label": "Jezero fan 2 deposit (upper delta layered topset, USGS SIM 3464)",
+      "near_contact_zone": false,
+      "contact_indeterminacy_boost": 0.0,
+      "sand_speed_factor": 1.0
+    }
+  },
+  "area_filter_does_not_enforce_width": {
+    "input_shape_px": [
+      1,
+      16
+    ],
+    "retained_pixels": 16
+  },
+  "input_sha256": {
+    "hazard_grid.json": "b9bcf5105dbdd4deb893166e45567771a5ecee95d1f20cbafc1c524d95f45475",
+    "waypoints.geojson": "2afbeb2caa96cd4dccb9c2b2125066900ac3f90dbc51316933bfd0685e4b9f86",
+    "validation_report.json": "2dd4585972fefce0153fc9ae61ce7804c96cfb68305c1e03c7b2b987896fe57d",
+    "obstacles.geojson": "2f8a8a8bafef3975db98b4487eed008acb3d9cd2ec5fd5e2aef97fcafcfbc1bd"
+  }
+}

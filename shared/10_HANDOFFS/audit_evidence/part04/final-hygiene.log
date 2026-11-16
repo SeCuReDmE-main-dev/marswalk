@@ -1,0 +1,20 @@
+LOCAL_PATH_PREFIXES_REDACTED; exact raw output retained locally
+AUDIT_MAIN_COMMIT=e38ceba70e9c6273cf35233d3255cd912a7a4809
+SOURCE_IMPORT=src/marswalk/middleware/pack_loader.py (isolated checkout verified)
+RAW_CACHE=absent; tracked datalake/.gitkeep and README.md preserved
+NETWORK=localhost allowed; external socket/connect/getaddrinfo denied
+PYTHON=3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+DEPENDENCY pytest=9.2.0
+DEPENDENCY numpy=2.5.4
+DEPENDENCY scipy=1.18.1
+DEPENDENCY pydantic=2.14.3
+DEPENDENCY fastapi=0.163.1
+DEPENDENCY Pillow=13.0.0
+DEPENDENCY hypothesis=6.170.15
+DEPENDENCY SALib=1.6.0
+PYTEST_ARGS=['-q', '-ra', '--tb=short', '--basetemp=work/part04-final-hygiene', 'tests/test_repo_hygiene.py']
+.....                                                                    [100%]
+COLLECTED=5
+OUTCOMES={'passed': 5, 'failed': 0, 'skipped': 0, 'error': 0, 'xfailed': 0, 'xpassed': 0}
+EXIT_CODE=0
+ELAPSED_S=1.639

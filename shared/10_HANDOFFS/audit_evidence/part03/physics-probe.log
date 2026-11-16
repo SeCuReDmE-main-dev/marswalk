@@ -1,0 +1,371 @@
+{
+  "commit": "e38ceba70e9c6273cf35233d3255cd912a7a4809",
+  "identity": "Codex independent audit context; same machine and existing dependency venv",
+  "network": "Every outbound connection denied; no raw data downloaded",
+  "source_imports": [
+    "src/marswalk/engine/eva_human_rf.py",
+    "src/marswalk/engine/kinematics_m4.py",
+    "src/marswalk/engine/m20_raw_images_m5.py",
+    "src/marswalk/engine/meda_envelope.py",
+    "src/marswalk/engine/radiation_svf.py",
+    "src/marswalk/engine/topographic_refuge_m3.py"
+  ],
+  "datalake_files": [
+    "datalake/.gitkeep",
+    "datalake/README.md"
+  ],
+  "grade_and_minetti": {
+    "minus10percent_angle_deg": -5.710593137499643,
+    "20deg_grade_fraction": 0.36397023426620234,
+    "quintic_minus10percent": 1.127125
+  },
+  "minetti_published_comparison": [
+    {
+      "grade": -0.45,
+      "published_table2": 3.46,
+      "implementation": 3.46,
+      "delta": 0.0
+    },
+    {
+      "grade": -0.4,
+      "published_table2": 3.23,
+      "implementation": 2.97,
+      "delta": -0.26
+    },
+    {
+      "grade": -0.35,
+      "published_table2": 2.65,
+      "implementation": 2.55,
+      "delta": -0.1
+    },
+    {
+      "grade": -0.3,
+      "published_table2": 2.18,
+      "implementation": 2.09,
+      "delta": -0.09
+    },
+    {
+      "grade": -0.2,
+      "published_table2": 1.3,
+      "implementation": 1.22,
+      "delta": -0.08
+    },
+    {
+      "grade": -0.1,
+      "published_table2": 0.81,
+      "implementation": 0.81,
+      "delta": 0.0
+    },
+    {
+      "grade": 0,
+      "published_table2": 1.64,
+      "implementation": 1.64,
+      "delta": 0.0
+    },
+    {
+      "grade": 0.1,
+      "published_table2": 4.68,
+      "implementation": 3.92,
+      "delta": -0.76
+    },
+    {
+      "grade": 0.2,
+      "published_table2": 8.07,
+      "implementation": 7.36,
+      "delta": -0.71
+    },
+    {
+      "grade": 0.3,
+      "published_table2": 11.29,
+      "implementation": 11.95,
+      "delta": 0.66
+    },
+    {
+      "grade": 0.35,
+      "published_table2": 12.72,
+      "implementation": 14.43,
+      "delta": 1.71
+    },
+    {
+      "grade": 0.4,
+      "published_table2": 14.75,
+      "implementation": 15.93,
+      "delta": 1.18
+    },
+    {
+      "grade": 0.45,
+      "published_table2": 17.33,
+      "implementation": 17.33,
+      "delta": 0.0
+    }
+  ],
+  "pandolf_reference": {
+    "grade_frac": 0.0,
+    "slope_deg": 0.0,
+    "speed_m_s": 0.625,
+    "body_mass_kg": 75.0,
+    "suit_mass_kg": 104.0,
+    "norcross_2010_measured_anchor_w": 402.0,
+    "norcross_tag": "MEASURED",
+    "pandolf_csrm_all_g_scaled_w": 343.65,
+    "pandolf_carr_newman_unscaled_postural_w": 413.46,
+    "pandolf_load_carriage_share": 0.76,
+    "pandolf_tag": "DERIVED",
+    "note": "Norcross (2010) 0.32 g pressurized MKIII table is the operational anchor; Pandolf CSRM and Carr-Newman variants treat suit mass as backpack load (L/W)^2."
+  },
+  "measured_tag_attack": {
+    "grade_frac": 0.7,
+    "slope_deg": 34.992,
+    "speed_m_s": 1.2,
+    "body_mass_kg": 80.0,
+    "suit_mass_kg": 104.0,
+    "norcross_2010_measured_anchor_w": 3047.98,
+    "norcross_tag": "MEASURED",
+    "pandolf_csrm_all_g_scaled_w": 3745.23,
+    "pandolf_carr_newman_unscaled_postural_w": 3819.7,
+    "pandolf_load_carriage_share": 0.2078,
+    "pandolf_tag": "DERIVED",
+    "note": "Norcross (2010) 0.32 g pressurized MKIII table is the operational anchor; Pandolf CSRM and Carr-Newman variants treat suit mass as backpack load (L/W)^2."
+  },
+  "oxygen_payloads": {
+    "0": {
+      "nominal_w": 385.987,
+      "walkback_w": 695.8333333333334,
+      "used_g": 432.77960578825343,
+      "margin_min": 108.22073010574131
+    },
+    "60": {
+      "nominal_w": 512.0895591623037,
+      "walkback_w": 695.8333333333334,
+      "used_g": 529.6037856919183,
+      "margin_min": 75.60018785537294
+    },
+    "120": {
+      "nominal_w": 638.1921183246073,
+      "walkback_w": 695.8333333333334,
+      "used_g": 626.4279655955833,
+      "margin_min": 42.97964560500457
+    }
+  },
+  "oxygen_floor_isolated_no_nominal": {
+    "0": 208.0688642374778,
+    "60": 208.0688642374778,
+    "120": 208.0688642374778
+  },
+  "tobler_level_kmh": 2.0146968498460978,
+  "return_2000m_h": 0.9927051805102984,
+  "svf_wall": {
+    "finite_quadrature": 0.4114312855239282,
+    "finite_function": 0.411431,
+    "infinite": 0.437167
+  },
+  "gcr_at_035_occlusion": {
+    "sky_occlusion_1_minus_svf": 0.35,
+    "expected_gcr_reduction_min_pct": 7.0,
+    "expected_gcr_reduction_max_pct": 9.1,
+    "partial_topographic_refuge": true,
+    "spe_routing_weight": 0.0,
+    "tag": "DERIVED",
+    "note": "Partial geometric sky occlusion (DERIVED, eta_s in [0.20, 0.26] calibrated on MSL RAD GCR); UNVERIFIED for hard zenith-peaked SPE spectrum (arXiv:2205.13786 is ABSTRACT_OR_METADATA geometric context only); mandatory SPE action is immediate fastest return to rover or habitat."
+  },
+  "gcr_baselines": {
+    "code_msv_day": 0.67,
+    "code_mgy_day": 0.233,
+    "Hassler_2014_msv_day": 0.64,
+    "source_usv_h": 26.666666666666668,
+    "code_usv_h": 27.916666666666668
+  },
+  "fresnel": {
+    "wavelength_m": 0.7237867165620473,
+    "midpoint_f1_m": 13.451642246971625,
+    "bulge_m": 0.03680595019713267,
+    "assessment": {
+      "frequency_hz": 414200000.0,
+      "wavelength_m": 0.723787,
+      "h_tx_rover_mast_m": 3.0,
+      "h_rx_suit_antenna_m": 1.8,
+      "distance_m": 1000.0,
+      "nu_max": -0.848528,
+      "min_clearance_over_f1": 0.6,
+      "first_fresnel_radius_mid_m": 13.4516,
+      "diffraction_loss_db": 0.0,
+      "verdict": "GO"
+    }
+  },
+  "bullington_omitted_eq57": {
+    "code": {
+      "frequency_hz": 414200000.0,
+      "wavelength_m": 0.723787,
+      "h_tx_rover_mast_m": 3.0,
+      "h_rx_suit_antenna_m": 1.8,
+      "distance_m": 1000.0,
+      "nu_max": -0.24845,
+      "min_clearance_over_f1": 0.175681,
+      "first_fresnel_radius_mid_m": 13.4516,
+      "diffraction_loss_db": 3.9315,
+      "verdict": "GO"
+    },
+    "itu_section451_loss_db_from_unrounded_v": 8.748039120917518,
+    "itu_rounded_loss_db": 8.747991572607816,
+    "itu_verdict_at_6db": "NO_GO"
+  },
+  "rf_sampling_alias": {
+    "sample_count": 126,
+    "sampled_peak_m": 20.0,
+    "true_peak_m": 20.0,
+    "sampled_verdict": "NO_GO",
+    "dense_verdict": "NO_GO"
+  },
+  "rf_sampling_alias_4m_between_samples": {
+    "sampled_peak_m": 0.0,
+    "true_peak_m": 20.0,
+    "sampled": {
+      "frequency_hz": 414200000.0,
+      "wavelength_m": 0.723787,
+      "h_tx_rover_mast_m": 3.0,
+      "h_rx_suit_antenna_m": 1.8,
+      "distance_m": 1000.0,
+      "nu_max": -0.240559,
+      "min_clearance_over_f1": 0.170101,
+      "first_fresnel_radius_mid_m": 13.4516,
+      "diffraction_loss_db": 3.9963,
+      "verdict": "GO"
+    },
+    "dense": {
+      "frequency_hz": 414200000.0,
+      "wavelength_m": 0.723787,
+      "h_tx_rover_mast_m": 3.0,
+      "h_rx_suit_antenna_m": 1.8,
+      "distance_m": 1000.0,
+      "nu_max": 1.85448,
+      "min_clearance_over_f1": -1.311315,
+      "first_fresnel_radius_mid_m": 13.4516,
+      "diffraction_loss_db": 18.4359,
+      "verdict": "NO_GO"
+    }
+  },
+  "invalid_helpers": {
+    "dust_nan": "GO",
+    "dust_negative": "GO",
+    "rf_all_nan": {
+      "frequency_hz": 414200000.0,
+      "wavelength_m": 0.723787,
+      "h_tx_rover_mast_m": 3.0,
+      "h_rx_suit_antenna_m": 1.8,
+      "distance_m": 1000.0,
+      "nu_max": -1000000000.0,
+      "min_clearance_over_f1": 707106781.186548,
+      "first_fresnel_radius_mid_m": 13.4516,
+      "diffraction_loss_db": 0.0,
+      "verdict": "GO"
+    },
+    "svf_all_nan": 1.0
+  },
+  "meda_boundaries": {
+    "0": "GO",
+    "0.5": "GO",
+    "0.500001": "CAUTION",
+    "1": "CAUTION",
+    "1.000001": "NO_GO"
+  },
+  "meda_filters": {
+    "WS35": {
+      "sensor": "WS",
+      "sol": 35,
+      "valid_values": [],
+      "rejected_count": 1
+    },
+    "WS36": {
+      "sensor": "WS",
+      "sol": 36,
+      "valid_values": [
+        2.0
+      ],
+      "rejected_count": 0
+    },
+    "RHS62": {
+      "sensor": "RHS",
+      "sol": 62,
+      "valid_values": [],
+      "rejected_count": 1
+    },
+    "RHS63": {
+      "sensor": "RHS",
+      "sol": 63,
+      "valid_values": [
+        0.5
+      ],
+      "rejected_count": 0
+    },
+    "PS_sentinels": {
+      "sensor": "PS",
+      "sol": 1,
+      "valid_values": [
+        700.0
+      ],
+      "rejected_count": 3
+    }
+  },
+  "meda_empty_file": {
+    "available": true,
+    "tag": "MEASURED",
+    "source_id": "SRC-PDS-MEDA-ENV",
+    "indeterminacy_i": 0.05,
+    "note": "MEDA PDS4 calibrated atmospheric envelope"
+  },
+  "meda_no_file": {
+    "available": false,
+    "tag": "UNAVAILABLE",
+    "source_id": "SRC-PDS-MEDA-ENV",
+    "indeterminacy_i": 1.0,
+    "note": "layer meda_env unavailable: cached MEDA_env_summary.csv not present"
+  },
+  "camera_offline": {
+    "result": {
+      "sol": 700,
+      "source_status": "offline_unavailable",
+      "cache_sha256": null,
+      "total_matching": 0,
+      "page": 1,
+      "page_size": 12,
+      "items": []
+    },
+    "created_directory": false
+  },
+  "pack_summary": {
+    "rf_counts": {
+      "NO_GO": 1347,
+      "CAUTION": 13,
+      "GO": 240
+    },
+    "cells": 1600,
+    "partial_refuges": 5,
+    "meda": {
+      "available": false,
+      "tag": "UNAVAILABLE",
+      "source_id": "SRC-PDS-MEDA-ENV",
+      "indeterminacy_i": 1.0,
+      "note": "layer meda_env unavailable: cached MEDA_env_summary.csv not present"
+    }
+  },
+  "panorama_urls": {
+    "count": 708,
+    "nonempty": 708,
+    "mmgis": 0
+  },
+  "spe_service": {
+    "verdict": "NO_GO",
+    "reasons": [
+      "Solar Particle Event (SPE) alert active: NO_GO abort; returning fastest safe egress path to rover/habitat with zero topographic refuge detour.",
+      "layer themis_ti_100m unavailable",
+      "layer crism_mtrdr_18m unavailable",
+      "layer meda_pds4_env unavailable"
+    ]
+  },
+  "request_invalid_dust": {
+    "nan": "rejected",
+    "inf": "rejected",
+    "negative": "rejected"
+  }
+}
+EXIT_CODE=0
