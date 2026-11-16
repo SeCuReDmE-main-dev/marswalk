@@ -1,0 +1,170 @@
+{
+  "commit": "e38ceba70e9c6273cf35233d3255cd912a7a4809",
+  "manifest_sha256": "d93d3c3951359935f886c3029c67c71cfe63839f9608d79f0d91c2801fe944a5",
+  "listed_files": 17,
+  "total_listed_bytes": 4663360,
+  "files_not_listed_excluding_manifest": [],
+  "source_count": 11,
+  "sources": [
+    {
+      "id": "SRC-M20-WAYPOINTS",
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+    },
+    {
+      "id": "SRC-M20-TRAVERSE",
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
+    },
+    {
+      "id": "SRC-M20-RAW-IMAGES",
+      "url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/"
+    },
+    {
+      "id": "SRC-TREK-HIRISE-25CM",
+      "url": "https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars"
+    },
+    {
+      "id": "SRC-USGS-HIRISE-DTM-1M",
+      "url": "https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif"
+    },
+    {
+      "id": "SRC-USGS-SIM3464",
+      "url": "https://pubs.usgs.gov/sim/3464/sim3464_database.zip"
+    },
+    {
+      "id": "SRC-NASA-XEVA",
+      "url": "https://www.nasa.gov/wp-content/uploads/2017/02/eva-exp-0042_xeva_system_con_ops_rev_b_final_dtd_10192020_ref_doc.pdf"
+    },
+    {
+      "id": "SRC-JPL-TRAVERSABILITY",
+      "url": "https://www-robotics.jpl.nasa.gov/media/documents/Data-driven%20surface%20traversability%20analysis%20for%20Mars%202020%20landing%20site%20selection.pdf"
+    },
+    {
+      "id": "SRC-RAD-GALE",
+      "url": "https://www.swri.org/newsroom/press-releases/swri-scientists-publish-first-radiation-measurements-the-surface-of-mars"
+    },
+    {
+      "id": "SRC-APOLLO-SLOPE",
+      "url": "https://doi.org/10.1016/j.actaastro.2024.07.006"
+    },
+    {
+      "id": "synthetic-v1",
+      "url": "https://github.com/SeCuReDmE-main-dev/marswalk"
+    }
+  ],
+  "waypoints": 708,
+  "grid_cells": 1600,
+  "quantity_count": 22767,
+  "quantity_unknown_sources": [],
+  "sol700": {
+    "cell": "JEZ-R27-C38",
+    "tilt_deg": 20.3345,
+    "slopes": {
+      "1": 21.99,
+      "4": 12.68,
+      "16": 13.34,
+      "64": 13.31
+    },
+    "cell_verdict": "CAUTION"
+  },
+  "sol700_nearest_center": {
+    "cell": "JEZ-R27-C37",
+    "slopes": {
+      "1": 19.08,
+      "4": 10.92,
+      "16": 11.48,
+      "64": 11.19
+    }
+  },
+  "sol700_validation_samples": [
+    {
+      "waypoint_id": "M20-33_366-SOL700",
+      "sol": 700,
+      "lon": 77.4087634,
+      "lat": 18.45810853,
+      "measured_rover_tilt_deg": 20.334,
+      "dtm_elev_m": -2528.21,
+      "dtm_slope_deg_by_baseline": {
+        "1": 18.562,
+        "4": 18.108,
+        "16": 17.213,
+        "64": 12.649
+      },
+      "signed_error_deg_by_baseline": {
+        "1": -1.772,
+        "4": -2.226,
+        "16": -3.121,
+        "64": -7.685
+      }
+    }
+  ],
+  "routes": [
+    {
+      "type": "SIMULATED_ASTRONAUT_EVA",
+      "distance_m_recomputed": 2213.5617346135186,
+      "walkback_m_recomputed": 1925.7120744822862,
+      "stored_distance_m": 2213.6,
+      "verdict": "CAUTION"
+    },
+    {
+      "type": "DERIVED_OBSTACLE_AWARE_EVA",
+      "distance_m_recomputed": 2290.5841955737073,
+      "walkback_m_recomputed": 1925.9754418475243,
+      "stored_distance_m": 2290.43,
+      "verdict": "CAUTION"
+    }
+  ],
+  "one_byte_mutations_rejected": [
+    "eva_constraints.json",
+    "gate_log.jsonl",
+    "hazard_grid.json",
+    "hazard_overlay.png",
+    "obstacles.geojson",
+    "panoramas/sol_0413_ncam.jpg",
+    "panoramas/sol_0609_ncam.jpg",
+    "panoramas/sol_0700_ncam.jpg",
+    "panoramas/sol_0753_ncam.jpg",
+    "panoramas/sol_1578_ncam.jpg",
+    "planner_grid_10m.png",
+    "profiles/funnel_v1.json",
+    "profiles/gates_v1.json",
+    "profiles/plithogenic_eva_v1.json",
+    "route.geojson",
+    "validation_report.json",
+    "waypoints.geojson"
+  ],
+  "omitted_waypoints_hash_accepted_tilt_deg": 88.0,
+  "cached_file_integrity": {
+    "before_http": 200,
+    "after_mutation_http": 200,
+    "served_bytes_changed": true,
+    "served_sha_matches_manifest": false
+  },
+  "path_traversal_http": {
+    "%2e%2e%2fmanifest.json": 404,
+    "..%5cmanifest.json": 404,
+    "unlisted.jpg": 404,
+    "sol_0700_ncam.jpg/extra": 404
+  },
+  "schema_byte_equality": {
+    "SiteManifest.schema.json": true,
+    "WaypointFeatureCollection.schema.json": true,
+    "HazardGrid.schema.json": true,
+    "EvaConstraints.schema.json": true,
+    "EvaRoute.schema.json": true
+  },
+  "svg_byte_equal": true,
+  "svg_sha256": "fe2889a1970fe002654817f8143fb0e977d3e511b1e993f63d91b0995dc10ca0",
+  "safe_mode": {
+    "health": {
+      "status": "ok",
+      "contract_version": "1.1.0",
+      "safe_mode": true
+    },
+    "evaluate": "NO_GO",
+    "plan": "NO_GO"
+  },
+  "service_initialization_error_http": {
+    "evaluate-route": 500,
+    "plan-route": 500
+  }
+}

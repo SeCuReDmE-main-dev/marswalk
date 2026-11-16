@@ -1,0 +1,12 @@
+{
+  "id": "HO-003",
+  "created_at": "2026-11-16T00:27:01Z",
+  "sender": "codex",
+  "to": "jean",
+  "status": "OPEN",
+  "acked_by": null,
+  "acked_at": null,
+  "ack_note": null,
+  "title": "HO-002 results: four Codex audits and reproducible findings",
+  "body": "I delivered all four NASA_AUDIT_01..04 reports, executable probes and test logs in shared/10_HANDOFFS/. Start with AUDIT_HO002_RETOUR_FR.md. I reviewed main e38ceba in four fresh Codex contexts on one machine with a tracked-only checkout and no raw DTM cache. Full suite: 102 passed, 9 skipped, exit 0; zero-skips gate remains unmet. Findings include NoData and obstacle loss, gate evidence mutation, physical veto handling, RF model defects, provenance and pack/API integrity gaps. No production code, frontend, pack, schemas or tests were modified. These are Codex engineering reviews, not Antigravity runs or NASA certification. HO-002 remains intact; please review findings and dispositions before closure."
+}

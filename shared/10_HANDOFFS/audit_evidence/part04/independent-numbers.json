@@ -1,0 +1,91 @@
+{
+  "source_commit": "e38ceba70e9c6273cf35233d3255cd912a7a4809",
+  "grid_verdicts": {
+    "CAUTION": 1104,
+    "NO_GO": 164,
+    "GO": 332
+  },
+  "stops": {
+    "413": 0.0,
+    "609": 555.1426550142475,
+    "753": 1925.7120744822862
+  },
+  "routes": {
+    "ROUTE-XEVA-SIMULATED-FAN-CORRIDOR": {
+      "distance_m": 2213.5617346135186,
+      "max_walkback_from_science_origin_m": 1925.7120744822862,
+      "exact_segment_polygon_hits": [
+        "OBS-JEZ-001",
+        "OBS-JEZ-017",
+        "OBS-JEZ-025"
+      ]
+    },
+    "ROUTE-EVA-M2-OBSTACLE-AWARE": {
+      "distance_m": 2290.5841955737073,
+      "max_walkback_from_science_origin_m": 1927.6616578929486,
+      "exact_segment_polygon_hits": [
+        "OBS-JEZ-001",
+        "OBS-JEZ-013"
+      ]
+    }
+  },
+  "unavailable_layers": [
+    "crism_mtrdr_18m",
+    "meda_pds4_env",
+    "themis_ti_100m"
+  ],
+  "sol700_waypoint": [
+    {
+      "waypoint_id": "M20-33_366-SOL700",
+      "sol": 700,
+      "site": 33,
+      "drive": 366,
+      "lon": 77.4087634,
+      "lat": 18.45810853,
+      "elev_geoid_m": {
+        "value": -2528.164,
+        "unit": "m",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "note": null
+      },
+      "rover_tilt_deg": {
+        "value": 20.3345,
+        "unit": "deg",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "note": null
+      },
+      "rover_pitch_deg": {
+        "value": 19.7422,
+        "unit": "deg",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "note": null
+      },
+      "rover_roll_deg": {
+        "value": 4.972,
+        "unit": "deg",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "note": null
+      },
+      "dist_total_m": {
+        "value": 14295.51,
+        "unit": "m",
+        "tag": "MEASURED",
+        "source_id": "SRC-M20-WAYPOINTS",
+        "note": null
+      },
+      "panorama_url": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00700/ids/edr/browse/ncam/NLF_0700_0729092948_288ECM_N0330366NCAM03700_01_195J01_800.jpg"
+    }
+  ],
+  "gcr_constraint": {
+    "value": 0.67,
+    "unit": "mSv/day",
+    "tag": "MEASURED",
+    "source_id": "SRC-RAD-GALE",
+    "note": "proxy Curiosity RAD, Gale"
+  },
+  "svg_sha256": "fe2889a1970fe002654817f8143fb0e977d3e511b1e993f63d91b0995dc10ca0"
+}

@@ -1,0 +1,35 @@
+LOCAL_PATH_PREFIXES_REDACTED; exact raw output retained locally
+AUDIT_MAIN_COMMIT=e38ceba70e9c6273cf35233d3255cd912a7a4809
+SOURCE_IMPORT=src/marswalk/middleware/pack_loader.py (isolated checkout verified)
+RAW_CACHE=absent; tracked datalake/.gitkeep and README.md preserved
+NETWORK=localhost allowed; external socket/connect/getaddrinfo denied
+PYTHON=3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+DEPENDENCY pytest=9.2.0
+DEPENDENCY numpy=2.5.4
+DEPENDENCY scipy=1.18.1
+DEPENDENCY pydantic=2.14.3
+DEPENDENCY fastapi=0.163.1
+DEPENDENCY Pillow=13.0.0
+DEPENDENCY hypothesis=6.170.15
+DEPENDENCY SALib=1.6.0
+PYTEST_ARGS=['-q', '-ra', '--tb=short', '--basetemp=work/part04-full']
+...................s.ss.ss..........s....ss............................. [ 64%]
+...s...................................                                  [100%]
+============================== warnings summary ===============================
+..\.venv\Lib\site-packages\fastapi\testclient.py:1
+  <USER_HOME>\Documents\GitHub\marswalk\work\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_b2_split_and_eval.py:38: Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif
+SKIPPED [1] tests\test_b3_sweep_and_timing.py:46: Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif
+SKIPPED [1] tests\test_b3_sweep_and_timing.py:72: Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif
+SKIPPED [1] tests\test_b4_sobol_and_ablation.py:17: Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif
+SKIPPED [1] tests\test_b4_sobol_and_ablation.py:36: Requires gitignored local datalake/JEZ_hirise_soc_006_DTM_1m_window_2x2km.tif
+SKIPPED [1] tests\test_engine_phase2b.py:207: Requires gitignored local datalake/ cache for full DTM rebuild
+SKIPPED [1] tests\test_pack_integrity.py:144: Requires gitignored local datalake/ cache for pack rebuild
+SKIPPED [1] tests\test_pack_integrity.py:181: Requires gitignored local datalake/ cache for pack rebuild
+SKIPPED [1] tests\test_phase4_obstacles_and_routing.py:111: Requires gitignored local datalake/ DTM GeoTIFF
+EXIT_CODE=0
+ELAPSED_S=16.054

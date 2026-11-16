@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-11-16T00:13:04.658091+00:00",
+  "method": "HEAD only; HTTP errors do not prove a source invalid; payload/science not validated",
+  "results": [
+    {
+      "id": "SRC-M20-WAYPOINTS",
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+      "status": 200,
+      "final_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json"
+    },
+    {
+      "id": "SRC-M20-TRAVERSE",
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json",
+      "status": 200,
+      "final_url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
+    },
+    {
+      "id": "SRC-M20-RAW-IMAGES",
+      "url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/",
+      "status": 200,
+      "final_url": "https://mars.nasa.gov/mars2020/multimedia/raw-images/"
+    },
+    {
+      "id": "SRC-TREK-HIRISE-25CM",
+      "url": "https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars",
+      "status": 200,
+      "final_url": "https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars"
+    },
+    {
+      "id": "SRC-USGS-HIRISE-DTM-1M",
+      "url": "https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+      "status": 200,
+      "final_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif"
+    },
+    {
+      "id": "SRC-USGS-SIM3464",
+      "url": "https://pubs.usgs.gov/sim/3464/sim3464_database.zip",
+      "status": 200,
+      "final_url": "https://pubs.usgs.gov/sim/3464/sim3464_database.zip"
+    },
+    {
+      "id": "SRC-NASA-XEVA",
+      "url": "https://www.nasa.gov/wp-content/uploads/2017/02/eva-exp-0042_xeva_system_con_ops_rev_b_final_dtd_10192020_ref_doc.pdf",
+      "status": 200,
+      "final_url": "https://www.nasa.gov/wp-content/uploads/2017/02/eva-exp-0042_xeva_system_con_ops_rev_b_final_dtd_10192020_ref_doc.pdf"
+    },
+    {
+      "id": "SRC-JPL-TRAVERSABILITY",
+      "url": "https://www-robotics.jpl.nasa.gov/media/documents/Data-driven%20surface%20traversability%20analysis%20for%20Mars%202020%20landing%20site%20selection.pdf",
+      "status": 200,
+      "final_url": "https://www-robotics.jpl.nasa.gov/media/documents/Data-driven%20surface%20traversability%20analysis%20for%20Mars%202020%20landing%20site%20selection.pdf"
+    },
+    {
+      "id": "SRC-RAD-GALE",
+      "url": "https://www.swri.org/newsroom/press-releases/swri-scientists-publish-first-radiation-measurements-the-surface-of-mars",
+      "status": 200,
+      "final_url": "https://www.swri.org/newsroom/press-releases/swri-scientists-publish-first-radiation-measurements-the-surface-of-mars"
+    },
+    {
+      "id": "SRC-APOLLO-SLOPE",
+      "url": "https://doi.org/10.1016/j.actaastro.2024.07.006",
+      "status": 200,
+      "final_url": "https://linkinghub.elsevier.com/retrieve/pii/S0094576524003746"
+    },
+    {
+      "id": "synthetic-v1",
+      "url": "https://github.com/SeCuReDmE-main-dev/marswalk",
+      "status": 200,
+      "final_url": "https://github.com/SeCuReDmE-main-dev/marswalk"
+    }
+  ]
+}
