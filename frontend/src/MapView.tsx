@@ -601,7 +601,7 @@ export default function MapView(props: Props) {
       <div className="map-top-controls">
         <div className="map-location">
           <span className="mars-location-dot" />
-          Jezero, Mars
+          Jezero crater, Mars
         </div>
         <button
           className="map-button"
@@ -641,18 +641,18 @@ export default function MapView(props: Props) {
                   {
                     imagery: "NASA imagery · global color + HiRISE",
                     hazards: "Terrain assessments",
-                    rover: "Perseverance traverse",
+                    rover: "Rover’s recorded path",
                     stops: "Science stops",
-                    obstacles: "Scarps & rock formations · DERIVED",
-                    suppliedRoute: "Supplied walk",
+                    obstacles: "Steep edges & large rock formations · DERIVED",
+                    suppliedRoute: "Included walk",
                     simulated: "Original walk comparison · SIMULATED",
-                    benchmarks: "Hazard benchmarks · MEASURED",
+                    benchmarks: "Rover reference points · MEASURED",
                   }[key]
                 }
               </label>
             ))}
             <label className="opacity-label">
-              Hazard opacity{" "}
+              Terrain color strength{" "}
               <output>{Math.round(props.layers.opacity * 100)}%</output>
               <input
                 type="range"
@@ -691,14 +691,13 @@ export default function MapView(props: Props) {
       <div className="map-legend" hidden={zoom < 12}>
         <b>Map key</b>
         <span>
-          <i className="legend-line" /> Supplied walk{" "}
+          <i className="legend-line" /> Included walk{" "}
           <small>
             {routeParts(props.data).candidate?.properties.tag || "Unavailable"}
           </small>
         </span>
         <span>
-          <i className="legend-line rover" /> Rover traverse{" "}
-          <small>MEASURED</small>
+          <i className="legend-line rover" /> Rover path <small>MEASURED</small>
         </span>
         <div className="legend-verdicts">
           {Object.entries(colors).map(([key, color]) => (
@@ -708,7 +707,9 @@ export default function MapView(props: Props) {
             </span>
           ))}
         </div>
-        {props.layers.obstacles && <span>Scarps / formations · DERIVED</span>}
+        {props.layers.obstacles && (
+          <span>Steep edges / rock formations · DERIVED</span>
+        )}
         {props.plannedRoute && <span>Dashed line · live assessment</span>}
         {props.layers.simulated && (
           <span>Dotted cream line · SIMULATED walk</span>
@@ -723,9 +724,9 @@ export default function MapView(props: Props) {
           Mars · Jezero crater ·{" "}
           {props.layers.imagery
             ? zoom >= 11
-              ? "HiRISE grayscale detail over Viking color context"
-              : "Viking color context · local HiRISE grayscale detail"
-            : "Coarse elevation · DERIVED"}
+              ? "Detailed black-and-white NASA images over a wider color map"
+              : "Wide NASA color map with detailed black-and-white images"
+            : "Estimated ground shape · DERIVED"}
         </span>
         <span className="imagery-availability">
           {props.layers.imagery

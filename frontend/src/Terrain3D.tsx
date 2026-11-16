@@ -527,7 +527,7 @@ export default function Terrain3D({
       />
       <div className="terrain-heading">
         <span className="eyebrow">JEZERO, MARS</span>
-        <h2>Terrain in relief</h2>
+        <h2>Jezero in 3D</h2>
         <span>
           DERIVED · {data.hazards.rows} × {data.hazards.cols} samples
         </span>
@@ -549,13 +549,13 @@ export default function Terrain3D({
               value={mode}
               onChange={(e) => setMode(e.target.value as Mode)}
             >
-              <option value="relief">Shaded relief</option>
+              <option value="relief">Shaded terrain</option>
               <option value="hazards">Terrain assessments</option>
               <option value="satellite">NASA satellite imagery</option>
             </select>
           </label>
           <label>
-            Height exaggeration{" "}
+            Stretch terrain height{" "}
             <output>
               {exaggeration.toLocaleString("en-US", {
                 maximumFractionDigits: 2,
@@ -563,7 +563,7 @@ export default function Terrain3D({
               ×
             </output>
             <input
-              aria-label="Height exaggeration"
+              aria-label="Stretch terrain height"
               type="range"
               min="1"
               max="4"
@@ -594,7 +594,7 @@ export default function Terrain3D({
           </label>
           <p>
             Grid samples are approximately {data.hazards.cell_size_m.toFixed(0)}{" "}
-            m apart. Surface between them is interpolated.
+            m apart. The shape between them is estimated.
           </p>
         </div>
       )}
@@ -662,7 +662,7 @@ export default function Terrain3D({
               : textureStatus === "error"
                 ? "NASA texture unavailable · shaded terrain remains"
                 : "Loading NASA texture · shaded terrain remains"
-            : "USGS HiRISE elevation samples · DERIVED, interpolated display"}
+            : "USGS HiRISE ground heights · DERIVED, estimated surface between samples"}
         </span>
       </div>
       {mode === "hazards" && (

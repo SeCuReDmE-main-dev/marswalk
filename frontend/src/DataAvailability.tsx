@@ -1,5 +1,12 @@
 import type { MarswalkData } from "./data/types";
 
+const layerNames: Record<string, string> = {
+  themis_ti_100m: "Ground heating and cooling data",
+  crism_mtrdr_18m: "Mineral observations from reflected light",
+  meda_pds4_env: "Rover weather and dust observations",
+  sim3464_geology: "Approximate rock-type classification",
+};
+
 export default function DataAvailability({ data }: { data: MarswalkData }) {
   const images = data.manifest.files.filter((file) =>
     /^panoramas\/.*\.jpg$/.test(file.path),
@@ -31,24 +38,29 @@ export default function DataAvailability({ data }: { data: MarswalkData }) {
       <h3>Missing data & approximations</h3>
       {external.length ? (
         external.map(([name, status]) => (
-          <p key={name}>
-            <b>{name}</b>:{" "}
+          <div key={name}>
+            <b>{layerNames[name] || "Additional data layer"}</b>:{" "}
             {String(status.tag ?? status.status ?? "Not reported").replaceAll(
               "_",
               " ",
             )}
-            {status.note ? ` · ${status.note}` : ""}
-            {status.indeterminacy_i != null
-              ? ` · Scale/data uncertainty: ${status.indeterminacy_i}`
-              : ""}
-          </p>
+            <details>
+              <summary>Technical data status</summary>
+              <p>{name}</p>
+              {status.note && <p>{status.note}</p>}
+              {status.indeterminacy_i != null
+                ? ` · Scale/data uncertainty: ${status.indeterminacy_i}`
+                : ""}
+            </details>
+          </div>
         ))
       ) : (
         <p>No external-layer availability report was supplied.</p>
       )}
       <p>
-        Geology is estimated from elevation and position, not the SIM 3464 map
-        polygons. Missing layers and terrain outside the grid remain unassessed.
+        Rock types are estimated from height and location, rather than read from
+        the boundaries on the published geology map (USGS SIM 3464). Missing
+        layers and terrain outside the grid remain unassessed.
       </p>
     </details>
   );

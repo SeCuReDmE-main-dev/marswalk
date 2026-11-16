@@ -52,7 +52,7 @@ export default function ValidationEvidence({
           <div
             className="scale-buttons"
             role="group"
-            aria-label="Rover comparison baseline"
+            aria-label="Distance used for rover comparison"
           >
             {["64", "16", "4"].map((b) => (
               <button
@@ -71,7 +71,7 @@ export default function ValidationEvidence({
           slope <= 90 ? (
             <>
               <div className="readout">
-                <span>Orbital slope at this stop</span>
+                <span>Map slope at rover position</span>
                 {q(
                   {
                     value: slope,
@@ -102,18 +102,19 @@ export default function ValidationEvidence({
             </p>
             {metrics && metrics.sample_count > 0 ? (
               <p>
-                At {baseline} m, the mean absolute difference from measured tilt
-                is <b>{metrics.mae_deg.toFixed(2)}°</b> across{" "}
+                At {baseline} m, the average difference from measured tilt is{" "}
+                <b>{metrics.mae_deg.toFixed(2)}°</b> across{" "}
                 {metrics.sample_count} even-sol test stops. Odd-sol stops were
-                used for tuning. This split is not independent spatial
-                validation.
+                used to adjust the model. Nearby stops can have similar terrain,
+                so this does not prove the model works in a new area.
               </p>
             ) : (
-              <p>No held-out error summary is available at this scale.</p>
+              <p>No test comparison is available at this scale.</p>
             )}
             <p className="scale-caption">
               A statistical comparison of different measurements, not a
-              probability of safety. The 1 m baseline remains diagnostic only.
+              probability of safety. The 1 m reading is kept for inspection, not
+              for deciding the verdict.
             </p>
           </details>
         </>

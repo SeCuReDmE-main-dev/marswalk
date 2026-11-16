@@ -1,3 +1,4 @@
+import EvidenceText from "./EvidenceText";
 import type { ReactNode } from "react";
 import type {
   MarswalkData,
@@ -44,13 +45,13 @@ export default function BenchmarkPanel({
       className="benchmark-panel"
       aria-label="Measured hazard benchmarks"
     >
-      <h3>Orbit vs ground</h3>
+      <h3>Map vs rover</h3>
       <p className="intro">
         Compare the map with Perseverance’s measurements. These reference points
-        are separate from the proposed walk.
+        are separate from the proposed walk. A sol is a day on Mars.
       </p>
       <label className="field-label">
-        Hazard benchmark
+        Rover reference point
         <select
           value={selected?.properties.feature_id || ""}
           onChange={(e) =>
@@ -85,7 +86,7 @@ export default function BenchmarkPanel({
           </div>
           <div className="angle-pair">
             <AngleReading
-              label="64 m orbital slope"
+              label="Slope from space · 64 m"
               value={cell?.slope_deg_by_baseline["64"]}
               tone="orbit"
               q={q}
@@ -98,16 +99,16 @@ export default function BenchmarkPanel({
             />
           </div>
           <p className="scale-caption">
-            Orbital slope summarizes the containing terrain cell; rover tilt is
-            a point observation. They cover different areas. Lines illustrate
-            angles, not a terrain cross-section.
+            Rover tilt is how far the rover leaned at this location. The map
+            estimates slope across an area, so the two readings can differ. The
+            sketches compare angles, not ground shapes.
           </p>
           <RoverImage data={data} url={selected.properties.panorama_url} />
           {observation && (
             <ValidationEvidence data={data} waypoint={observation} q={q} />
           )}
           <div className="readout">
-            <span>Suit slope reference limit</span>
+            <span>Spacesuit slope reference limit</span>
             {q(data.constraints.suit_max_slope_deg, 1)}
           </div>
           {!cell && (
@@ -135,12 +136,17 @@ export default function BenchmarkPanel({
             </>
           )}
           <details>
-            <summary>Reference notes</summary>
+            <summary>Technical reference notes</summary>
             <p>
-              The comparison above uses the containing cell. A point-sampled
-              slope in these notes has different spatial support.
+              The comparison above uses the map cell around the rover. A slope
+              calculated at the rover’s exact position covers a different area
+              and can have a different value.
             </p>
-            <p>{selected.properties.notes}</p>
+            <EvidenceText
+              text={selected.properties.notes}
+              kind="note"
+              summary="The source notes compare recorded rover tilt with map estimates. Different comparison distances and locations can give different values; these observations do not certify an astronaut route."
+            />
           </details>
         </>
       )}

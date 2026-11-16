@@ -1,3 +1,6 @@
+import EvidenceText from "./EvidenceText";
+import { geologyLabel } from "./explainEvidence";
+import ReadingHelp from "./ReadingHelp";
 import {
   lazy,
   Suspense,
@@ -67,6 +70,12 @@ const steps = [
   "Terrain",
   "Rover observations",
   "Route assessment",
+];
+const stepPurposes = [
+  "The colored line is a proposed astronaut walk. Science stops are places to investigate along it. Rover records are dated in sols: days on Mars.",
+  "A terrain cell is one small area of the map. Compare its slope readings over different distances to spot details a broad map can miss.",
+  "Use real rover measurements to check how the map describes the ground. A rover stop is a recorded place along the rover’s own route; tilt is how far the rover leaned there.",
+  "Check the proposed astronaut walk against terrain and walking limits. The result is a model assessment, not a guarantee of safety.",
 ];
 const defaultLayers: LayerState = {
   imagery: true,
@@ -181,7 +190,7 @@ function Workspace({
 
   const q = (value: Quantity | null | undefined, digits = 1) =>
     value && value.tag !== "UNAVAILABLE" ? (
-      <span className="quantity">
+      <div className="quantity">
         <strong>
           {value.value.toLocaleString("en-US", {
             maximumFractionDigits: digits,
@@ -190,7 +199,7 @@ function Workspace({
         </strong>
         <button
           className="provenance"
-          title={`View source: ${value.source_id}`}
+          title={`${value.tag === "MEASURED" ? "Recorded observation or published reference" : value.tag === "DERIVED" ? "Calculated from data" : "Assumed or modeled scenario"}. View source: ${value.source_id}`}
           onClick={() => {
             setSourceId(value.source_id);
             setDialog("sources");
@@ -198,8 +207,8 @@ function Workspace({
         >
           {value.tag} <ExternalLink size={9} />
         </button>
-        {value.note && <span className="quantity-note">{value.note}</span>}
-      </span>
+        {value.note && <EvidenceText text={value.note} kind="note" />}
+      </div>
     ) : (
       <span className="unavailable">Unavailable</span>
     );
@@ -320,7 +329,10 @@ function Workspace({
             alt="Marswalk"
           />
           <span className="header-divider" />
-          <span className="site-title">{title}</span>
+          <span className="site-title">
+            {title}
+            {data.manifest.site_id === "jezero" ? " crater · Mars" : ""}
+          </span>
         </div>
         <span className="prototype">Planning prototype</span>
         <nav aria-label="Application">
@@ -376,13 +388,13 @@ function Workspace({
           <div className="mission-strip">
             <div className="mission-label">
               <span className="eyebrow">
-                SUPPLIED WALK · {candidate?.properties.tag}
+                INCLUDED WALK · {candidate?.properties.tag}
               </span>
               <b>
                 {title}{" "}
                 {candidate?.properties.tag === "DERIVED"
-                  ? "obstacle-aware EVA"
-                  : "candidate EVA"}
+                  ? "planned walk"
+                  : "proposed walk"}
               </b>
             </div>
             {candidate ? (
@@ -585,7 +597,9 @@ function Workspace({
                 </label>
               </div>
               <p className="guide-purpose">
-                Compare the map with what the rover measured on the ground.
+                Plan a walk in <b>Jezero, a crater on Mars.</b> Check spacecraft
+                maps against ground readings from{" "}
+                <b>Perseverance, NASA’s robotic rover.</b>
               </p>
               <div className="guide-scroll">
                 {steps.map((name, i) => (
@@ -612,12 +626,9 @@ function Workspace({
                     </button>
                     {step === i && expanded && (
                       <div className="step-content" id={`step-${i}`}>
+                        <p className="intro">{stepPurposes[i]}</p>
                         {i === 0 && (
                           <>
-                            <p className="intro">
-                              A proposed walk across the western delta, with
-                              science stops along the way.
-                            </p>
                             {tips && (
                               <div className="context-tip">
                                 <HelpCircle size={15} />
@@ -661,21 +672,41 @@ function Workspace({
                                     value={selectedStop.properties.verdict}
                                   />
                                 </div>
-                                <p className="geology">
-                                  {selectedStop.properties.geologic_unit ||
-                                    "Geology unavailable"}
-                                </p>
                                 <div className="readout">
-                                  <span>Rover tilt at this stop</span>
+                                  <span>Rover tilt recorded here</span>
                                   {q(selectedStop.properties.rover_tilt_deg, 2)}
                                 </div>
+                                <p className="footnote">
+                                  Tilt is how far the rover leaned at this
+                                  location.
+                                </p>
                                 <RoverImage
                                   data={data}
                                   url={selectedStop.properties.panorama_url}
                                 />
                                 <details>
                                   <summary>Stop notes and source</summary>
-                                  <p>{selectedStop.properties.notes}</p>
+                                  <p className="geology">
+                                    {geologyLabel(
+                                      selectedStop.properties.geologic_unit,
+                                    )}
+                                  </p>
+                                  <details>
+                                    <summary>
+                                      Original stop name and terrain
+                                      classification
+                                    </summary>
+                                    <p>{selectedStop.properties.title}</p>
+                                    <p>
+                                      {selectedStop.properties.geologic_unit ||
+                                        "Unavailable"}
+                                    </p>
+                                  </details>
+                                  <EvidenceText
+                                    text={selectedStop.properties.notes}
+                                    kind="note"
+                                    summary="These planning notes describe arrival time, distance from the start and radiation estimates. They also include the rover’s recorded tilt; that observation is separate from the proposed astronaut walk."
+                                  />
                                   <button
                                     className="text-button"
                                     onClick={() => {
@@ -691,8 +722,8 @@ function Workspace({
                               </div>
                             )}
                             <p className="footnote">
-                              Measured stop locations provide context. They are
-                              not measurements of an astronaut visit.
+                              Rover readings provide context for the proposed
+                              walk; they do not record an astronaut visit.
                             </p>
                           </>
                         )}
@@ -766,7 +797,7 @@ function Workspace({
                                   )}
                                   <details className="reason-box">
                                     <summary>Why this verdict?</summary>
-                                    <p>{cell.reason}</p>
+                                    <EvidenceText text={cell.reason} />
                                   </details>
                                   <TerrainExtras
                                     data={data}
@@ -827,13 +858,10 @@ function Workspace({
                               open={!selectedBenchmark}
                             >
                               <summary>Browse rover stops</summary>
-                              <p className="intro">
-                                Find a Perseverance stop by sol (Martian day).
-                              </p>
                               <label className="field-label">
-                                Find a sol
+                                Find a Martian day (sol)
                                 <input
-                                  aria-label="Find a sol"
+                                  aria-label="Find a Martian day (sol)"
                                   type="search"
                                   inputMode="numeric"
                                   value={solSearch}
@@ -890,11 +918,11 @@ function Workspace({
                                     {q(waypoint.properties.rover_tilt_deg, 2)}
                                   </div>
                                   <div className="readout">
-                                    <span>Pitch</span>
+                                    <span>Forward/backward lean (pitch)</span>
                                     {q(waypoint.properties.rover_pitch_deg, 2)}
                                   </div>
                                   <div className="readout">
-                                    <span>Roll</span>
+                                    <span>Sideways lean (roll)</span>
                                     {q(waypoint.properties.rover_roll_deg, 2)}
                                   </div>
                                   <RoverImage
@@ -932,13 +960,10 @@ function Workspace({
                         )}
                         {i === 3 && (
                           <>
-                            <p className="intro">
-                              These estimates describe the proposed route.
-                            </p>
                             {candidate && (
                               <>
                                 <div className="cell-assessment">
-                                  <span>Candidate EVA</span>
+                                  <span>Proposed walk</span>
                                   <Badge value={candidate.properties.verdict} />
                                 </div>
                                 <div className="readout">
@@ -984,22 +1009,27 @@ function Workspace({
                                 </p>
                                 <details>
                                   <summary>Route notes</summary>
-                                  <p>{candidate.properties.notes}</p>
+                                  <EvidenceText
+                                    text={candidate.properties.notes}
+                                    kind="note"
+                                    summary="These are the route builder’s calculations and assumptions. The route remains a proposed walk, not a recorded astronaut journey."
+                                  />
                                 </details>
                               </>
                             )}
                             <details open>
                               <summary>Limits and assumptions</summary>
+                              <ReadingHelp topics={["return"]} />
                               <div className="readout">
                                 <span>Suit slope limit</span>
                                 {q(data.constraints.suit_max_slope_deg)}
                               </div>
                               <div className="readout">
-                                <span>Walkback limit</span>
+                                <span>Maximum distance from the start</span>
                                 {q(data.constraints.walkback_max_km)}
                               </div>
                               <div className="readout">
-                                <span>Maximum EVA duration</span>
+                                <span>Maximum time outside</span>
                                 {q(data.constraints.eva_duration_max_h)}
                               </div>
                             </details>
@@ -1008,10 +1038,10 @@ function Workspace({
                               <div>
                                 <b>Planning prototype</b>
                                 <p>
-                                  GO means the model’s criteria are met. It is
-                                  not operational safety certification. Missing
-                                  data and unassessed terrain remain
-                                  limitations.
+                                  GO: the model’s checks passed. CAUTION:
+                                  warnings or uncertainty remain. NO_GO: the
+                                  model blocks the walk. Missing data and
+                                  unassessed terrain remain limitations.
                                 </p>
                               </div>
                             </div>
@@ -1108,9 +1138,33 @@ function Workspace({
       {dialog === "help" && (
         <Dialog title="How does it work?" onClose={() => setDialog(null)}>
           <p className="dialog-lead">
-            Compare Mars terrain at different scales with real Perseverance
-            observations before planning a walk.
+            Where could an astronaut walk on Mars, and what could make the
+            journey difficult? Marswalk lets you explore that question in
+            Jezero, a crater on Mars.
           </p>
+          <h3>Why look at the terrain?</h3>
+          <p>
+            A route can look easy from above while hiding a short, steep
+            stretch. Slopes and obstacles affect where an astronaut could walk,
+            how much effort it might take, and whether the route fits the
+            planned time and return limits.
+          </p>
+          <h3>Why Perseverance?</h3>
+          <p>
+            Perseverance is NASA’s robotic rover. Its recorded lean and photos
+            give us observations from the ground to compare with maps made from
+            spacecraft images. They help us check what those maps capture and
+            what they might miss. A rover’s experience does not prove an
+            astronaut could safely follow the same path.
+          </p>
+          <h3>What do we hope to achieve?</h3>
+          <p>
+            Help people explore possible walking routes, understand the evidence
+            behind a route assessment, and see where more information is needed.
+            This hackathon prototype demonstrates a way to support future
+            exploration; it does not certify routes for real missions.
+          </p>
+          <h3>Try it in four steps</h3>
           <ol className="help-steps">
             {steps.map((s, i) => (
               <li key={s}>
@@ -1119,8 +1173,8 @@ function Workspace({
                   {
                     [
                       "Choose a science stop along the proposed route.",
-                      "Compare the same cell at 64 m, 16 m and 4 m analysis distances.",
-                      "Compare orbital slopes with rover tilt and NASA photos.",
+                      "Compare slope over 64 m, 16 m and 4 m of ground. A broad reading can hide a short, steep stretch an astronaut would still have to cross.",
+                      "Compare slopes estimated from space with rover tilt and NASA photos.",
                       "Read the route verdict, estimates and limits.",
                     ][i]
                   }
@@ -1128,6 +1182,14 @@ function Workspace({
               </li>
             ))}
           </ol>
+          <details>
+            <summary>What is a rover stop?</summary>
+            <p>
+              A recorded location along Perseverance’s route, with measurements
+              such as tilt. It is different from a science stop: a proposed
+              place for an astronaut to investigate.
+            </p>
+          </details>
           <details>
             <summary>What do the colors mean?</summary>
             <p>
@@ -1140,9 +1202,9 @@ function Workspace({
           <details>
             <summary>What is rover tilt?</summary>
             <p>
-              How far the rover leaned while standing on the ground. The orbital
-              map estimates the slope across an area. Comparing them helps show
-              what a broad map can miss; they are different measurements.
+              How far the rover leaned while standing on the ground. The map
+              estimates the slope across an area. Comparing them helps show what
+              a broad map can miss; they are different measurements.
             </p>
           </details>
           <div className="tag-explainer">

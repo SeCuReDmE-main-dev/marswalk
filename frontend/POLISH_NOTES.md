@@ -18,3 +18,60 @@ Point samples match waypoint ID, sol, coordinates and rounded measured tilt; no 
 - Browser QA used an ephemeral build override for a fresh engine at port 8001. Committed configuration still defaults to port 8000. No backend/shared schema/pack was edited for this frontend change.
 
 Screenshots: `screenshots/polished-help-desktop.png`, `screenshots/rover-validation-mobile.png`.
+
+## Beginner reading pass
+
+Each guide step now opens with its own purpose: identify the proposed walk,
+inspect details a broad map can miss, compare with rover observations, then
+read the route assessment and limits. The persistent introduction identifies
+Jezero and Perseverance. Essential context stays visible even with tips off;
+longer explanations expand beside the relevant reading.
+
+The interface says “slope from space” instead of “orbital slope”, explains
+analysis distances separately from map zoom, and distinguishes proposed science
+stops from recorded rover stops. Sol, tilt, pitch and roll have plain-language
+context where used. Technical geology descriptions remain in stop notes.
+Optional definitions cover terrain cells, elevation, dust, effort, oxygen,
+radio and camera direction. Intermediate radio calculations sit in technical
+planner details. Values, sources, provenance and verdict logic are unchanged.
+
+The production build and 29 frontend tests pass. Browser checks at desktop and
+390 px mobile width confirm the context, scale explanation and verdict wording,
+with no horizontal overflow or JavaScript errors observed. Steps collapse with
+tips off. This is a copy/interaction review, not a comprehension study with new
+users. Ruff and pack verification pass. A repeat full-Python run produced no
+output and was interrupted; it supplies no new test result. The previously
+observed missing local `SIM3464_metadata.xml` limitation remains unresolved.
+
+Screenshots: `screenshots/beginner-context-desktop.png`,
+`screenshots/plain-language-slopes-mobile.png`.
+
+The scale comparison now explains the 64/16/4 m calculation distances beside
+the buttons, with an expandable hillside/ramp example and a description of
+each distance. It explains why scale differences matter for a walk, why shorter
+is not automatically more accurate, and why these are not safety limits.
+Help also explains the project goal and the role of Perseverance. Production
+build and all 29 frontend tests pass; expanded theory was checked in the browser
+with no JavaScript errors observed (`screenshots/scale-theory.png`).
+
+## Pull and technical wording review
+
+`git pull --ff-only origin main` returned `Already up to date.` Existing UI
+coverage includes the current terrain layers, rover evidence, route planning
+and evaluation, scenarios, radio/oxygen/effort, camera cache and validation
+report. No additional engine feature was added for this review.
+
+Cell reasons, route warnings, quantity qualifications and route/stop notes now
+have readable context with the exact source text in an expandable original.
+Known reason formats are translated conservatively; unfamiliar formats explicitly
+request technical interpretation. A retained slope can combine scales, so its
+named scale is described as the main comparison distance, not as a separate raw
+slope measurement. Filtering checks is never described as proving safe terrain.
+Geology remains approximate. External-layer names and several science labels
+are expanded; original identifiers and data-status notes remain inspectable.
+
+Build and 32 frontend tests pass. Browser checks used the reported example at
+JEZ-R32-C34 and confirmed the 1.1° summary and unchanged original wording.
+Mobile route readings showed no horizontal overflow; no JavaScript errors were
+observed. Screenshot: `screenshots/readable-engine-reason.png`. The full Python
+gate limitation documented above remains unresolved.

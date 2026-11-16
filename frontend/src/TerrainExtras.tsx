@@ -1,8 +1,47 @@
+import EvidenceText from "./EvidenceText";
+import { geologyLabel } from "./explainEvidence";
+import ReadingHelp from "./ReadingHelp";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { MarswalkData, HazardCell, Quantity } from "./data/types";
 import { createEngineClient, type CellLookupResult } from "./data/engine";
 import { getConfig } from "./data/config";
 import type { LonLat } from "./domain";
+const explanations: Record<string, string> = {
+  solar_shadow_fraction:
+    "Estimated share in shadow: 0 means none, 1 means all.",
+  hurst_exponent_h:
+    "Describes how the pattern of terrain roughness changes with distance.",
+  step_scale_slope_075m_deg:
+    "A model estimate over a short walking-step distance, not a direct measurement of each step.",
+  distance_to_contact_m:
+    "Estimated distance to a boundary between rock units in the approximate geology model.",
+  sky_view_factor:
+    "How much sky is unobstructed by terrain: 0 means none, 1 means all.",
+  local_gcr_dose_mgy_per_day:
+    "Estimated radiation absorbed per day, based on a model and measurements from another Mars site.",
+  meda_dust_tau_880nm:
+    "How much dust blocks light. Higher values mean more dust, not a percentage.",
+  metabolic_rate_w:
+    "Estimated energy the body uses each second while walking; W means watts.",
+  walkback_o2_margin_min:
+    "Estimated oxygen time remaining after the modeled return and other assumed use.",
+  rf_bullington_nu:
+    "A technical score describing terrain obstruction along the assumed radio path.",
+  rf_diffraction_loss_db:
+    "How much terrain weakens the radio signal in the model; dB compares signal levels.",
+  obstacle_mask_fraction:
+    "Share of this cell marked as obstacles in the model: 0 means none, 1 means all.",
+  partial_refuge_gcr_reduction_pct:
+    "Estimated reduction of background space radiation from surrounding terrain. It is not solar-storm protection.",
+  thermal_inertia_tiu:
+    "How strongly the ground resists heating up or cooling down.",
+  crism_olindex3:
+    "A measurement from light reflected by the ground, used to look for the rock-forming mineral olivine.",
+  crism_d2300:
+    "A feature in reflected light used to study minerals, not a safety score.",
+  crism_bd1900_2:
+    "A feature in reflected light used to study water-related minerals, not a reading of available drinking water.",
+};
 
 export function TerrainExtras({
   data,
@@ -16,45 +55,54 @@ export function TerrainExtras({
   return (
     <details>
       <summary>Environment, effort & radio</summary>
+      <ReadingHelp topics={["height", "effort", "oxygen", "radio", "dust"]} />
       <p className="footnote">
-        Geology is an elevation/position approximation, not the published map
-        polygons. Rock abundance is a roughness proxy, not a rock count.
+        Geology is an elevation/position approximation, not the boundaries on
+        the published geology map. Rock abundance is a roughness proxy, not a
+        rock count.
       </p>
-      <p>{cell.geologic_unit || "Geology unavailable"}</p>
+      <p>{geologyLabel(cell.geologic_unit)}</p>
+      <details>
+        <summary>Original terrain classification</summary>
+        <p>{cell.geologic_unit || "Unavailable"}</p>
+      </details>
       <p>
-        Rover-data applicability:{" "}
+        Terrain similar to the rover reference data:{" "}
         {cell.aoa_inside == null
           ? "Unavailable"
           : cell.aoa_inside
-            ? "Inside reference domain"
-            : "Outside reference domain · extrapolation"}
+            ? "Similar to reference terrain"
+            : "Different terrain · estimates are less supported"}
       </p>
       {(
         [
           ["solar_shadow_fraction", "Shadow fraction"],
           ["hurst_exponent_h", "Terrain texture"],
           ["step_scale_slope_075m_deg", "Step-scale slope"],
-          ["distance_to_contact_m", "Distance to geological contact"],
+          ["distance_to_contact_m", "Distance to a rock-type boundary"],
           ["sky_view_factor", "Open sky fraction"],
           ["local_gcr_dose_mgy_per_day", "Local radiation estimate"],
-          ["meda_dust_tau_880nm", "Dust optical depth"],
-          ["metabolic_rate_w", "Metabolic effort"],
-          ["walkback_o2_margin_min", "Oxygen return margin"],
-          ["rf_bullington_nu", "Radio diffraction parameter"],
-          ["rf_diffraction_loss_db", "Radio diffraction loss"],
+          ["meda_dust_tau_880nm", "Dust level (optical depth)"],
+          ["metabolic_rate_w", "Estimated body energy use"],
+          ["walkback_o2_margin_min", "Estimated oxygen time left after return"],
+          ["rf_bullington_nu", "Terrain obstruction score (nu)"],
+          ["rf_diffraction_loss_db", "Radio signal loss from terrain"],
           ["obstacle_mask_fraction", "Obstacle coverage"],
           [
             "partial_refuge_gcr_reduction_pct",
-            "Partial refuge radiation reduction",
+            "Radiation reduction from terrain shelter",
           ],
-          ["thermal_inertia_tiu", "Thermal inertia"],
+          ["thermal_inertia_tiu", "Resistance to heating and cooling"],
           ["crism_olindex3", "Olivine index"],
-          ["crism_d2300", "Spectral absorption 2300"],
-          ["crism_bd1900_2", "Spectral absorption 1900"],
+          ["crism_d2300", "Reflected-light mineral indicator (2300)"],
+          ["crism_bd1900_2", "Reflected-light water-related indicator (1900)"],
         ] as const
       ).map(([key, label]) => (
         <div className="readout" key={key}>
-          <span>{label}</span>
+          <span>
+            {label}
+            <small className="reading-explanation">{explanations[key]}</small>
+          </span>
           {q(cell[key], 3)}
         </div>
       ))}
@@ -65,10 +113,10 @@ export function TerrainExtras({
       <p className="footnote">
         Direct UHF link to the rover parked at Science Stop 1 (Sol 413): 414.2
         MHz, suit antenna 1.8 m, rover mast 3.0 m. Terrain can block this link.
-        This is not orbital-relay coverage.
+        This is a direct link to the rover, not a link through a satellite.
       </p>
       <p>
-        Partial topographic refuge:{" "}
+        Ground partly sheltered by surrounding terrain:{" "}
         {cell.partial_topographic_refuge == null
           ? "Unavailable"
           : cell.partial_topographic_refuge
@@ -77,7 +125,7 @@ export function TerrainExtras({
         . Terrain shelter never cancels a solar particle event.
       </p>
       <p>
-        Spectral smectite caution:{" "}
+        Possible clay-mineral warning:{" "}
         {cell.spectral_smectite_caution == null
           ? "Unavailable"
           : cell.spectral_smectite_caution
@@ -86,18 +134,18 @@ export function TerrainExtras({
       </p>
       {cell.calibrated_opinion && (
         <details>
-          <summary>Calibrated confidence</summary>
+          <summary>Confidence adjusted using reference data</summary>
           <p>
             Verified agreement {cell.calibrated_opinion.t.toFixed(2)} ·
             scale/data uncertainty {cell.calibrated_opinion.i.toFixed(2)} ·
             hazard contradiction {cell.calibrated_opinion.f.toFixed(2)}.
-            Independent components, not a normalized probability. Original
+            Separate values, not percentages that add to 100. Original
             confidence remains above.
           </p>
         </details>
       )}
       <details>
-        <summary>External data availability</summary>
+        <summary>Technical data availability</summary>
         {Object.entries(data.hazards.external_layers_status || {}).map(
           ([name, status]) => (
             <p key={name}>
@@ -170,8 +218,9 @@ export function CellEvidence({
       {result && (
         <>
           <p>
-            <b>{result.cell.verdict}</b> · {result.cell.reason}
+            <b>{result.cell.verdict}</b>
           </p>
+          <EvidenceText text={result.cell.reason} />
           <p>
             Nearest rover observation: Sol{" "}
             {result.nearest_waypoint.properties.sol},{" "}

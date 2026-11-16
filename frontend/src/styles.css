@@ -1393,6 +1393,29 @@ a {
   font-size: 12px;
   line-height: 1.6;
 }
+.reading-help {
+  font-size: 12px;
+  line-height: 1.65;
+}
+.reading-help dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+.reading-help dd {
+  margin: 3px 0 12px;
+  color: #536773;
+}
+.engine-tools .reading-help {
+  margin: 12px 0;
+}
+.reading-explanation {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-top: 5px;
+  color: #61727b;
+  font-weight: 400;
+}
 .tip-toggle {
   display: flex;
   align-items: center;
@@ -2521,4 +2544,20 @@ dialog::backdrop {
   .app-header .brand img {
     width: 132px;
   }
+}
+
+.evidence-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.quantity .evidence-text {
+  font-size: 11px;
+  font-weight: 400;
+  max-width: 240px;
+}
+.quantity .evidence-text p {
+  margin: 4px 0;
+}
+.quantity .evidence-text summary {
+  font-size: 11px;
 }

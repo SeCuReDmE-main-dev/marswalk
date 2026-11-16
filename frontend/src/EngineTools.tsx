@@ -1,3 +1,5 @@
+import EvidenceText from "./EvidenceText";
+import ReadingHelp from "./ReadingHelp";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   createEngineClient,
@@ -284,11 +286,15 @@ export function EngineTools({
       </div>
       <details>
         <summary>Planning assumptions</summary>
+        <ReadingHelp
+          title="What do these inputs mean?"
+          topics={["dust", "weight", "radio", "solar"]}
+        />
         <p className="footnote">
-          These are planning assumptions, not live telemetry.
+          These are planning assumptions, not live instrument readings.
         </p>
         <label className="field-label">
-          Dust optical depth (880 nm)
+          Dust level (optical depth at 880 nm)
           <input
             type="number"
             min="0"
@@ -304,7 +310,7 @@ export function EngineTools({
           />
         </label>
         <label className="field-label">
-          Additional payload (kg)
+          Extra carried weight (kg)
           <input
             type="number"
             min="0"
@@ -338,7 +344,7 @@ export function EngineTools({
               setScenario((s) => ({ ...s, spe_alert: e.target.checked }))
             }
           />{" "}
-          Solar particle event · forces NO_GO
+          Solar particle burst · blocks the walk
         </label>
       </details>
       <div className="engine-actions">
@@ -382,29 +388,41 @@ export function EngineTools({
           )}
           <ul className="engine-reasons">
             {result.reasons.map((r, i) => (
-              <li key={i}>{r}</li>
+              <li key={i}>
+                <EvidenceText text={r} />
+              </li>
             ))}
           </ul>
           {Object.entries(result)
-            .filter(([, v]) => v && typeof v === "object" && "value" in v)
+            .filter(
+              ([key, v]) =>
+                !["rf_bullington_nu", "rf_min_clearance_over_f1"].includes(
+                  key,
+                ) &&
+                v &&
+                typeof v === "object" &&
+                "value" in v,
+            )
             .map(([key, v]) => (
               <div className="readout" key={key}>
                 <span>
                   {(
                     {
                       total_distance_m: "Route length",
-                      walkback_distance_m: "Walkback distance",
+                      walkback_distance_m: "Distance from start",
                       pure_walking_time_s: "Walking time",
-                      max_longitudinal_slope_deg: "Along-path slope",
-                      max_cross_slope_deg: "Cross slope",
-                      metabolic_rate_w: "Metabolic effort",
-                      walkback_o2_margin_min: "Oxygen return margin",
-                      rf_diffraction_loss_db: "Radio diffraction loss",
+                      max_longitudinal_slope_deg: "Slope along the path",
+                      max_cross_slope_deg: "Sideways slope",
+                      metabolic_rate_w: "Estimated body energy use",
+                      walkback_o2_margin_min:
+                        "Estimated oxygen time left after return",
+                      rf_diffraction_loss_db: "Radio signal loss from terrain",
                       rf_bullington_nu: "Radio diffraction parameter",
                       rf_min_clearance_over_f1: "Fresnel clearance ratio",
-                      max_slope_1m_deg: "1 m diagnostic slope",
+                      max_slope_1m_deg: "1 m slope · inspection only",
                       max_slope_64m_deg: "64 m slope",
-                      max_scale_divergence_deg: "Scale divergence",
+                      max_scale_divergence_deg:
+                        "Difference between slope readings",
                       estimated_duration_h: "Estimated duration",
                       estimated_radiation_msv: "Estimated radiation dose",
                       walkback_return_h: "Return walking time",
@@ -419,18 +437,30 @@ export function EngineTools({
             <b>{result.rf_comms_verdict ?? "Unavailable"}</b>
           </div>
           <p>
-            Walkback distance within limit:{" "}
+            Distance from start within limit:{" "}
             {result.walkback_within_limit ? "Yes" : "No"}
           </p>
           {"string_pull_audit" in result && (
             <details>
-              <summary>Planner details</summary>
+              <summary>Technical planner details</summary>
               <p>{result.optimality_guarantee}</p>
               <p>
                 {result.cells_expanded} cells explored;{" "}
                 {result.string_pull_audit.accepted_count} smoothing shortcuts
                 accepted.
               </p>
+              <p>
+                These intermediate radio calculations are not extra safety
+                verdicts.
+              </p>
+              <div className="readout">
+                <span>Terrain obstruction score (nu)</span>
+                {q(result.rf_bullington_nu, 2)}
+              </div>
+              <div className="readout">
+                <span>Radio path clearance ratio (Fresnel)</span>
+                {q(result.rf_min_clearance_over_f1, 2)}
+              </div>
             </details>
           )}
           <button
@@ -459,6 +489,10 @@ export function EngineTools({
           </button>
         </div>
       )}
+      <ReadingHelp
+        title="What do these results mean?"
+        topics={["return", "effort", "oxygen", "radio", "side"]}
+      />
       <p className="footnote">
         Derived planning results do not represent an astronaut visit. GO is a
         model verdict, not operational safety certification.
@@ -520,12 +554,13 @@ export function CameraPanel({
   return (
     <details className="camera-panel">
       <summary>Rover camera frames</summary>
+      <ReadingHelp topics={["camera"]} />
       <p className="footnote">
         Browse cached NASA photos for Sol {sol}. This does not request new
         downloads from NASA.
       </p>
       <label className="field-label">
-        Mast azimuth (optional, 0–360°)
+        Camera direction (optional, 0–360°)
         <input
           type="number"
           min="0"
@@ -574,7 +609,7 @@ export function CameraPanel({
                     {frame.instrument} · MEASURED
                     <br />
                     {frame.mast_azimuth_deg != null &&
-                      `Mast azimuth ${frame.mast_azimuth_deg.toFixed(1)}°`}
+                      `Camera direction ${frame.mast_azimuth_deg.toFixed(1)}°`}
                   </figcaption>
                   <details>
                     <summary>Camera metadata</summary>
@@ -582,7 +617,12 @@ export function CameraPanel({
                       {frame.camera_model_type || "Camera model unavailable"}
                     </p>
                     <p>
-                      Attitude: {frame.attitude_quaternion || "Unavailable"}
+                      Raw orientation (quaternion):{" "}
+                      {frame.attitude_quaternion || "Unavailable"}
+                    </p>
+                    <p>
+                      This orientation is a technical value used by software,
+                      not a single camera angle.
                     </p>
                   </details>
                 </figure>
