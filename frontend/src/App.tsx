@@ -1,4 +1,5 @@
 import EvidenceText from "./EvidenceText";
+import DecisionExplanation from "./DecisionExplanation";
 import { geologyLabel } from "./explainEvidence";
 import ReadingHelp from "./ReadingHelp";
 import {
@@ -776,6 +777,13 @@ function Workspace({
                                     </div>
                                     <Badge value={cell.verdict} />
                                   </div>
+                                  <p className="intro">
+                                    {cell.verdict === "GO"
+                                      ? "GO: the model’s terrain checks pass. One gentle slope reading alone would not be enough."
+                                      : cell.verdict === "CAUTION"
+                                        ? "CAUTION: concerns or uncertainty remain. Read the reasons before treating this ground as walkable."
+                                        : "NO_GO: the model blocks this ground. A limit, hazard check or data problem can cause this; a gentler reading at another scale does not cancel it."}
+                                  </p>
                                   <ScaleComparison
                                     cell={cell}
                                     baseline={baseline}
@@ -798,7 +806,18 @@ function Workspace({
                                   <details className="reason-box">
                                     <summary>Why this verdict?</summary>
                                     <EvidenceText text={cell.reason} />
+                                    <p className="footnote">
+                                      This message summarizes the terrain
+                                      checks; it may not identify every rule
+                                      behind the verdict. A slope reading alone
+                                      does not explain the result.
+                                    </p>
                                   </details>
+                                  <DecisionExplanation
+                                    slopeLimit={q(
+                                      data.constraints.suit_max_slope_deg,
+                                    )}
+                                  />
                                   <TerrainExtras
                                     data={data}
                                     cell={cell}
@@ -1019,6 +1038,11 @@ function Workspace({
                             )}
                             <details open>
                               <summary>Limits and assumptions</summary>
+                              <DecisionExplanation
+                                slopeLimit={q(
+                                  data.constraints.suit_max_slope_deg,
+                                )}
+                              />
                               <ReadingHelp topics={["return"]} />
                               <div className="readout">
                                 <span>Suit slope limit</span>

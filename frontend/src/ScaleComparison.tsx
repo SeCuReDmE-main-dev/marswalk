@@ -66,6 +66,12 @@ export default function ScaleComparison({
         A broad map can smooth over a short, steep stretch.
       </p>
       <p className="scale-caption">
+        An astronaut would still have to cross that steep part. Comparing 64 m,
+        16 m and 4 m helps check whether a gentle broad reading hides more
+        difficult ground nearby. The engine uses comparisons across scales;
+        these buttons let you inspect the evidence, not choose a safer verdict.
+      </p>
+      <p className="scale-caption">
         The map estimates ground slope using spacecraft images taken from orbit.
         The buttons choose the distance across the ground used for that
         calculation—not the height of a hill or the map zoom.
@@ -105,7 +111,8 @@ export default function ScaleComparison({
       </p>
       <p className="scale-caption">
         Angle sketches, not a terrain cross-section. Changing scale keeps the
-        supplied <b>{cell.verdict}</b> verdict.
+        supplied <b>{cell.verdict}</b> verdict. A lower angle in one reading
+        does not cancel the other checks.
       </p>
       <details className="reading-help">
         <summary>Why compare 64 m, 16 m and 4 m?</summary>
